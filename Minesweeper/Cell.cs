@@ -1,0 +1,83 @@
+﻿using Bridge.Html5;
+
+namespace Minesweeper
+{
+    public class Cell : BaseCell
+    {
+
+        public override void Highlight()
+        {
+            var context = Program.Canvas.GetContext(CanvasTypes.CanvasContext2DType.CanvasRenderingContext2D);
+            context.FillStyle = HTMLColor.LightGray;
+            context.FillRect(X,Y,Width,Width);
+            context.FillStyle = HTMLColor.Black;
+        }
+
+        public override void UnHighLight()
+        {
+            var context = Program.Canvas.GetContext(CanvasTypes.CanvasContext2DType.CanvasRenderingContext2D);
+            context.FillStyle = HTMLColor.White;
+            context.FillRect(X, Y, Width, Width);
+            context.FillStyle = HTMLColor.Black;
+        }
+        public Cell(int row, int column, int w)
+        {
+            X = row * w;
+            Y = column * w;
+            Row = row;
+            Column = column;
+            Width = w;
+            //Bomb = true;
+            Visible = false;
+        }
+
+        
+
+       
+
+        public override void Show()
+        {
+            var context = Program.Canvas.GetContext(CanvasTypes.CanvasContext2DType.CanvasRenderingContext2D);
+           // context.ClearRect(X,Y,W,W);
+            if (Visible)
+            {
+                if (Bomb)
+                {
+                    context.FillStyle = HTMLColor.DarkRed;
+                    context.FillRect(X,Y, Width, Width);
+                    context.FillStyle = HTMLColor.Red;
+                    context.Font = "55px arial";
+                    context.FillText("X",X ,Y+ Width, Width);
+                    context.FillStyle = HTMLColor.Black;
+                    //Window.Alert("You Lose");
+                }
+                else if(Value > 0)
+                {
+                    context.Font = "18px arial";
+                    context.FillText(Value.ToString(), X + Width / 2, Y + Width / 2, Width);
+                }
+                else
+                {
+                    context.FillStyle = HTMLColor.Gray;
+                    context.FillRect(X,Y, Width, Width);
+                    context.FillStyle = HTMLColor.Black;
+                }
+            }
+            else
+            {
+                if (Flag)
+                {
+                    context.FillStyle = HTMLColor.Red;
+                    context.Font = "55px arial";
+                    context.FillText("F",X,Y+ Width, Width);
+                    context.FillStyle = HTMLColor.Black;
+                }
+            }
+            context.StrokeRect(X, Y, Width, Width);
+        }
+
+
+
+        
+    }
+}
