@@ -14,7 +14,7 @@
     "enabled": true
   },
   "html": {
-    "disabled": true
+    "disabled": false
   },
   // Set to true to disable Reflection metadata generation.
   // Default is false.
@@ -28,7 +28,7 @@
 
   // Delete everything from the output folder
   // Default is false
-  "cleanOutputFolderBeforeBuild": false,
+  "cleanOutputFolderBeforeBuild": true,
 
   // Set to false to disable Report generation.
   // Default is false.
