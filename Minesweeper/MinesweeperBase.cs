@@ -1,8 +1,71 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Minesweeper
 {
+    public class NoShowCell : BaseCell
+    {
+        public override void Show()
+        {
+        }
+
+        public override void Highlight()
+        {
+        }
+
+        public override void UnHighLight()
+        {
+        }
+
+        public NoShowCell(int row, int column, int width)
+        {
+            X = row * width;
+            Y = column * width;
+            Row = row;
+            Column = column;
+            Width = width;
+            Visible = false;
+
+        }
+    }
+    public class MinesweeperFitnessTest : IFitnessVal
+    {
+        public bool Maximize
+        {
+            get { return true; }
+        }
+
+        public double EvaluateFitness(INeuralNetwork network)
+        {
+            var mine = new MinesweeperBase();
+            mine.Setup(p => new NoShowCell(p.Row, p.Column, p.Width), numOfBombs: 50);
+            int clicks = 0;
+            int score = 0;
+            while (mine.GameEnd() != true && clicks < mine.MaxScore)
+            {
+                var result = network.FeedForward(mine.Grid.Cells.Select(p => p.Value).ToArray().ToDoubleArray());
+                double x = 0, y = 0;
+                x = result[0] * mine.Width;
+                y = result[1] * mine.Width;
+                var cell = mine.Grid.Cells.FirstOrDefault(p => p.Hit((int)x, (int)y));
+                if (cell != null)
+                {
+                    var c = mine.ClickOnCell(cell, false);
+                    if (c != true)
+                    {
+                        score--;
+                    }
+                }
+                clicks++;
+
+            }
+
+            return mine.Score + score;
+
+        }
+    }
+
     public struct CellParams
     {
         public int Row { get; }
@@ -23,16 +86,11 @@ namespace Minesweeper
         internal int Rows;
         internal int Width;
         internal int Height;
+        public IEnumerable<BaseCell> Cells => Grid?.Cells;
 
-        public int MaxScore
-        {
-            get { return Grid.Cells.Count(p => p.Bomb != true); }
-        }
+        public virtual int MaxScore => Grid.Cells.Count;
 
-        public int Score
-        {
-            get { return Grid.Cells.Count(p => p.Visible && p.Bomb != true); }
-        }
+        public virtual int Score => Grid.Cells.Count(p => p.Visible || p.Flag);
 
         public bool GameEnd()
         {
@@ -142,7 +200,7 @@ namespace Minesweeper
         }
         public bool Win()
         {
-            return Grid.Cells.Any(p => p.Bomb && p.Flag != true) != true;
+            return Grid.Cells.Any(p => p.Bomb && p.Flag != true) != true || Grid.Cells.Where(p=>p.Bomb != true).All(p=>p.Visible);
         }
 
         private Func<CellParams, BaseCell> _cellFunc;

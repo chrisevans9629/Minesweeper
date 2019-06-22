@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\minesweeper\ai\Generation.cs" Link="AI\Generation.cs" />
+    <Compile Include="..\minesweeper\ai\NeuralNetwork.cs" Link="AI\NeuralNetwork.cs" />
+    <Compile Include="..\minesweeper\ai\NeuroEvolution.cs" Link="AI\NeuroEvolution.cs" />
+    <Compile Include="..\minesweeper\interfaces\IFitnessVal.cs" Link="Interfaces\IFitnessVal.cs" />
+    <Compile Include="..\minesweeper\interfaces\IGeneration.cs" Link="Interfaces\IGeneration.cs" />
+    <Compile Include="..\minesweeper\interfaces\INeuralNetwork.cs" Link="Interfaces\INeuralNetwork.cs" />
+    <Compile Include="..\minesweeper\interfaces\IOptimizationFunction.cs" Link="Interfaces\IOptimizationFunction.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Minesweeper\BaseCell.cs" Link="BaseCell.cs" />
+    <Compile Include="..\Minesweeper\Ext.cs" Link="Ext.cs" />
+    <Compile Include="..\Minesweeper\Grid.cs" Link="Grid.cs" />
+    <Compile Include="..\Minesweeper\MinesweeperBase.cs" Link="MinesweeperBase.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Evans.AI\Evans.AI.csproj" />
+  </ItemGroup>
+
+</Project>

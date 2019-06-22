@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,12 +44,43 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\minesweeper\ai\Generation.cs">
+      <Link>AI\Generation.cs</Link>
+    </Compile>
+    <Compile Include="..\minesweeper\ai\NeuralNetwork.cs">
+      <Link>AI\NeuralNetwork.cs</Link>
+    </Compile>
+    <Compile Include="..\minesweeper\ai\NeuroEvolution.cs">
+      <Link>AI\NeuroEvolution.cs</Link>
+    </Compile>
+    <Compile Include="..\Minesweeper\BaseCell.cs">
+      <Link>BaseCell.cs</Link>
+    </Compile>
+    <Compile Include="..\Minesweeper\Ext.cs">
+      <Link>Ext.cs</Link>
+    </Compile>
+    <Compile Include="..\Minesweeper\Grid.cs">
+      <Link>Grid.cs</Link>
+    </Compile>
+    <Compile Include="..\minesweeper\interfaces\IFitnessVal.cs">
+      <Link>Interfaces\IFitnessVal.cs</Link>
+    </Compile>
+    <Compile Include="..\minesweeper\interfaces\IGeneration.cs">
+      <Link>Interfaces\IGeneration.cs</Link>
+    </Compile>
+    <Compile Include="..\minesweeper\interfaces\INeuralNetwork.cs">
+      <Link>Interfaces\INeuralNetwork.cs</Link>
+    </Compile>
+    <Compile Include="..\minesweeper\interfaces\IOptimizationFunction.cs">
+      <Link>Interfaces\IOptimizationFunction.cs</Link>
+    </Compile>
+    <Compile Include="..\Minesweeper\MinesweeperBase.cs">
+      <Link>MinesweeperBase.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit">
-      <Version>3.9.0</Version>
-    </PackageReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

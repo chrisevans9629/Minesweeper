@@ -3,67 +3,7 @@ using System.Linq;
 
 namespace Minesweeper
 {
-    public class NoShowCell : BaseCell
-    {
-        public override void Show()
-        {
-        }
-
-        public override void Highlight()
-        {
-        }
-
-        public override void UnHighLight()
-        {
-        }
-
-        public NoShowCell(int row, int column, int width)
-        {
-            X = row * width;
-            Y = column * width;
-            Row = row;
-            Column = column;
-            Width = width;
-            Visible = false;
-
-        }
-    }
-    public class MinesweeperFitnessTest : IFitnessVal
-    {
-        public bool Maximize
-        {
-            get { return true; }
-        }
-
-        public double EvaluateFitness(INeuralNetwork network)
-        {
-            var mine = new MinesweeperBase();
-            mine.Setup(p => new NoShowCell(p.Row, p.Column, p.Width), numOfBombs: 50);
-            int clicks = 0;
-            int score = 0;
-            while (mine.GameEnd() != true && clicks < mine.MaxScore)
-            {
-                var result = network.FeedForward(mine.Grid.Cells.Select(p => p.Value).ToArray().ToDoubleArray());
-                double x = 0, y = 0;
-                x = result[0] * mine.Width;
-                y = result[1] * mine.Width;
-                var cell = mine.Grid.Cells.FirstOrDefault(p => p.Hit((int)x, (int)y));
-                if (cell != null)
-                {
-                    var c = mine.ClickOnCell(cell, false);
-                    if (c != true)
-                    {
-                        score--;
-                    }
-                }
-                clicks++;
-
-            }
-
-            return mine.Score + score;
-
-        }
-    }
+   
     public class BaseFitnessTest : IFitnessVal
     {
         public bool Maximize

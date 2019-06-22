@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minesweeper.Base", "Mineswe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetwork.View", "NeuralNetwork.View\NeuralNetwork.View.csproj", "{1B2CFFAA-E828-49BB-9F7D-AE921B46F036}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evans.Minesweeper", "Evans.Minesweeper\Evans.Minesweeper.csproj", "{9893C409-5635-4556-8871-74C0EAE3F8BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evans.AI", "Evans.AI\Evans.AI.csproj", "{BA0BA220-3DA8-4300-B4A6-33F60FDA4CC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{1B2CFFAA-E828-49BB-9F7D-AE921B46F036}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B2CFFAA-E828-49BB-9F7D-AE921B46F036}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B2CFFAA-E828-49BB-9F7D-AE921B46F036}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9893C409-5635-4556-8871-74C0EAE3F8BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9893C409-5635-4556-8871-74C0EAE3F8BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9893C409-5635-4556-8871-74C0EAE3F8BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9893C409-5635-4556-8871-74C0EAE3F8BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA0BA220-3DA8-4300-B4A6-33F60FDA4CC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA0BA220-3DA8-4300-B4A6-33F60FDA4CC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA0BA220-3DA8-4300-B4A6-33F60FDA4CC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA0BA220-3DA8-4300-B4A6-33F60FDA4CC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
