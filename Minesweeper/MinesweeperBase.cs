@@ -102,6 +102,10 @@ namespace Minesweeper
         }
         public bool ClickOnCell(BaseCell item, bool flag)
         {
+            if (Grid.Cells.Any(p => p.Bomb) != true)
+            {
+                SetupBombs(_numOfBombs, _seed, item);
+            }
             if (item.Visible == true)
             {
                 return false;
@@ -203,6 +207,8 @@ namespace Minesweeper
             return Grid.Cells.Any(p => p.Bomb && p.Flag != true) != true || Grid.Cells.Where(p=>p.Bomb != true).All(p=>p.Visible);
         }
 
+        private int _numOfBombs;
+        private int _seed;
         private Func<CellParams, BaseCell> _cellFunc;
         public void Setup(Func<CellParams, BaseCell> createCellFunc, int cellwidth = 40, int width = 600, int height = 600, int numOfBombs = 20, int seed = 100 )
         {
@@ -212,16 +218,21 @@ namespace Minesweeper
             Height = height;
             Columns = Width / cellwidth;
             Rows = Height / cellwidth;
-
+            _numOfBombs = numOfBombs;
+            _seed = seed;
             Grid = new Grid(Rows, Columns, cellwidth,createCellFunc);
 
-            //var numOfBombs = 20;
+        }
+        
+        private void SetupBombs(int numOfBombs, int seed, BaseCell firstCell)
+        {
+//var numOfBombs = 20;
             var random = new Random(seed);
 
             //create bombs
             for (int i = 0; i < numOfBombs; i++)
             {
-                var cells = Grid.Cells.Where(p => p.Bomb != true).ToList();
+                var cells = Grid.Cells.Where(p => p.Bomb != true && p != firstCell).ToList();
                 cells[random.Next(0, cells.Count - 1)].Bomb = true;
             }
 
@@ -231,10 +242,8 @@ namespace Minesweeper
                 if (item.Bomb != true)
                 {
                     CalculateBombs(item);
-
                 }
             }
-
         }
 
         protected virtual void OnHasWon()

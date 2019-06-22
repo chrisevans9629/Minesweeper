@@ -84,6 +84,7 @@ namespace Minesweeper
 
         private void SetupHtml()
         {
+            Document.Body.AppendChild(new HTMLDivElement() {Id = "game"});
             var game = Document.GetElementById("game");
             var canvas = Program.Canvas;
             var tools = new HTMLDivElement();
