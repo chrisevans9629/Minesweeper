@@ -41,7 +41,7 @@ namespace Minesweeper
                     Window.Alert("Lost!");
                 }
             };
-            Setup(p => new Cell(p.Row,p.Column,p.Width),numOfBombs:50,seed:random.Next(int.MaxValue));
+            Setup(p => new Cell(p.Row,p.Column,(int)p.Width),numOfBombs:50,seed:random.Next(int.MaxValue));
             SetupHtml();
             Show();
             //Window.RequestAnimationFrame(RenderLoop);
@@ -63,7 +63,7 @@ namespace Minesweeper
             };
             context.Canvas.OnClick = mevent =>
             {
-                context.ClearRect(0, 0, Width, Height);
+                context.ClearRect(0, 0,(int) Width, (int)Height);
                 foreach (var item in Grid.Cells)
                 {
                     if (item.Hit(mevent.ClientX, mevent.ClientY + Document.DocumentElement.ScrollTop))
@@ -107,7 +107,7 @@ namespace Minesweeper
             reset.OnClick = click =>
             {
                 //Reset();
-                Setup(p => new Cell(p.Row,p.Column,p.Width),numOfBombs:50,seed:random.Next(int.MaxValue) );
+                Setup(p => new Cell(p.Row,p.Column,(int)p.Width),numOfBombs:50,seed:random.Next(int.MaxValue) );
                 Show();
                // Setup(p => new Cell(p.Row,p.Column,p.Width)); 
                // Show();
@@ -116,8 +116,8 @@ namespace Minesweeper
             tools.AppendChild(reset);
             tools.AppendChild(text);
             tools.AppendChild(score);
-            canvas.Width = Width;
-            canvas.Height = Height;
+            canvas.Width = (int) Width;
+            canvas.Height = (int)Height;
             game.AppendChild(canvas);
             game.AppendChild(tools);
             //Document.Body.AppendChild(canvas);

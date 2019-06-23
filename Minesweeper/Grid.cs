@@ -27,7 +27,7 @@ namespace Minesweeper
             }
             return cells.ToArray();
         }
-        public Grid(int rows, int columns, int width, Func<CellParams, BaseCell> createCellFunc)
+        public Grid(int rows, int columns, float width, Func<CellParams, BaseCell> createCellFunc)
         {
             _createCellFunc = createCellFunc;
             Rows = rows;
@@ -50,6 +50,6 @@ namespace Minesweeper
 
         public int Rows { get; }
         public int Columns { get; }
-        public int Width { get; }
+        public float Width { get; }
     }
 }

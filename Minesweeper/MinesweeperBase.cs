@@ -39,7 +39,7 @@ namespace Minesweeper
         public double EvaluateFitness(INeuralNetwork network)
         {
             var mine = new MinesweeperBase();
-            mine.Setup(p => new NoShowCell(p.Row, p.Column, p.Width), numOfBombs: 50);
+            mine.Setup(p => new NoShowCell(p.Row, p.Column,(int) p.Width), numOfBombs: 50);
             int clicks = 0;
             int score = 0;
             while (mine.GameEnd() != true && clicks < mine.MaxScore)
@@ -70,9 +70,9 @@ namespace Minesweeper
     {
         public int Row { get; }
         public int Column { get; }
-        public int Width { get; }
+        public float Width { get; }
 
-        public CellParams(int row, int column, int width)
+        public CellParams(int row, int column, float width)
         {
             Row = row;
             Column = column;
@@ -84,8 +84,8 @@ namespace Minesweeper
         internal Grid Grid;
         internal int Columns;
         internal int Rows;
-        internal int Width;
-        internal int Height;
+        internal float Width;
+        internal float Height;
         public IEnumerable<BaseCell> Cells => Grid?.Cells;
 
         public virtual int MaxScore => Grid.Cells.Count;
@@ -210,14 +210,15 @@ namespace Minesweeper
         private int _numOfBombs;
         private int _seed;
         private Func<CellParams, BaseCell> _cellFunc;
-        public void Setup(Func<CellParams, BaseCell> createCellFunc, int cellwidth = 40, int width = 600, int height = 600, int numOfBombs = 20, int seed = 100 )
+        public void Setup(Func<CellParams, BaseCell> createCellFunc, float cellwidth = 40, 
+            float width = 600, float height = 600, int numOfBombs = 20, int seed = 100 )
         {
             // var cellwidth = 40;
             _cellFunc = createCellFunc;
             Width = width;
             Height = height;
-            Columns = Width / cellwidth;
-            Rows = Height / cellwidth;
+            Columns = (int)(Width / cellwidth);
+            Rows = (int)(Height / cellwidth);
             _numOfBombs = numOfBombs;
             _seed = seed;
             Grid = new Grid(Rows, Columns, cellwidth,createCellFunc);
