@@ -41,7 +41,7 @@ namespace Minesweeper
                     Window.Alert("Lost!");
                 }
             };
-            Setup(p => new Cell(p.Row,p.Column,(int)p.Width),numOfBombs:50,seed:random.Next(int.MaxValue));
+            Setup(new MinesweeperConfig(p => new Cell(p.Row, p.Column, (int)p.Width)){BombCount = 50, Seed = random.Next(int.MaxValue) });
             SetupHtml();
             Show();
             //Window.RequestAnimationFrame(RenderLoop);
@@ -107,7 +107,8 @@ namespace Minesweeper
             reset.OnClick = click =>
             {
                 //Reset();
-                Setup(p => new Cell(p.Row,p.Column,(int)p.Width),numOfBombs:50,seed:random.Next(int.MaxValue) );
+                Setup(new MinesweeperConfig(p => new Cell(p.Row, p.Column, (int)p.Width)) { BombCount = 50, Seed = random.Next(int.MaxValue) });
+
                 Show();
                // Setup(p => new Cell(p.Row,p.Column,p.Width)); 
                // Show();

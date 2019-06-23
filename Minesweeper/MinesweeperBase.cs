@@ -39,7 +39,7 @@ namespace Minesweeper
         public double EvaluateFitness(INeuralNetwork network)
         {
             var mine = new MinesweeperBase();
-            mine.Setup(p => new NoShowCell(p.Row, p.Column,(int) p.Width), numOfBombs: 50);
+            mine.Setup(new MinesweeperConfig(p => new NoShowCell(p.Row, p.Column, (int)p.Width)){BombCount = 50});
             int clicks = 0;
             int score = 0;
             while (mine.GameEnd() != true && clicks < mine.MaxScore)
@@ -66,6 +66,23 @@ namespace Minesweeper
         }
     }
 
+    public class MinesweeperConfig
+    {
+        public MinesweeperConfig(Func<CellParams, BaseCell> createCellFunc)
+        {
+            CreateCellFunc = createCellFunc;
+        }
+        public int? Rows { get; set; }
+        public int? Columns { get; set; }
+        public Func<CellParams, BaseCell> CreateCellFunc { get; }
+        public float CellWidth { get; set; } = 40;
+        public float Width { get; set; } = 600;
+        public float Height { get; set; } = 600;
+        public int Seed { get; set; } = 100;
+        public int? BlockCount { get; set; }
+        public int BombCount { get; set; } = 20;
+
+    }
     public struct CellParams
     {
         public int Row { get; }
@@ -104,7 +121,7 @@ namespace Minesweeper
         {
             if (Grid.Cells.Any(p => p.Bomb) != true)
             {
-                SetupBombs(_numOfBombs, _seed, item);
+                SetupBombs(_config.BombCount, _config.Seed, item);
             }
             if (item.Visible == true)
             {
@@ -118,7 +135,7 @@ namespace Minesweeper
                     OnHasLost();
                     OnGameEnded(false);
                 }
-                
+
                 if (item.Value == 0)
                 {
                     ShowOthers(item);
@@ -165,7 +182,7 @@ namespace Minesweeper
 
         public void Reset()
         {
-            Setup(_cellFunc);
+            Setup(_config);
             Show();
         }
         private void ShowOthers(BaseCell cell)
@@ -200,34 +217,42 @@ namespace Minesweeper
             {
                 item.Show();
             }
-            
+
         }
         public bool Win()
         {
-            return Grid.Cells.Any(p => p.Bomb && p.Flag != true) != true || Grid.Cells.Where(p=>p.Bomb != true).All(p=>p.Visible);
+            return Grid.Cells.Any(p => p.Bomb && p.Flag != true) != true || Grid.Cells.Where(p => p.Bomb != true).All(p => p.Visible);
         }
 
-        private int _numOfBombs;
-        private int _seed;
-        private Func<CellParams, BaseCell> _cellFunc;
-        public void Setup(Func<CellParams, BaseCell> createCellFunc, float cellwidth = 40, 
-            float width = 600, float height = 600, int numOfBombs = 20, int seed = 100 )
+        private MinesweeperConfig _config;
+
+        public void Setup(MinesweeperConfig config)
         {
-            // var cellwidth = 40;
-            _cellFunc = createCellFunc;
-            Width = width;
-            Height = height;
-            Columns = (int)(Width / cellwidth);
-            Rows = (int)(Height / cellwidth);
-            _numOfBombs = numOfBombs;
-            _seed = seed;
-            Grid = new Grid(Rows, Columns, cellwidth,createCellFunc);
+            _config = config;
+            var cellwidth = config.CellWidth;
+            Width = config.Width;
+            Height = config.Height;
+            if (config.Columns is int i)
+            {
+                Columns = i;
+            }
+            else
+                Columns = (int)(Width / cellwidth);
+
+            if (config.Rows is int t) Rows = t;
+            else
+                Rows = (int)(Height / cellwidth);
+            if (config.BlockCount is int j)
+            {
+                throw new NotImplementedException();
+            }
+            Grid = new Grid(Rows, Columns, cellwidth, config.CreateCellFunc);
 
         }
-        
+
         private void SetupBombs(int numOfBombs, int seed, BaseCell firstCell)
         {
-//var numOfBombs = 20;
+            //var numOfBombs = 20;
             var random = new Random(seed);
 
             //create bombs

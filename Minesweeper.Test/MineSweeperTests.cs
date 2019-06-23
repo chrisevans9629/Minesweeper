@@ -13,7 +13,31 @@ namespace Minesweeper.Test
         {
             minesweeper = new MinesweeperBase();
 
-            minesweeper.Setup(p=> new NoShowCell(p.Row,p.Column,p.Width));
+            minesweeper.Setup(new MinesweeperConfig(NoShow));
+        }
+
+        BaseCell NoShow(CellParams p)
+        {
+            return new NoShowCell(p.Row, p.Column, (int) p.Width);
+        }
+        [Test]
+        public void Bomb_Num()
+        {
+            PlaceFirst();
+            minesweeper.Cells.Count(p => p.Bomb).Should().Be(20);
+        }
+
+        [Test]
+        public void Setup_100Cells()
+        {
+            minesweeper.Setup(new MinesweeperConfig(NoShow){Columns = 10, Rows = 10});
+            minesweeper.Cells.Count().Should().Be(100);
+        }
+
+        [Test]
+        public void CellCount()
+        {
+            minesweeper.Cells.Count().Should().Be(225);
         }
 
         [Test]
