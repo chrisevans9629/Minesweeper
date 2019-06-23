@@ -9,7 +9,7 @@
         public abstract void Show();
         public abstract void Highlight();
         public abstract void UnHighLight();
-        public bool Flag
+        public virtual bool Flag
         {
             get { return _flag; }
             set
@@ -19,7 +19,7 @@
             }
         }
 
-        public int Value
+        public virtual int Value
         {
             get { return _value; }
             set
@@ -30,7 +30,7 @@
         }
 
 
-        public bool Bomb
+        public virtual bool Bomb
         {
             get { return _bomb; }
             set
@@ -41,7 +41,7 @@
         }
 
         
-        public bool Visible
+        public virtual bool Visible
         {
             get { return _visible; }
             set
@@ -50,12 +50,12 @@
                 Show();
             }
         }
-        public int Row { get; set; }
-        public int Column { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Width { get; set; }
-        public bool Hit(int x, int y)
+        public virtual int Row { get; set; }
+        public virtual int Column { get; set; }
+        public virtual float X { get; set; }
+        public virtual float Y { get; set; }
+        public virtual float Width { get; set; }
+        public virtual bool Hit(float x, float y)
         {
             return (x > X && x < X + Width && y > Y && y < Y + Width);
         }

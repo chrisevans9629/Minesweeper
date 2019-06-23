@@ -9,7 +9,7 @@ namespace Minesweeper
         {
             var context = Program.Canvas.GetContext(CanvasTypes.CanvasContext2DType.CanvasRenderingContext2D);
             context.FillStyle = HTMLColor.LightGray;
-            context.FillRect(X,Y,Width,Width);
+            context.FillRect((int)X,(int)Y,(int)Width,(int)Width);
             context.FillStyle = HTMLColor.Black;
         }
 
@@ -17,7 +17,8 @@ namespace Minesweeper
         {
             var context = Program.Canvas.GetContext(CanvasTypes.CanvasContext2DType.CanvasRenderingContext2D);
             context.FillStyle = HTMLColor.White;
-            context.FillRect(X, Y, Width, Width);
+            context.FillRect((int)X, (int)Y, (int)Width, (int)Width);
+
             context.FillStyle = HTMLColor.Black;
         }
         public Cell(int row, int column, int w)
@@ -44,22 +45,23 @@ namespace Minesweeper
                 if (Bomb)
                 {
                     context.FillStyle = HTMLColor.DarkRed;
-                    context.FillRect(X,Y, Width, Width);
+                    context.FillRect((int)X,(int)Y,(int) Width,(int) Width);
+
                     context.FillStyle = HTMLColor.Red;
                     context.Font = "55px arial";
-                    context.FillText("X",X ,Y+ Width, Width);
+                    context.FillText("X",(int)X ,(int)(Y+ Width),(int) Width);
                     context.FillStyle = HTMLColor.Black;
                     //Window.Alert("You Lose");
                 }
                 else if(Value > 0)
                 {
                     context.Font = "18px arial";
-                    context.FillText(Value.ToString(), X + Width / 2, Y + Width / 2, Width);
+                    context.FillText(Value.ToString(),(int) (X + Width / 2),(int)( Y + Width / 2),(int) Width);
                 }
                 else
                 {
                     context.FillStyle = HTMLColor.Gray;
-                    context.FillRect(X,Y, Width, Width);
+                    context.FillRect((int)X,(int)Y,(int) Width,(int) Width);
                     context.FillStyle = HTMLColor.Black;
                 }
             }
@@ -69,11 +71,11 @@ namespace Minesweeper
                 {
                     context.FillStyle = HTMLColor.Red;
                     context.Font = "55px arial";
-                    context.FillText("F",X,Y+ Width, Width);
+                    context.FillText("F",(int)X,(int)(Y+ Width),(int) Width);
                     context.FillStyle = HTMLColor.Black;
                 }
             }
-            context.StrokeRect(X, Y, Width, Width);
+            context.StrokeRect((int)X,(int) Y,(int) Width,(int) Width);
         }
 
 
