@@ -22,10 +22,9 @@ namespace Minesweeper.Test
     {
         private readonly IRandomizer _randomizer;
 
-        public object Clone()
-        {
-            throw new NotImplementedException();
-        }
+      
+
+       
 
         public List<bool> Genes { get; set; }
         public CandidateSolution(int capacity, ItemList list, IRandomizer randomizer)
@@ -67,14 +66,37 @@ namespace Minesweeper.Test
                 }
             }
         }
+
+        public void SetGene(int i, bool hasGene)
+        {
+            Genes[i] = hasGene;
+        }
+
+        public bool HasGene(int i)
+        {
+            return Genes[i];
+        }
+
         public int Capacity { get; set; }
 
         void CalcFitness()
         {
             Fitness = CandidateItem.Zip(Genes, (item, b) => new {item, b}).Where(p => p.b).Sum(p => p.item.Value);
         }
+
+       
+
         public ItemList CandidateItem { get; set; }
         public int Fitness { get; set; }
+        public ICandidateSolution<ItemList> CloneObject()
+        {
+            return new CandidateSolution(Capacity, CandidateItem.Clone() as ItemList, _randomizer);
+        }
+
+        public object Clone()
+        {
+            return CloneObject();
+        }
     }
 
 
@@ -153,7 +175,7 @@ namespace Minesweeper.Test
 
         public void SolveWithGenetics()
         {
-            var genetics = new GeneticAlgorithmEngine<ItemList, Knapsack>(1000,10,10, new SolutionGenerator());
+            var genetics = new GeneticAlgorithmEngine<ItemList, Knapsack>(1000,10,10, new SolutionGenerator(), Randomizer);
 
             ResultContents = genetics.Run(this);
         }
@@ -166,9 +188,27 @@ namespace Minesweeper.Test
             return new CandidateSolution(data.Capacity, data.Candidates, data.Randomizer);
         }
 
-        public ICandidateSolution<ItemList> CrossOver(ICandidateSolution<ItemList> male, ICandidateSolution<ItemList> female)
+        public (ICandidateSolution<ItemList> child1, ICandidateSolution<ItemList> child2) CrossOver(ICandidateSolution<ItemList> male, ICandidateSolution<ItemList> female, Knapsack input)
         {
-            throw new NotImplementedException();
+            var child1 = male.Clone() as ICandidateSolution<ItemList>;
+            var child2 = female.Clone() as ICandidateSolution<ItemList>;
+
+            var items = male.CandidateItem.Count;
+            var crossPoint = input.Randomizer.IntLessThan(items);
+
+            for (int i = 0; i < crossPoint; i++)
+            {
+                child1.SetGene(i, male.HasGene(i));
+                child2.SetGene(i, female.HasGene(i));
+            }
+
+            for (int i = crossPoint; i < items; i++)
+            {
+                child1.SetGene(i, female.HasGene(i));
+                child2.SetGene(i,male.HasGene(i));
+            }
+
+            return (child1, child2);
         }
 
         public ICandidateSolution<ItemList> Mutate(ICandidateSolution<ItemList> candidate)
