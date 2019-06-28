@@ -10,7 +10,7 @@ namespace Minesweeper
         public int PopulationSize { get; set; }
         public double CrossOverRate { get; set; }
         public double MutationRate { get; set; }
-
+        
         public GeneticAlgorithmEngine(int popsize, 
             int crossoverPercent, double mutationPercent, 
             ICandidateSolutionGenerator<T, TInput> generator, IRandomizer randomizer)
