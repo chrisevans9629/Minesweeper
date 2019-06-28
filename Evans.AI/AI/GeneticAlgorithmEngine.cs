@@ -46,8 +46,23 @@ namespace Minesweeper
                     if (_randomizer.GetDoubleFromZeroToOne() < CrossOverRate)
                     {
                         var (child1, child2) = _generator.CrossOver(parent1, parent2);
-
+                        parent1 = child1;
+                        parent2 = child2;
                     }
+
+                    if (_randomizer.GetDoubleFromZeroToOne() < MutationRate)
+                    {
+                        parent1 = _generator.Mutate(parent1);
+                    }
+
+                    if (_randomizer.GetDoubleFromZeroToOne() < MutationRate)
+                    {
+                        parent2 = _generator.Mutate(parent2);
+                    }
+
+                    nextGen.Add(parent1);
+                    nextGen.Add(parent2);
+
                 }
             }
             throw new NotImplementedException();
