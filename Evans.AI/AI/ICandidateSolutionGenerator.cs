@@ -6,7 +6,7 @@
 
         (ICandidateSolution<T> child1, ICandidateSolution<T> child2) CrossOver(ICandidateSolution<T> male, ICandidateSolution<T> female, TInput input = default(TInput));
 
-        ICandidateSolution<T> Mutate(ICandidateSolution<T> candidate);
+        ICandidateSolution<T> Mutate(ICandidateSolution<T> candidate, TInput input, double mutationRate);
 
     }
 }

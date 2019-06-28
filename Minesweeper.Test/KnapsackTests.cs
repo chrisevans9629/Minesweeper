@@ -211,9 +211,17 @@ namespace Minesweeper.Test
             return (child1, child2);
         }
 
-        public ICandidateSolution<ItemList> Mutate(ICandidateSolution<ItemList> candidate)
+        public ICandidateSolution<ItemList> Mutate(ICandidateSolution<ItemList> candidate, Knapsack input, double mutationRate)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < candidate.CandidateItem.Count; i++)
+            {
+                if (input.Randomizer.GetDoubleFromZeroToOne() < mutationRate)
+                {
+                    candidate.SetGene(i,!candidate.HasGene(i));
+                }
+            }
+
+            return candidate;
         }
     }
 

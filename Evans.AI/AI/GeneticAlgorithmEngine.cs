@@ -22,6 +22,7 @@ namespace Minesweeper
             MutationRate = mutationPercent / 100D;
         }
 
+        public int MaxGenerationsWithNoChanges { get; set; }
         public T Run(TInput data)
         {
             CurrentGeneration = new List<ICandidateSolution<T>>(PopulationSize);
@@ -29,14 +30,39 @@ namespace Minesweeper
             {
                 CurrentGeneration.Add(_generator.GenerateCandidate(data));
             }
+            ICandidateSolution<T> bestSolution = null;
+            int bestFitness = int.MinValue;
 
+            var bestGen = 0;
+            var gen = 1;
             while (true)
             {
+                var bestGenFitness = 0;
                 var totalFitness = 0;
+                ICandidateSolution<T> bestSolutionThisGen = null;
                 foreach (var candidateSolution in CurrentGeneration)
                 {
                     candidateSolution.Repair();
                     totalFitness += candidateSolution.Fitness;
+                    if (candidateSolution.Fitness > bestGenFitness)
+                    {
+                        bestGenFitness = candidateSolution.Fitness;
+                        bestSolutionThisGen = candidateSolution;
+                    }
+                }
+
+                if (totalFitness > bestFitness)
+                {
+                    bestFitness = totalFitness;
+                    bestSolution = bestSolutionThisGen;
+                    bestGen = gen;
+                }
+                else
+                {
+                    if ((gen - bestGen) > MaxGenerationsWithNoChanges)
+                    {
+                        break;
+                    }
                 }
                 var nextGen = new List<ICandidateSolution<T>>();
                 while (nextGen.Count < PopulationSize)
@@ -45,27 +71,30 @@ namespace Minesweeper
                     var parent2 = RouletteWheelSelectCandidate(totalFitness).CloneObject();
                     if (_randomizer.GetDoubleFromZeroToOne() < CrossOverRate)
                     {
-                        var (child1, child2) = _generator.CrossOver(parent1, parent2);
+                        var (child1, child2) = _generator.CrossOver(parent1, parent2, data);
                         parent1 = child1;
                         parent2 = child2;
                     }
 
                     if (_randomizer.GetDoubleFromZeroToOne() < MutationRate)
                     {
-                        parent1 = _generator.Mutate(parent1);
+                        parent1 = _generator.Mutate(parent1, data, MutationRate);
                     }
 
                     if (_randomizer.GetDoubleFromZeroToOne() < MutationRate)
                     {
-                        parent2 = _generator.Mutate(parent2);
+                        parent2 = _generator.Mutate(parent2, data, MutationRate);
                     }
 
                     nextGen.Add(parent1);
                     nextGen.Add(parent2);
 
                 }
+
+                gen++;
             }
-            throw new NotImplementedException();
+
+            return bestSolution?.CandidateItem;
         }
         
 
