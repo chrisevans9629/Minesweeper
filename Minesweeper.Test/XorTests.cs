@@ -1,73 +1,56 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace Minesweeper.Test
 {
-    public class CanidateSolution : ICandidateSolution<bool[]>
+    public class PathChosen
     {
-        public ICandidateSolution<bool[]> CloneObject()
+        public PathChosen(PathChosen pathChosen)
         {
-            return new CanidateSolution(){CandidateItem = CandidateItem.ToArray()};
-        }
-
-        public object Clone()
-        {
-            return CloneObject();
-        }
-
-        public bool[] CandidateItem { get; set; }
-        public int Fitness { get; set; }
-
-        public bool[] Genes { get; set; }
-        public void Repair()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetGene(int i, bool hasGene)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool HasGene(int i)
-        {
-            throw new NotImplementedException();
+            
         }
     }
 
-    public class CandidateSolutionGenerator : ICandidateSolutionGenerator<bool[], bool[]>
+    public class Road
     {
-        public ICandidateSolution<bool[]> GenerateCandidate(bool[] data)
+        public int Distance { get; set; }
+        public City City { get; set; }
+    }
+    public class City
+    {
+        public List<Road> Roads { get; set; } = new List<Road>();
+        public int Id { get; set; }
+    }
+    public class CityCollection
+    {
+        public List<City> Cities { get; set; } = new List<City>();  
+        public CityCollection(IRandomizer randomizer, int count, IntegerRange distanceRange)
         {
-            throw new System.NotImplementedException();
-        }
+            for (int i = 0; i < count; i++)
+            {
+                Cities.Add(new City(){Id = i});
+            }
 
-        public (ICandidateSolution<bool[]> child1, ICandidateSolution<bool[]> child2) CrossOver(ICandidateSolution<bool[]> male, ICandidateSolution<bool[]> female,
-            bool[] input = default(bool[]))
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ICandidateSolution<bool[]> Mutate(ICandidateSolution<bool[]> candidate, bool[] input, double mutationRate)
-        {
-            throw new System.NotImplementedException();
+            foreach (var city in Cities)
+            {
+                foreach (var otherCities in Cities)
+                {
+                    city.Roads.Add(new Road(){City = otherCities, Distance = randomizer.IntInRange(distanceRange)});
+                }
+            }
         }
     }
 
-    [TestFixture]
-    public class XorTests
+    public class CandiateSolutionPath : CandidateSolution<PathChosen>
     {
-        [Test]
-        public void XorAiTest()
+       
+        public override void Repair()
         {
-            var ai = new GeneticAlgorithmEngine<bool[],bool[]>(100,10,10, new CandidateSolutionGenerator(), new Randomizer(new Random(100)));
-
-            var t = ai.Run(new[] {true, false, true});
-
-            t[0].Should().BeFalse();
-            t.Should().HaveCount(3);
+            throw new NotImplementedException();
         }
+        
     }
 }

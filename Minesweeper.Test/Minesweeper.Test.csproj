@@ -44,7 +44,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CandidateSolution.cs" />
+    <Compile Include="CandidateSolutionItem.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemList.cs" />
     <Compile Include="Knapsack.cs" />

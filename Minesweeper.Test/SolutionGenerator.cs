@@ -4,7 +4,7 @@
     {
         public ICandidateSolution<ItemList> GenerateCandidate(Knapsack data)
         {
-            return new CandidateSolution(data.Capacity, data.Candidates, data.Randomizer);
+            return new CandidateSolutionItem(data.Capacity, data.Candidates, data.Randomizer);
         }
 
         public (ICandidateSolution<ItemList> child1, ICandidateSolution<ItemList> child2) CrossOver(ICandidateSolution<ItemList> male, ICandidateSolution<ItemList> female, Knapsack input)
