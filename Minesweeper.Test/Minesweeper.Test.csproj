@@ -51,6 +51,7 @@
     <Compile Include="KnapsackTests.cs" />
     <Compile Include="MineSweeperTests.cs" />
     <Compile Include="NeuralNetworkTest.cs" />
+    <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SolutionGenerator.cs" />
     <Compile Include="XorTests.cs" />
