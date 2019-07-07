@@ -49,6 +49,7 @@
     <Compile Include="ItemList.cs" />
     <Compile Include="Knapsack.cs" />
     <Compile Include="KnapsackTests.cs" />
+    <Compile Include="MathParser.cs" />
     <Compile Include="MineSweeperTests.cs" />
     <Compile Include="NeuralNetworkTest.cs" />
     <Compile Include="ParserTests.cs" />
