@@ -13,12 +13,10 @@ namespace Minesweeper.Test
     {
         public string StringValue { get; set; }
         public double? Value { get; set; }
-     
     }
 
     public class SecondAdd : DoubleOperator
     {
-      
         public override double Calculate(double first, double second)
         {
             return first + second;
@@ -30,7 +28,7 @@ namespace Minesweeper.Test
 
         public override double Calculate(double first, double second)
         {
-                return first - second;
+            return first - second;
         }
     }
     public class Subtract : NumberOperator
@@ -55,7 +53,7 @@ namespace Minesweeper.Test
             if (!calculated)
             {
                 calculated = true;
-                return Calculate(First.Calculate(),(Second.Value ?? 0));
+                return Calculate(First.Calculate(), (Second.Value ?? 0));
             }
             return 0;
         }
