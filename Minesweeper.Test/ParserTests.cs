@@ -42,6 +42,8 @@ namespace Minesweeper.Test
     {
         public abstract double Calculate(double first, double second);
         public abstract double Calculate();
+
+        
     }
 
     public abstract class DoubleOperator : Operator
@@ -121,6 +123,9 @@ namespace Minesweeper.Test
         [TestCase("200*10", 2000)]
         [TestCase("1.5+2.5", 4)]
         [TestCase(".5+2.5", 3)]
+        [TestCase("10+10-10", 10)]
+        [TestCase("10-10*10", 90)]
+        [TestCase("10-10-10*10", 80)]
 
         public void Tests(string math, double result)
         {
