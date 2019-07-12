@@ -1,49 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace Minesweeper.Test
 {
 
-    public class MathValue
+    public interface IMathValue
     {
 
     }
-    public class NumberValue : MathValue
+    public class NumberValue : IMathValue
     {
         public string StringValue { get; set; }
         public double? Value { get; set; }
     }
 
-    public class SecondAdd : DoubleOperator
+    public interface IMathNode
     {
-        public override double Calculate(double first, double second)
-        {
-            return first + second;
-        }
+        IEnumerable<IMathNode> GetMathNodes();
     }
-
-    public class SecondSubtract : DoubleOperator
-    {
-
-        public override double Calculate(double first, double second)
-        {
-            return first - second;
-        }
-    }
-    public class Subtract : NumberOperator
-    {
-        public override double Calculate(double first, double second)
-        {
-            return first - second;
-        }
-    }
-    public abstract class Operator : MathValue
+    
+    
+    public abstract class Operator : IMathValue
     {
         public abstract double Calculate(double first, double second);
         public abstract double Calculate();
-
-        
     }
 
     public abstract class DoubleOperator : Operator
@@ -81,13 +63,6 @@ namespace Minesweeper.Test
 
     }
 
-    public class Add : NumberOperator
-    {
-        public override double Calculate(double first, double second)
-        {
-            return first + second;
-        }
-    }
 
     [TestFixture]
     public class ParserTests

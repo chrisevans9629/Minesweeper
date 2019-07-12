@@ -27,7 +27,7 @@ namespace Minesweeper.Test
 
         }
 
-        public MathValue ParseChar(char value, NumberOperator lastOp, NumberValue previousValue)
+        public IMathValue ParseChar(char value, NumberOperator lastOp, NumberValue previousValue)
         {
             if (operators.ContainsKey(value))
             {
@@ -109,7 +109,7 @@ namespace Minesweeper.Test
         }
         public double Calculate(string value)
         {
-            var operators = new List<MathValue>();
+            var operators = new List<IMathValue>();
             NumberValue previousValue = null;
             for (var i = 0; i < value.Length; i++)
             {
@@ -137,34 +137,7 @@ namespace Minesweeper.Test
 
                 var tresult = collection.ParseChar(value[i], lastOp, previousValue);
                 if(tresult != null) operators.Add(tresult);
-                //MultiplyOperator(value[i], lastOp, operators, previousValue);
-                //if (value[i] == '-')
-                //{
-                //    if (lastOp != null)
-                //    {
-                //        operators.Add(new SecondSubtract() { First = lastOp });
-                //    }
-                //    else
-                //    {
-                //        operators.Add(new Subtract() { First = previousValue });
-
-                //    }
-                //    continue;
-                //}
-
-                //if (value[i] == '+')
-                //{
-                //    if (lastOp != null)
-                //    {
-                //        operators.Add(new SecondAdd() { First = lastOp });
-                //    }
-                //    else
-                //    {
-                //        operators.Add(new Add() { First = previousValue });
-
-                //    }
-                //    continue;
-                //}
+                
 
                 var secAdd = operators.OfType<DoubleOperator>().LastOrDefault();
                 if (secAdd != null && secAdd.Second == null)
@@ -188,20 +161,6 @@ namespace Minesweeper.Test
             return operators.OfType<Operator>().Sum(p => p.Calculate());
         }
 
-        private static void MultiplyOperator(char value, NumberOperator lastOp, List<MathValue> operators,
-            NumberValue previousValue)
-        {
-            if (value == '*')
-            {
-                if (lastOp != null)
-                {
-                    operators.Add(new SecondMultiply() { First = lastOp });
-                }
-                else
-                {
-                    operators.Add(new Multiply() { First = previousValue });
-                }
-            }
-        }
+      
     }
 }
