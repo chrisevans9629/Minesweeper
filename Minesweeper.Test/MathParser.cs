@@ -4,21 +4,21 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
-    public class SecondMultiply : DoubleOperator
-    {
-        public override double Calculate(double first, double second)
-        {
-            return first * second;
-        }
-    }
+    //public class SecondMultiply : DoubleOperator
+    //{
+    //    public override double Calculate(double first, double second)
+    //    {
+    //        return first * second;
+    //    }
+    //}
 
-    public class Multiply : NumberOperator
-    {
-        public override double Calculate(double first, double second)
-        {
-            return first * second;
-        }
-    }
+    //public class Multiply : NumberOperator
+    //{
+    //    public override double Calculate(double first, double second)
+    //    {
+    //        return first * second;
+    //    }
+    //}
 
     public class MathOperatorCollection
     {
@@ -35,14 +35,14 @@ namespace Minesweeper.Test
                 if (lastOp != null)
                 {
                     var op = opFunc();
-                    op.DoubleOperator.First = lastOp;
-                    return op.DoubleOperator;
+                    op.First = lastOp;
+                    return op;
                 }
                 else
                 {
                     var op = opFunc();
-                    op.NumberOperator.First = previousValue;
-                    return op.NumberOperator;
+                    op.First = previousValue;
+                    return op;
                 }
             }
 
@@ -50,12 +50,12 @@ namespace Minesweeper.Test
         }
         public void AddOperator(char value, Operation op)
         {
-            operators.Add(value, () => new FullOperator(op));
+            operators.Add(value, () => new NumberOperatorInject(op));
         }
 
 
 
-        private Dictionary<char, Func<FullOperator>> operators = new Dictionary<char, Func<FullOperator>>();
+        private Dictionary<char, Func<NumberOperator>> operators = new Dictionary<char, Func<NumberOperator>>();
     }
 
     public class NumberOperatorInject : NumberOperator
@@ -73,32 +73,69 @@ namespace Minesweeper.Test
     }
 
     public delegate double Operation(double first, double second);
-    public class DoubleOperatorInject : DoubleOperator
-    {
-        private readonly Operation _operation;
+    //public class DoubleOperatorInject : DoubleOperator
+    //{
+    //    private readonly Operation _operation;
 
-        public DoubleOperatorInject(Operation operation)
+    //    public DoubleOperatorInject(Operation operation)
+    //    {
+    //        _operation = operation;
+    //    }
+    //    public override double Calculate(double first, double second)
+    //    {
+    //        return _operation(first, second);
+    //    }
+    //}
+
+    //public class FullOperator
+    //{
+    //    public FullOperator(Operation operation)
+    //    {
+    //        NumberOperator = new NumberOperatorInject(operation);
+    //    }
+    //    public NumberOperator NumberOperator { get; set; }
+    //}
+    public interface IMathParser
+    {
+        double Calculate(string value);
+    }
+    public class MathParserTree : IMathParser
+    {
+        public double Calculate(string value)
         {
-            _operation = operation;
-        }
-        public override double Calculate(double first, double second)
-        {
-            return _operation(first, second);
+            throw new NotImplementedException();
         }
     }
 
-    public class FullOperator
+    public class NumberParser
     {
-        public FullOperator(Operation operation)
+        public static (bool, NumberValue) ParseNumber(IMathValue lastNode, string currentValue, List<IMathValue> operators)
         {
-            DoubleOperator = new DoubleOperatorInject(operation);
-            NumberOperator = new NumberOperatorInject(operation);
-        }
-        public DoubleOperator DoubleOperator { get; set; }
-        public NumberOperator NumberOperator { get; set; }
-    }
+            NumberValue previousValue = null;
+            //add to the number value
+            if (lastNode is NumberValue v)
+            {
+                currentValue = v.StringValue + currentValue;
+                if (Double.TryParse(currentValue, out var ts))
+                {
+                    previousValue = v;
+                    v.Value = ts;
+                    v.StringValue = currentValue;
+                    return (true, previousValue);
+                }
+            }
+            else if (Double.TryParse(currentValue, out var t) || currentValue == ".")
+            {
+                var val = new NumberValue() { Value = t, StringValue = currentValue };
+                previousValue = val;
 
-    public class MathParser
+                operators.Add(val);
+            }
+
+            return (false, previousValue);
+        }
+    }
+    public class MathParser : IMathParser
     {
         MathOperatorCollection collection = new MathOperatorCollection();
         public MathParser()
@@ -109,37 +146,30 @@ namespace Minesweeper.Test
         }
         public double Calculate(string value)
         {
+            
             var operators = new List<IMathValue>();
             NumberValue previousValue = null;
-            for (var i = 0; i < value.Length; i++)
+            foreach (char valueChars in value)
             {
-                var currentValue = value[i].ToString();
+                var currentValue = valueChars.ToString();
                 var last = operators.LastOrDefault();
-                if (last is NumberValue v)
+                var parseResult = NumberParser.ParseNumber(last, currentValue, operators);
+                if (parseResult.Item2 != null)
                 {
-                    currentValue = v.StringValue + currentValue;
-                    if (double.TryParse(currentValue, out var ts))
-                    {
-                        previousValue = v;
-                        v.Value = ts;
-                        v.StringValue = currentValue;
-                        continue;
-                    }
+                    previousValue = parseResult.Item2;
                 }
-                if (double.TryParse(currentValue, out var t) || currentValue == ".")
+                if (parseResult.Item1)
                 {
-                    var val = new NumberValue() { Value = t, StringValue = currentValue };
-                    previousValue = val;
-
-                    operators.Add(val);
+                    continue;
                 }
                 var lastOp = operators.OfType<NumberOperator>().LastOrDefault();
 
-                var tresult = collection.ParseChar(value[i], lastOp, previousValue);
+                var tresult = collection.ParseChar(valueChars, lastOp, previousValue);
                 if(tresult != null) operators.Add(tresult);
                 
 
-                var secAdd = operators.OfType<DoubleOperator>().LastOrDefault();
+                //var secAdd = operators.OfType<DoubleOperator>().LastOrDefault();
+                var secAdd = operators.OfType<NumberOperator>().LastOrDefault(p => p.First is NumberOperator);
                 if (secAdd != null && secAdd.Second == null)
                 {
                     secAdd.Second = previousValue;
@@ -158,9 +188,7 @@ namespace Minesweeper.Test
                 return si.Value ?? 0;
             }
 
-            return operators.OfType<Operator>().Sum(p => p.Calculate());
+            return operators.OfType<Operator>().Sum(p => p.Value ?? 0);
         }
-
-      
     }
 }

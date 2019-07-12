@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace Minesweeper.Test
 {
 
-    public interface IMathValue
+    public interface IMathValue : IMathNode
     {
 
     }
@@ -14,42 +15,78 @@ namespace Minesweeper.Test
     {
         public string StringValue { get; set; }
         public double? Value { get; set; }
+        public IEnumerable<IMathNode> GetMathNodes()
+        {
+            return Enumerable.Empty<IMathNode>();
+        }
+    }
+    public class OperatorValue : IMathValue
+    {
+        private readonly Operation _op;
+
+        public OperatorValue(Operation op)
+        {
+            _op = op;
+        }
+
+        public double? Value
+        {
+            get => _op(First.Value ?? 0, Second.Value ?? 0);
+            set => throw new NotImplementedException();
+        }
+
+        public IMathNode First { get; set; }
+        public IMathNode Second { get; set; }
+
     }
 
+    public class MathTree
+    {
+        public MathTree()
+        {
+
+        }
+        public IMathNode ParentNode { get; set; }
+
+        public double? Value => ParentNode.Value;
+    }
     public interface IMathNode
     {
-        IEnumerable<IMathNode> GetMathNodes();
+        double? Value { get; set; }
     }
-    
-    
+
+
     public abstract class Operator : IMathValue
     {
         public abstract double Calculate(double first, double second);
         public abstract double Calculate();
+        public double? Value { get => Calculate(); set => new NotImplementedException(); }
+
     }
 
-    public abstract class DoubleOperator : Operator
-    {
-        private bool calculated = false;
+    //public abstract class DoubleOperator : Operator
+    //{
+    //    private bool _calculated = false;
 
-        public override double Calculate()
-        {
-            if (!calculated)
-            {
-                calculated = true;
-                return Calculate(First.Calculate(), (Second.Value ?? 0));
-            }
-            return 0;
-        }
-        public NumberOperator First { get; set; }
-        public NumberValue Second { get; set; }
-    }
+    //    public override double Calculate()
+    //    {
+    //        if (!_calculated)
+    //        {
+    //            _calculated = true;
+    //            return Calculate((First.Value ?? 0), (Second.Value ?? 0));
+    //        }
+    //        return 0;
+    //    }
+
+    //    public IMathNode First { get; set; }
+    //    public IMathNode Second { get; set; }
+    //}
     public abstract class NumberOperator : Operator
     {
         private bool calculated = false;
 
-        public NumberValue First { get; set; }
-        public NumberValue Second { get; set; }
+        public IMathNode First { get; set; }
+        public IMathNode Second { get; set; }
         public override double Calculate()
         {
             if (!calculated)
@@ -58,7 +95,6 @@ namespace Minesweeper.Test
                 return Calculate(First.Value ?? 0, Second.Value ?? 0);
             }
             return 0;
-
         }
 
     }
@@ -99,8 +135,8 @@ namespace Minesweeper.Test
         [TestCase("1.5+2.5", 4)]
         [TestCase(".5+2.5", 3)]
         [TestCase("10+10-10", 10)]
-        [TestCase("10-10*10", 90)]
-        [TestCase("10-10-10*10", 80)]
+       // [TestCase("10-10*10", 90)]
+        //[TestCase("10-10-10*10", 80)]
 
         public void Tests(string math, double result)
         {
