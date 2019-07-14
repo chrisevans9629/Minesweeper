@@ -154,6 +154,11 @@ namespace Minesweeper.Test
             tokens[1].Position.Should().Be(2);
         }
     }
+
+    public class AbstractSyntaxTree
+    {
+
+    }
     
    
     public interface IMathValue : IMathNode
