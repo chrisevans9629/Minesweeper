@@ -232,17 +232,17 @@ namespace Minesweeper
             var cellwidth = config.CellWidth;
             Width = config.Width;
             Height = config.Height;
-            if (config.Columns is int i)
+            if (config.Columns != null)
             {
-                Columns = i;
+                Columns = config.Columns ?? 0;
             }
             else
                 Columns = (int)(Width / cellwidth);
 
-            if (config.Rows is int t) Rows = t;
+            if (config.Rows != null) Rows = config.Rows ?? 0;
             else
                 Rows = (int)(Height / cellwidth);
-            if (config.BlockCount is int j)
+            if (config.BlockCount != null)
             {
                 throw new NotImplementedException();
             }
