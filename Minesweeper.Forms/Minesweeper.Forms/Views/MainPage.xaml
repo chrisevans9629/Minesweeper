@@ -3,8 +3,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Minesweeper.Forms.Views.MainPage"
              Title="{Binding Title}">
+    <ContentPage.Resources>
+       
+    </ContentPage.Resources>
+    <StackLayout>
+        <Label Text="Flag"></Label>
+        <CheckBox x:Name="FlagCheck"></CheckBox>
+        <ListView  ItemsSource="{Binding Cells}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Label
+                            BackgroundColor="Black"
+                            TextColor="White"
+                            Grid.Column="{Binding Column}"
+                            Grid.Row="{Binding Row}"
+                            Text="{Binding ViewText}"
+                        >
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="{Binding Source={x:Reference FlagCheck}, Path=IsChecked}"></TapGestureRecognizer>
+                            </Label.GestureRecognizers>
 
-    <!--<Grid x:Name="MineGrid">
+                        </Label>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <!--<CollectionView.ItemsLayout>
+            <GridItemsLayout Orientation="Horizontal"  HorizontalItemSpacing="5" VerticalItemSpacing="5" ></GridItemsLayout>
+        </CollectionView.ItemsLayout>-->
+        </ListView>
+
+    </StackLayout>
+    <!--<Grid x:Name="MineGrid" RowSpacing="5" ColumnSpacing="5">
     </Grid>-->
 
 </ContentPage>

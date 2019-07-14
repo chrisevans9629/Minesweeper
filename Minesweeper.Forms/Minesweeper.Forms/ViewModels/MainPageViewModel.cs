@@ -13,12 +13,12 @@ namespace Minesweeper.Forms.ViewModels
     {
         private readonly IMinesweeperBase _minesweeper;
         private string _viewText;
-        public DelegateCommand<bool> TapCommand { get; set; }
+        public DelegateCommand<bool?> TapCommand { get; set; }
 
         public CellViewModel(IMinesweeperBase minesweeper)
         {
             _minesweeper = minesweeper;
-            TapCommand = new DelegateCommand<bool>(Tap);
+            TapCommand = new DelegateCommand<bool?>(Tap);
         }
 
         public string ViewText
@@ -33,12 +33,13 @@ namespace Minesweeper.Forms.ViewModels
 
         private string UpdateViewText()
         {
-            return this.Flag ? "F" : (this.Visible ? (this.Bomb ? "X" : this.Value.ToString()) : "");
+            return this.Flag ? "F" : (this.Visible ? (this.Bomb ? "X" : this.Value.ToString()) : "NA");
         }
 
-        private void Tap(bool flag)
+        private void Tap(bool? flag)
         {
-            _minesweeper.ClickOnCell(this, flag);
+            if (flag is bool b)
+                _minesweeper.ClickOnCell(this, b);
         }
 
         public override void Show()
@@ -65,10 +66,10 @@ namespace Minesweeper.Forms.ViewModels
         {
             Title = "Main Page";
             minesweeper = new MinesweeperBase();
-            var config = new MinesweeperConfig(p => new CellViewModel(minesweeper){Row= p.Row,Column = p.Column,Width = p.Width })
+            var config = new MinesweeperConfig(p => new CellViewModel(minesweeper) { Row = p.Row, Column = p.Column, Width = p.Width })
             {
-                Columns = 100,
-                Rows = 100,
+                Columns = 10,
+                Rows = 10,
                 BombCount = 20,
                 Seed = 100
             };

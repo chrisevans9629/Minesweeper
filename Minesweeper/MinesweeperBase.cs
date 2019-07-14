@@ -153,6 +153,7 @@ namespace Minesweeper
                     }
                 }
             }
+            else
             {
                 item.Flag = true;
             }

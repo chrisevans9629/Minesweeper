@@ -14,22 +14,33 @@ namespace Minesweeper.Forms.Views
         {
             InitializeComponent();
 
+           
+        }
+
+        protected override void OnAppearing()
+        {
             //if (BindingContext is MainPageViewModel vm)
             //{
             //    var t = vm.Cells;
 
             //    foreach (var cellViewModel in t)
             //    {
-            //        var label = new Label();
+            //        var label = Resources["Label"] as View;
+            //        label.BindingContext = cellViewModel;
 
-            //        Grid.SetColumn(label, cellViewModel.Column);
-            //        Grid.SetRow(label, cellViewModel.Row);
+            //        //label.BackgroundColor = Color.AliceBlue;
+            //        //Grid.SetColumn(label, cellViewModel.Column);
+            //        //Grid.SetRow(label, cellViewModel.Row);
 
-            //        label.SetBinding(Label.TextProperty, new Binding(nameof(cellViewModel.ViewText), BindingMode.OneWay, null, null,null, source:cellViewModel));
+            //        //label.SetBinding(Label.TextProperty,
+            //        //    new Binding(nameof(cellViewModel.ViewText),
+            //        //        BindingMode.OneWay
+            //        //        ));
 
             //        MineGrid.Children.Add(label);
             //    }
             //}
+            base.OnAppearing();
         }
     }
 }
