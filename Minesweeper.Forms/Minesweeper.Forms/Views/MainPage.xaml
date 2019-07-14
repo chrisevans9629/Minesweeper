@@ -4,8 +4,7 @@
              x:Class="Minesweeper.Forms.Views.MainPage"
              Title="{Binding Title}">
 
-    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
-        <Label Text="Welcome to Xamarin Forms and Prism!" />
-    </StackLayout>
+    <!--<Grid x:Name="MineGrid">
+    </Grid>-->
 
 </ContentPage>

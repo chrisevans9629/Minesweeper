@@ -96,11 +96,16 @@ namespace Minesweeper
             Width = width;
         }
     }
-    public class MinesweeperBase
+
+    public interface IMinesweeperBase
     {
-        internal Grid Grid;
-        internal int Columns;
-        internal int Rows;
+        bool ClickOnCell(BaseCell item, bool placeAsFlag);
+    }
+    public class MinesweeperBase : IMinesweeperBase
+    {
+        internal MinesweeperGrid Grid;
+        public int Columns { get; set; }
+        public int Rows { get; set; }
         internal float Width;
         internal float Height;
         public IEnumerable<BaseCell> Cells => Grid?.Cells;
@@ -117,7 +122,7 @@ namespace Minesweeper
         {
             return Grid.Cells.Any(p => p.Visible && p.Bomb);
         }
-        public bool ClickOnCell(BaseCell item, bool flag)
+        public bool ClickOnCell(BaseCell item, bool placeAsFlag)
         {
             if (Grid.Cells.Any(p => p.Bomb) != true)
             {
@@ -127,7 +132,7 @@ namespace Minesweeper
             {
                 return false;
             }
-            if (flag != true)
+            if (placeAsFlag != true)
             {
                 item.Visible = true;
                 if (item.Bomb)
@@ -246,7 +251,7 @@ namespace Minesweeper
             {
                 throw new NotImplementedException();
             }
-            Grid = new Grid(Rows, Columns, cellwidth, config.CreateCellFunc);
+            Grid = new MinesweeperGrid(Rows, Columns, cellwidth, config.CreateCellFunc);
 
         }
 

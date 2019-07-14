@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Minesweeper
 {
-    public class Grid
+    public class MinesweeperGrid
     {
         private readonly Func<CellParams, BaseCell> _createCellFunc;
 
@@ -27,7 +27,7 @@ namespace Minesweeper
             }
             return cells.ToArray();
         }
-        public Grid(int rows, int columns, float width, Func<CellParams, BaseCell> createCellFunc)
+        public MinesweeperGrid(int rows, int columns, float width, Func<CellParams, BaseCell> createCellFunc)
         {
             _createCellFunc = createCellFunc;
             Rows = rows;
