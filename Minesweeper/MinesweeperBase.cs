@@ -18,7 +18,7 @@ namespace Minesweeper
         {
         }
 
-        public NoShowCell(int row, int column, int width)
+        public NoShowCell(int row, int column, float width)
         {
             X = row * width;
             Y = column * width;

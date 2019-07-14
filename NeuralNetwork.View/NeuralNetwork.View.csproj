@@ -118,10 +118,6 @@
       <Project>{ba0ba220-3da8-4300-b4a6-33f60fda4cc0}</Project>
       <Name>Evans.AI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Minesweeper.Base\Minesweeper.Base.csproj">
-      <Project>{b3425d60-251c-449f-bf59-c5e744f68b11}</Project>
-      <Name>Minesweeper.Base</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
