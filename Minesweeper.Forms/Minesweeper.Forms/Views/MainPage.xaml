@@ -4,13 +4,13 @@
              x:Class="Minesweeper.Forms.Views.MainPage"
              Title="{Binding Title}">
     <ContentPage.Resources>
-       
+
     </ContentPage.Resources>
     <StackLayout>
         <Label Text="Flag"></Label>
         <CheckBox x:Name="FlagCheck"></CheckBox>
-        <ListView  ItemsSource="{Binding Cells}">
-            <ListView.ItemTemplate>
+        <CollectionView  ItemsSource="{Binding Cells}">
+            <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <Label
@@ -27,11 +27,11 @@
                         </Label>
                     </ViewCell>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-            <!--<CollectionView.ItemsLayout>
-            <GridItemsLayout Orientation="Horizontal"  HorizontalItemSpacing="5" VerticalItemSpacing="5" ></GridItemsLayout>
-        </CollectionView.ItemsLayout>-->
-        </ListView>
+            </CollectionView.ItemTemplate>
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Horizontal"  Span="10" HorizontalItemSpacing="5" VerticalItemSpacing="5" ></GridItemsLayout>
+            </CollectionView.ItemsLayout>
+        </CollectionView>
 
     </StackLayout>
     <!--<Grid x:Name="MineGrid" RowSpacing="5" ColumnSpacing="5">

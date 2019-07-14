@@ -33,7 +33,19 @@ namespace Minesweeper.Forms.ViewModels
 
         private string UpdateViewText()
         {
-            return this.Flag ? "F" : (this.Visible ? (this.Bomb ? "X" : this.Value.ToString()) : "NA");
+            return this.Flag ? 
+                "F" 
+                : 
+                (this.Visible ? 
+                    (this.Bomb ? 
+                        "X" 
+                        :
+                        (this.Value.ToString() == "0" ?
+                            "" 
+                            :
+                            this.Value.ToString())) 
+                    :
+                    "NA");
         }
 
         private void Tap(bool? flag)
