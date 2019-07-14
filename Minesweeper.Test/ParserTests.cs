@@ -1,12 +1,161 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace Minesweeper.Test
 {
+    public class TokenItem
+    {
+        public Token Token { get; set; }
+        public int Position { get; set; }
+        public int Line { get; set; }
+        public string Value { get; set; }
+    }
+    public class Token
+    {
+        public string Expression { get; set; }
+        public string Name { get; set; }
+    }
+    public class Lexer
+    {
+        IList<Token> tokens = new List<Token>();
+        public void Add(string name, string expression)
+        {
+            tokens.Add(new Token(){Expression = expression, Name = name});
+        }
+        IList<string> ignoreables = new List<string>();
+        public void Ignore(string expression)
+        {
+            ignoreables.Add(expression);
+        }
+        public IList<TokenItem> Tokenize(string str)
+        {
+            var items = new List<TokenItem>();
 
+            var matches = tokens.Select(p => new {match = Regex.Matches(str, p.Expression), p});
+
+            foreach (var match in matches)
+            {
+                foreach (Match o in match.match)
+                {
+                    if (o.Success)
+                    {
+                        items.Add(new TokenItem(){Token = match.p, Position = o.Index, Value = o.Value});
+                    }
+                }
+            }
+
+            //Validation
+            {
+                var rStr = str;
+                foreach (var token in tokens)
+                {
+                    rStr = Regex.Replace(rStr, token.Expression, "");
+                }
+
+                foreach (var ignoreable in ignoreables)
+                {
+                    rStr = Regex.Replace(rStr, ignoreable, "");
+                }
+
+                if (string.IsNullOrEmpty(rStr) != true)
+                {
+                    var index = str.IndexOf(rStr, StringComparison.InvariantCulture);
+                    throw new Exception($"Token '{rStr}' unrecognized at position {index} line 0");
+                }
+            }
+
+            var resultTokens = items.OrderBy(p => p.Position).ToList();
+
+            return resultTokens;
+        }
+    }
+    [TestFixture]
+    public class LexerTests
+    {
+        private Lexer lexer;
+
+        [SetUp]
+        public void Setup()
+        {
+            lexer = new Lexer();
+        }
+
+        [Test]
+        public void Tokenize_App()
+        {
+            lexer.Ignore(" ");
+            lexer.Add("Name", "[a-zA-Z]+");
+            lexer.Add("Equal", "=");
+            lexer.Add("Number", @"\d+");
+
+
+            var tokens = lexer.Tokenize("var test = 10");
+
+            tokens.Should().HaveCount(4);
+        }
+
+        [Test]
+        public void Tokenize_FullOperations()
+        {
+            lexer.Ignore(" ");
+            lexer.Add("Number", @"\d+");
+            lexer.Add("Add",@"\+");
+            lexer.Add("Subtract",@"\-");
+            lexer.Add("ParLeft", @"\(");
+            lexer.Add("ParRight", @"\)");
+
+            var tokens = lexer.Tokenize("10 + (10 - 100)");
+
+            tokens.Should().HaveCount(7);
+            tokens[5].Value.Should().Be("100");
+
+        }
+
+        [Test]
+        public void Tokenize_Number()
+        {
+            lexer.Add("Number", @"\d+");
+
+            var tokens = lexer.Tokenize("10");
+
+            tokens.Should().HaveCount(1);
+            tokens[0].Token.Name.Should().Be("Number");
+        }
+
+        [Test]
+        public void Tokenize_Ignored()
+        {
+            lexer.Ignore(" ");
+            var tokens = lexer.Tokenize(" ");
+            tokens.Should().BeEmpty();
+        }
+
+        [Test]
+        public void Tokenize_TokenUnrecognized()
+        {
+            var ex = Assert.Throws<Exception>(() => lexer.Tokenize(" "));
+            ex.Message.Should().Be("Token ' ' unrecognized at position 0 line 0");
+        }
+
+        [Test]
+        public void Tokenize_Addition()
+        {
+            lexer.Add("Number", @"\d+");
+            lexer.Add("Add", @"\+");
+            var tokens = lexer.Tokenize("10+15");
+            tokens.Should().HaveCount(3);
+
+            tokens[1].Token.Name.Should().Be("Add");
+            tokens[1].Line.Should().Be(0);
+            tokens[1].Position.Should().Be(2);
+        }
+    }
+    
+   
     public interface IMathValue : IMathNode
     {
 
