@@ -21,12 +21,12 @@ namespace Minesweeper.Test
     }
     public class Lexer
     {
-        IList<Token> tokens = new List<Token>();
+        readonly IList<Token> tokens = new List<Token>();
         public void Add(string name, string expression)
         {
             tokens.Add(new Token(){Expression = expression, Name = name});
         }
-        IList<string> ignoreables = new List<string>();
+        readonly IList<string> ignoreables = new List<string>();
         public void Ignore(string expression)
         {
             ignoreables.Add(expression);
@@ -142,6 +142,13 @@ namespace Minesweeper.Test
         }
 
         [Test]
+        public void Subtraction()
+        {
+            lexer.Add("Sub", "-");
+            var token = lexer.Tokenize("-");
+            token.Should().HaveCount(1);
+        }
+        [Test]
         public void Tokenize_Addition()
         {
             lexer.Add("Number", @"\d+");
@@ -155,11 +162,93 @@ namespace Minesweeper.Test
         }
     }
 
+    public class Grammer
+    {
+        public string[] Expression { get; set; }
+
+        public Func<IList<TokenItem>, string> Evaluate { get; set; }
+    }
     public class AbstractSyntaxTree
     {
+        private readonly IList<Grammer> _expressions = new List<Grammer>();
 
+        public void AddExpress(string expression, Func<IList<TokenItem>, string> eval)
+        {
+            _expressions.Add(new Grammer(){Expression = expression.Split(' ') , Evaluate = eval});
+        }
+
+        public string Evaluate(IList<TokenItem> tokens)
+        {
+            var index = 0;
+            var length = 1;
+            var str = "";
+            do
+            {
+
+                foreach (var expression in _expressions)
+                {
+                    var tokenSample = tokens.Skip(index).Take(length).ToList();
+                    if (expression.Expression.Length == tokenSample.Count)
+                    {
+                        var valid = true;
+                        for (var i = 0; i < expression.Expression.Length; i++)
+                        {
+                            var s = expression.Expression[i];
+                            if (s != tokenSample[i].Token.Name)
+                            {
+                                valid = false;
+                                break;
+                            }
+                        }
+
+                        if (valid)
+                        {
+                            str += expression.Evaluate(tokenSample);
+                            index++;
+                            length = 1;
+                        }
+                        
+                    }
+
+                    continue;
+                }
+
+                length++;
+            } while (tokens.Count > index && tokens.Count >= length);
+
+            return str;
+        }
     }
-    
+    [TestFixture]
+    public class AbstractSyntaxTreeTests
+    {
+        private AbstractSyntaxTree tree;
+
+        [SetUp]
+        public void Setup()
+        {
+            tree = new AbstractSyntaxTree();
+        }
+
+        [TestCase("10 + 3", "13")]
+        [TestCase("10+10", "20")]
+        [TestCase("10-10", "0")]
+        public void Add(string input, string output)
+        {
+            var lex = new Lexer();
+            lex.Ignore(" ");
+            lex.Add("Num", @"\d+");
+            lex.Add("Add", @"\+");
+            lex.Add("Sub", @"-");
+            tree.AddExpress("Num Add Num", p => (int.Parse(p[0].Value) + int.Parse(p[2].Value)).ToString());
+            tree.AddExpress("Num Sub Num", p => (int.Parse(p[0].Value) - int.Parse(p[2].Value)).ToString());
+
+            var tokens = lex.Tokenize(input);
+            var t = tree.Evaluate(tokens);
+
+            t.Should().Be(output);
+        }
+    }
    
     public interface IMathValue : IMathNode
     {
