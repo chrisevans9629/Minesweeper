@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Minesweeper.Test
@@ -20,59 +19,6 @@ namespace Minesweeper.Test
     //    }
     //}
 
-    public class MathOperatorCollection
-    {
-        public void Sort()
-        {
-
-        }
-
-        public IMathValue ParseChar(char value, NumberOperator lastOp, NumberValue previousValue)
-        {
-            if (operators.ContainsKey(value))
-            {
-                var opFunc = operators[value];
-                if (lastOp != null)
-                {
-                    var op = opFunc();
-                    op.First = lastOp;
-                    return op;
-                }
-                else
-                {
-                    var op = opFunc();
-                    op.First = previousValue;
-                    return op;
-                }
-            }
-
-            return null;
-        }
-        public void AddOperator(char value, Operation op)
-        {
-            operators.Add(value, () => new NumberOperatorInject(op));
-        }
-
-
-
-        private Dictionary<char, Func<NumberOperator>> operators = new Dictionary<char, Func<NumberOperator>>();
-    }
-
-    public class NumberOperatorInject : NumberOperator
-    {
-        private readonly Operation _operation;
-
-        public NumberOperatorInject(Operation operation)
-        {
-            _operation = operation;
-        }
-        public override double Calculate(double first, double second)
-        {
-            return _operation(first, second);
-        }
-    }
-
-    public delegate double Operation(double first, double second);
     //public class DoubleOperatorInject : DoubleOperator
     //{
     //    private readonly Operation _operation;
@@ -95,46 +41,7 @@ namespace Minesweeper.Test
     //    }
     //    public NumberOperator NumberOperator { get; set; }
     //}
-    public interface IMathParser
-    {
-        double Calculate(string value);
-    }
-    public class MathParserTree : IMathParser
-    {
-        public double Calculate(string value)
-        {
-            throw new NotImplementedException();
-        }
-    }
 
-    public class NumberParser
-    {
-        public static (bool, NumberValue) ParseNumber(IMathValue lastNode, string currentValue, List<IMathValue> operators)
-        {
-            NumberValue previousValue = null;
-            //add to the number value
-            if (lastNode is NumberValue v)
-            {
-                currentValue = v.StringValue + currentValue;
-                if (Double.TryParse(currentValue, out var ts))
-                {
-                    previousValue = v;
-                    v.Value = ts;
-                    v.StringValue = currentValue;
-                    return (true, previousValue);
-                }
-            }
-            else if (Double.TryParse(currentValue, out var t) || currentValue == ".")
-            {
-                var val = new NumberValue() { Value = t, StringValue = currentValue };
-                previousValue = val;
-
-                operators.Add(val);
-            }
-
-            return (false, previousValue);
-        }
-    }
     public class MathParser : IMathParser
     {
         MathOperatorCollection collection = new MathOperatorCollection();
