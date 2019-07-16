@@ -25,7 +25,7 @@ namespace Minesweeper.Test
         [TestCase("9 + 5 - 3 + 11", 22)]
         [TestCase("3", 3)]
         [TestCase("7*4/2*3", 42)]
-        public void Add(string input, double output)
+        public void Evaluate_Test(string input, double output)
         {
             var lex = new Lexer();
             lex.Ignore(" ");
