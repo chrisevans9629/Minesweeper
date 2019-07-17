@@ -59,6 +59,7 @@
     <Compile Include="Interpreter\MathParser\IMathParser.cs" />
     <Compile Include="Interpreter\MathParser\IMathValue.cs" />
     <Compile Include="Interpreter\SimpleTreeTests.cs" />
+    <Compile Include="Interpreter\SuperBasicMathInterpreter.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemList.cs" />
     <Compile Include="Knapsack.cs" />

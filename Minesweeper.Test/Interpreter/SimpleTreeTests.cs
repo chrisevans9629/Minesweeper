@@ -1,38 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace Minesweeper.Test
 {
-    public class SuperBasicMathInterpreter : IDisposable
+    [TestFixture]
+    public class SuperBasicMathInterpreter_Tests
     {
-        private IEnumerator<char> data;
-        public SuperBasicMathInterpreter(string data)
+        [TestCase("1+1", 2)]
+        [TestCase("1-1", 0)]
+        [TestCase("14 + 2 * 3 - 6 / 2", 17)]
+        [TestCase("2 * 2", 4)]
+        [TestCase("(1+2)*2", 6)]
+        [TestCase("2 * 2 +2", 6)]
+        [TestCase("7 + 3 * (10 / (12 / (3 + 1) - 1))", 22)]
+        public void Evaluate_Test(string input, double output)
         {
-            this.data = data.GetEnumerator();
-        }
-
-        public double Evaluate()
-        {
-            return 0;
-        }
-
-        public void Dispose()
-        {
-            data?.Dispose();
+            var tree = new SuperBasicMathInterpreter(input);
+            var t = tree.Evaluate();
+            t.Should().Be(output);
         }
     }
 
-    [TestFixture(typeof(SimpleTree))]
-    public class SimpleTreeTests<T> where T : IAbstractSyntaxTree, new()
+
+    [TestFixture]
+    public class SimpleTreeTests
     {
-        private T tree;
+        private SimpleTree tree;
 
         [SetUp]
         public void Setup()
         {
-            tree = new T();
+            tree = new SimpleTree();
         }
         [TestCase("14 + 2 * 3 - 6 / 2", 17)]
         [TestCase("2 * 2", 4)]
