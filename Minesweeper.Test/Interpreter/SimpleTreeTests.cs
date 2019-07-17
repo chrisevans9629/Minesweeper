@@ -1,8 +1,29 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Minesweeper.Test
 {
+    public class SuperBasicMathInterpreter : IDisposable
+    {
+        private IEnumerator<char> data;
+        public SuperBasicMathInterpreter(string data)
+        {
+            this.data = data.GetEnumerator();
+        }
+
+        public double Evaluate()
+        {
+            return 0;
+        }
+
+        public void Dispose()
+        {
+            data?.Dispose();
+        }
+    }
+
     [TestFixture(typeof(SimpleTree))]
     public class SimpleTreeTests<T> where T : IAbstractSyntaxTree, new()
     {
