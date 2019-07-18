@@ -3,14 +3,6 @@ using NUnit.Framework;
 
 namespace Minesweeper.Test
 {
-    public class SuperBasicMathInterpreter
-    {
-        public double Evaluate(Node node)
-        {
-            return 0;
-        }
-    }
-
     [TestFixture]
     public class SuperBasicMathInterpreter_Tests
     {
@@ -21,6 +13,9 @@ namespace Minesweeper.Test
         [TestCase("(1+2)*2", 6)]
         [TestCase("2 * 2 +2", 6)]
         [TestCase("7 + 3 * (10 / (12 / (3 + 1) - 1))", 22)]
+        [TestCase("+ - 3", -3)]
+        [TestCase("5 - - 2", 7)]
+        [TestCase("5 + - 2", 3)]
         public void Evaluate_Test(string input, double output)
         {
             var tree = new SuperBasicMathAst(input);
@@ -33,19 +28,55 @@ namespace Minesweeper.Test
         }
 
         [Test]
-        public void Test()
+        public void UnaryOperation()
+        {
+            var input = "-2";
+
+            var tree = new SuperBasicMathAst(input);
+
+            var node = tree.Evaluate();
+            node.Should().BeOfType<UnaryOperator>();
+            node.Name.Should().Be(SimpleTree.Sub);
+        }
+
+        [Test]
+        public void BasicAst_Should_Add()
         {
             var input = "1+2";
             var tree = new SuperBasicMathAst(input);
             var t = tree.Evaluate();
-            t.TokenItem.Token.Name.Should().Be(SimpleTree.Add);
 
+            t.TokenItem.Token.Name.Should().Be(SimpleTree.Add);
             ((BinaryOperator) t).Left.TokenItem.Token.Name.Should().Be(SimpleTree.Num);
             ((BinaryOperator) t).Left.TokenItem.Value.Should().Be("1");
             ((BinaryOperator) t).Right.TokenItem.Token.Name.Should().Be(SimpleTree.Num);
             ((BinaryOperator) t).Right.TokenItem.Value.Should().Be("2");
         }
 
+        [Test]
+        public void AddAndSubtract_Should_HaveSubAtTopOfTree()
+        {
+            var input = "1+2-3";
+
+            var tree = new SuperBasicMathAst(input);
+
+            var t = tree.Evaluate();
+            t.Name.Should().Be(SimpleTree.Sub);
+        }
+
+        [Test]
+        public void BasicAst_Should_Subtract()
+        {
+            var input = "1-2";
+            var tree = new SuperBasicMathAst(input);
+            var t = tree.Evaluate();
+
+            t.TokenItem.Token.Name.Should().Be(SimpleTree.Sub);
+            ((BinaryOperator)t).Left.TokenItem.Token.Name.Should().Be(SimpleTree.Num);
+            ((BinaryOperator)t).Left.TokenItem.Value.Should().Be("1");
+            ((BinaryOperator)t).Right.TokenItem.Token.Name.Should().Be(SimpleTree.Num);
+            ((BinaryOperator)t).Right.TokenItem.Value.Should().Be("2");
+        }
 
         [Test]
         public void TestTree()

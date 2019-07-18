@@ -6,6 +6,8 @@ namespace Minesweeper.Test
 {
     public class Node
     {
+
+        public string Name => TokenItem.Token.Name;
         public TokenItem TokenItem { get; set; }
     }
     public class NumberLeaf : Node
@@ -17,6 +19,18 @@ namespace Minesweeper.Test
         }
         public double Value { get; set; }
     }
+
+    public class UnaryOperator : Node
+    {
+        public UnaryOperator(Node value, TokenItem op)
+        {
+            Value = value;
+            TokenItem = op;
+        }
+
+        public Node Value { get; set; }
+    }
+
     public class BinaryOperator : Node
     {
         public BinaryOperator(Node left, Node right, TokenItem @operator)
@@ -69,12 +83,24 @@ namespace Minesweeper.Test
 
         Node Para()
         {
+            var current = _tokens.Current;
             if (_tokens.Current.Token.Name == SimpleTree.LParinth)
             {
                 Eat(SimpleTree.LParinth);
                 var result = Expression();
                 Eat(SimpleTree.RParinth);
                 return result;
+            }
+
+            if (current.Token.Name == SimpleTree.Add)
+            {
+                Eat(SimpleTree.Add);
+                return new UnaryOperator(ParseNumber(), current);
+            }
+            if (current.Token.Name == SimpleTree.Sub)
+            {
+                Eat(SimpleTree.Sub);
+                return new UnaryOperator(ParseNumber(), current);
             }
             return ParseNumber();
         }
@@ -86,14 +112,16 @@ namespace Minesweeper.Test
             {
                 if (_tokens.Current.Token.Name == SimpleTree.Multi)
                 {
+                    var token = _tokens.Current;
                     Eat(SimpleTree.Multi);
-                    result = Para();
+                    result = new BinaryOperator(result, Para(), token);
                 }
 
                 else if (_tokens.Current.Token.Name == SimpleTree.Div)
                 {
+                    var token = _tokens.Current;
                     Eat(SimpleTree.Div);
-                    result = Para();
+                    result = new BinaryOperator(result, Para(), token);
                 }
                 else
                 {
@@ -119,14 +147,16 @@ namespace Minesweeper.Test
             {
                 if (_tokens.Current.Token.Name == SimpleTree.Add)
                 {
+                    var token = _tokens.Current;
                     Eat(SimpleTree.Add);
-                    result = MultiDiv();
+                    result = new BinaryOperator(result, MultiDiv(), token);
                 }
 
                 else if (_tokens.Current.Token.Name == SimpleTree.Sub)
                 {
+                    var token = _tokens.Current;
                     Eat(SimpleTree.Sub);
-                    result = MultiDiv();
+                    result = new BinaryOperator(result, MultiDiv(), token);
                 }
                 else
                 {
