@@ -7,9 +7,13 @@ namespace Minesweeper.Test
     public class SimpleTree : IAbstractSyntaxTree
     {
         public const string Num = "NUM";
-        public void AddExpress(string expression, Func<IList<TokenItem>, double, double> eval)
-        {
-        }
+        public const string LParinth = "LPA";
+        public const string RParinth = "RPA";
+        public const string Multi = "MUL";
+        public const string Div = "DIV";
+        public const string Add = "ADD";
+        public const string Sub = "SUB";
+        
 
         double Number(IEnumerator<TokenItem> token)
         {
@@ -30,11 +34,7 @@ namespace Minesweeper.Test
         }
 
 
-        public const string LParinth = "LPA";
-        public const string RParinth = "RPA";
-        public const string Multi = "MUL";
-        public const string Div = "DIV";
-
+      
         double Par(IEnumerator<TokenItem> numerator)
         {
             if (numerator.Current.Token.Name == LParinth)
@@ -83,8 +83,7 @@ namespace Minesweeper.Test
             num.MoveNext();
         }
 
-        public const string Add = "ADD";
-        public const string Sub = "SUB";
+       
         private double Expr(IEnumerator<TokenItem> numerator)
         {
 
