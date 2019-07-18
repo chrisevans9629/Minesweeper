@@ -4,7 +4,11 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
-    public class NumberLeaf
+    public class Node
+    {
+        public TokenItem TokenItem { get; set; }
+    }
+    public class NumberLeaf : Node
     {
         public NumberLeaf(TokenItem token)
         {
@@ -12,25 +16,25 @@ namespace Minesweeper.Test
             TokenItem = token;
         }
         public double Value { get; set; }
-        public TokenItem TokenItem { get; set; }
     }
-    public class BinaryOperator
+    public class BinaryOperator : Node
     {
-        public BinaryOperator Left { get; set; }
-        public BinaryOperator Right { get; set; }
-        public TokenItem TokenItem { get; set; }
-    }
-    public class AbstractSyntaxTree
-    {
-
-    }
-    public class SuperBasicMathInterpreter : IDisposable
-    {
-        private readonly string _data;
-        private readonly IEnumerator<TokenItem> _tokens;
-        public SuperBasicMathInterpreter(string data)
+        public BinaryOperator(Node left, Node right, TokenItem @operator)
         {
-            this._data = data;
+            Left = left;
+            Right = right;
+            TokenItem = @operator;
+        }
+
+        public Node Left { get; set; }
+        public Node Right { get; set; }
+    }
+
+    public class SuperBasicMathAst : IDisposable
+    {
+        private readonly IEnumerator<TokenItem> _tokens;
+        public SuperBasicMathAst(string data)
+        {
             var lex = new Lexer();
             lex.Ignore(" ");
             lex.Add("LPA", @"\(");
@@ -56,26 +60,25 @@ namespace Minesweeper.Test
             }
         }
 
-        double ParseNumber()
+        NumberLeaf ParseNumber()
         {
-            var value = double.Parse(_tokens.Current.Value);
+            var value = new NumberLeaf(_tokens.Current);
             _tokens.MoveNext();
             return value;
         }
 
-        double Para()
+        Node Para()
         {
-            var result = 0.0;
             if (_tokens.Current.Token.Name == SimpleTree.LParinth)
             {
                 Eat(SimpleTree.LParinth);
-                result = Expression();
+                var result = Expression();
                 Eat(SimpleTree.RParinth);
                 return result;
             }
             return ParseNumber();
         }
-        double MultiDiv()
+        Node MultiDiv()
         {
             var result = Para();
 
@@ -84,13 +87,13 @@ namespace Minesweeper.Test
                 if (_tokens.Current.Token.Name == SimpleTree.Multi)
                 {
                     Eat(SimpleTree.Multi);
-                    result *= Para();
+                    result = Para();
                 }
 
                 else if (_tokens.Current.Token.Name == SimpleTree.Div)
                 {
                     Eat(SimpleTree.Div);
-                    result /= Para();
+                    result = Para();
                 }
                 else
                 {
@@ -102,14 +105,14 @@ namespace Minesweeper.Test
             return result;
         }
 
-        public double Evaluate()
+        public Node Evaluate()
         {
             Eat(null);
             var result = Expression();
             return result;
         }
 
-        private double Expression()
+        private Node Expression()
         {
             var result = MultiDiv();
             while (_tokens.Current != null && _tokens.Current.Token.Name != SimpleTree.Num)
@@ -117,13 +120,13 @@ namespace Minesweeper.Test
                 if (_tokens.Current.Token.Name == SimpleTree.Add)
                 {
                     Eat(SimpleTree.Add);
-                    result += MultiDiv();
+                    result = MultiDiv();
                 }
 
                 else if (_tokens.Current.Token.Name == SimpleTree.Sub)
                 {
                     Eat(SimpleTree.Sub);
-                    result -= MultiDiv();
+                    result = MultiDiv();
                 }
                 else
                 {

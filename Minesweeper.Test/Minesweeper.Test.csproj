@@ -59,7 +59,7 @@
     <Compile Include="Interpreter\MathParser\IMathParser.cs" />
     <Compile Include="Interpreter\MathParser\IMathValue.cs" />
     <Compile Include="Interpreter\SimpleTreeTests.cs" />
-    <Compile Include="Interpreter\SuperBasicMathInterpreter.cs" />
+    <Compile Include="Interpreter\SuperBasicMathAst.cs" />
     <Compile Include="Interpreter\SuperBasicMathInterpreter_Tests.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemList.cs" />
