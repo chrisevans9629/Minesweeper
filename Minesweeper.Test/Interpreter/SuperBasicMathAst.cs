@@ -44,12 +44,39 @@ namespace Minesweeper.Test
         public Node Right { get; set; }
     }
 
+    public class Pascal
+    {
+        private const string Begin = "BEGIN";
+        private const string End = "END";
+        const string Dot = "DOT";
+        private const string Id = "ID";
+        private const string Assign = "ASSIGN";
+        private const string Semi = "SEMI";
+        public static void AddPascalTokens(Lexer lex)
+        {
+            lex.Add(Begin, Begin);
+            lex.Add(End, End);
+            lex.Add(Dot, ".");
+            lex.Add(Id, "[a-zA-Z]+");
+            lex.Add(Assign, ":=");
+            lex.Add(Semi, ":");
+        }
+    }
     public class SuperBasicMathAst : IDisposable
     {
         private readonly IEnumerator<TokenItem> _tokens;
         public SuperBasicMathAst(string data)
         {
             var lex = new Lexer();
+            AddMathTokens(lex);
+            _tokens = lex.Tokenize(data).GetEnumerator();
+            //_tokens = GetTokens();
+        }
+
+        
+
+        public static void AddMathTokens(Lexer lex)
+        {
             lex.Ignore(" ");
             lex.Add("LPA", @"\(");
             lex.Add("RPA", @"\)");
@@ -58,8 +85,6 @@ namespace Minesweeper.Test
             lex.Add("SUB", @"-");
             lex.Add("MUL", @"\*");
             lex.Add("DIV", @"/");
-            _tokens = lex.Tokenize(data).GetEnumerator();
-            //_tokens = GetTokens();
         }
 
         void Eat(string name)
