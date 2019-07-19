@@ -95,12 +95,12 @@ namespace Minesweeper.Test
             if (current.Token.Name == SimpleTree.Add)
             {
                 Eat(SimpleTree.Add);
-                return new UnaryOperator(ParseNumber(), current);
+                return new UnaryOperator(Para(), current);
             }
             if (current.Token.Name == SimpleTree.Sub)
             {
                 Eat(SimpleTree.Sub);
-                return new UnaryOperator(ParseNumber(), current);
+                return new UnaryOperator(Para(), current);
             }
             return ParseNumber();
         }

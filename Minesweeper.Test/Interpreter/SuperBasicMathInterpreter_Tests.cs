@@ -16,6 +16,7 @@ namespace Minesweeper.Test
         [TestCase("+ - 3", -3)]
         [TestCase("5 - - 2", 7)]
         [TestCase("5 + - 2", 3)]
+        [TestCase("--2",2)]
         public void Evaluate_Test(string input, double output)
         {
             var tree = new SuperBasicMathAst(input);
