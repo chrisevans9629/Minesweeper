@@ -17,12 +17,34 @@ namespace Minesweeper.Test
         {
             ignoreables.Add(expression);
         }
-        public IList<TokenItem> Tokenize(string str)
+
+        IList<TokenItem> GetToken(string str)
         {
             var items = new List<TokenItem>();
 
-            var matches = tokens.Select(p => new { match = Regex.Matches(str, (string) p.Expression), p });
+            if (string.IsNullOrEmpty(str)) return new List<TokenItem>();
+            foreach (var token in tokens)
+            {
+                var match = Regex.Match(str, "^" + token.Expression);
+                if (match.Success)
+                {
+                    var newStr = str.Remove(match.Index, match.Length);
+                    var t = new TokenItem() { Token = token, Value = match.Value, Position = match.Index };
+                    items.Add(t);
+                    items.AddRange(GetToken(newStr));
+                    return items;
+                }
+            }
 
+            return items;
+        }
+
+        public IList<TokenItem> Tokenize(string str)
+        {
+            return GetToken(str);
+            var items = new List<TokenItem>();
+
+            var matches = tokens.Select(p => new { match = Regex.Matches(str, (string) p.Expression), p });
             foreach (var match in matches)
             {
                 foreach (Match o in match.match)

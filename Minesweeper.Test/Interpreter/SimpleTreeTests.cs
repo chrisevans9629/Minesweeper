@@ -19,8 +19,6 @@ namespace Minesweeper.Test
         [TestCase("2 * 2 +2", 6)]
         [TestCase("7 + 3 * (10 / (12 / (3 + 1) - 1))", 22)]
         [TestCase("14 + 2 * 3 - 6 / 2", 17)]
-
-
         public void Evaluate_Test(string input, double output)
         {
             var lex = new Lexer();

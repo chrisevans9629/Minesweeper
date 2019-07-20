@@ -46,20 +46,21 @@ namespace Minesweeper.Test
 
     public class Pascal
     {
-        private const string Begin = "BEGIN";
-        private const string End = "END";
-        const string Dot = "DOT";
-        private const string Id = "ID";
-        private const string Assign = "ASSIGN";
-        private const string Semi = "SEMI";
+        public const string Begin = "BEGIN";
+        public const string End = "END";
+        public const string Dot = "DOT";
+        public const string Id = "ID";
+        public const string Assign = "ASSIGN";
+        public const string Semi = "SEMI";
         public static void AddPascalTokens(Lexer lex)
         {
             lex.Add(Begin, Begin);
             lex.Add(End, End);
             lex.Add(Dot, ".");
-            lex.Add(Id, "[a-zA-Z]+");
             lex.Add(Assign, ":=");
             lex.Add(Semi, ":");
+            lex.Add(Id, "[a-zA-Z]+");
+
         }
     }
     public class SuperBasicMathAst : IDisposable

@@ -29,6 +29,20 @@ namespace Minesweeper.Test
         }
 
         [Test]
+        public void PascalTokensTest()
+        {
+            var input = "BEGIN a := 2; END.";
+
+            var lexer = new Lexer();
+            Pascal.AddPascalTokens(lexer);
+            var result = lexer.Tokenize(input);
+
+
+            result.Should().HaveCount(7);
+            result[0].Token.Name.Should().Be(Pascal.Begin);
+            
+        }
+        [Test]
         public void UnaryOperation()
         {
             var input = "-2";
