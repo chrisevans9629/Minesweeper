@@ -33,9 +33,8 @@ namespace Minesweeper.Test
         {
             var input = "BEGIN a := 2; END.";
 
-            var lexer = new Lexer();
-            Pascal.AddPascalTokens(lexer);
-            var result = lexer.Tokenize(input);
+            var lexer = new PascalLexer(input);
+            var result = lexer.Tokenize();
 
 
             result.Should().HaveCount(7);

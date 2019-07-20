@@ -5,6 +5,88 @@ using System.Text.RegularExpressions;
 
 namespace Minesweeper.Test
 {
+
+
+    public class PascalLexer
+    {
+        private readonly string _str;
+        private int index = 0;
+
+
+
+
+        public PascalLexer(string str)
+        {
+            _str = str;
+        }
+
+
+        public char? Peek()
+        {
+            if (index + 1 < _str.Length - 1)
+                return _str[index + 1];
+            return null;
+        }
+
+        public char Current => (index < _str.Length - 1) ? _str[index] : default(char);
+        public void Advance()
+        {
+            index++;
+        }
+
+        TokenItem Id()
+        {
+            var result = "";
+            while (char.IsLetterOrDigit(Current))
+            {
+                result += Current;
+                Advance();
+            }
+            //uwu
+
+
+            var token = CreateToken(Pascal.Id, result);
+            if (result == Pascal.Begin) token.Token.Name = Pascal.Begin;
+            else if (result == Pascal.End) token.Token.Name = Pascal.End;
+            return token;
+        }
+
+        TokenItem CreateToken(string name, string value)
+        {
+            var token = new TokenItem() { Position = index, Value = value, Token = new Token() {Name = name}};
+            return token;
+        }
+        public IList<TokenItem> Tokenize()
+        {
+            //rawr
+            var items = new List<TokenItem>();
+            while (Current != default(char))
+            {
+                if (char.IsWhiteSpace(Current))
+                {
+                    Advance();
+                }
+                else if (char.IsLetter(Current))
+                {
+                    items.Add(Id());
+                }
+                else if(Current == ':' && Peek() == '=')
+                {
+                    Advance();
+                    Advance();
+                    items.Add(CreateToken(Pascal.Assign, ":="));
+                }
+                else
+                {
+                    throw new Exception($"did not recognize char '{Current}'");
+                }
+            }
+
+            return items;
+        }
+
+
+    }
     public class Lexer
     {
         readonly IList<Token> tokens = new List<Token>();
@@ -18,33 +100,13 @@ namespace Minesweeper.Test
             ignoreables.Add(expression);
         }
 
-        IList<TokenItem> GetToken(string str)
-        {
-            var items = new List<TokenItem>();
 
-            if (string.IsNullOrEmpty(str)) return new List<TokenItem>();
-            foreach (var token in tokens)
-            {
-                var match = Regex.Match(str, "^" + token.Expression);
-                if (match.Success)
-                {
-                    var newStr = str.Remove(match.Index, match.Length);
-                    var t = new TokenItem() { Token = token, Value = match.Value, Position = match.Index };
-                    items.Add(t);
-                    items.AddRange(GetToken(newStr));
-                    return items;
-                }
-            }
-
-            return items;
-        }
 
         public IList<TokenItem> Tokenize(string str)
         {
-            return GetToken(str);
             var items = new List<TokenItem>();
 
-            var matches = tokens.Select(p => new { match = Regex.Matches(str, (string) p.Expression), p });
+            var matches = tokens.Select(p => new { match = Regex.Matches(str, (string)p.Expression), p });
             foreach (var match in matches)
             {
                 foreach (Match o in match.match)
