@@ -3,30 +3,6 @@ using NUnit.Framework;
 
 namespace Minesweeper.Test
 {
-
-    [TestFixture]
-    public class PascalTests
-    {
-        [Test]
-        public void PascalTokensTest()
-        {
-            var input = "BEGIN a := 2; END.";
-
-            var lexer = new PascalLexer(input);
-            var result = lexer.Tokenize();
-
-
-            result.Should().HaveCount(7);
-            result[0].Token.Name.Should().Be(Pascal.Begin);
-        }
-        [Test]
-        public void METHOD()
-        {
-            
-        }
-    }
-
-
     [TestFixture]
     public class SuperBasicMathInterpreter_Tests
     {

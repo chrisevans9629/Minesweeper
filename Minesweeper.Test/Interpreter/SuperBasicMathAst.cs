@@ -180,7 +180,7 @@ namespace Minesweeper.Test
         }
         public override Node Evaluate()
         {
-            throw new NotImplementedException();
+            return Program();
         }
     }
     public abstract class AbstractSyntaxTreeBase : IDisposable

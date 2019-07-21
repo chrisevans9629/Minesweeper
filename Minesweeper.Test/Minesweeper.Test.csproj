@@ -59,6 +59,7 @@
     <Compile Include="Interpreter\MathParser\IMathParser.cs" />
     <Compile Include="Interpreter\MathParser\IMathValue.cs" />
     <Compile Include="Interpreter\PascalLexer.cs" />
+    <Compile Include="Interpreter\PascalTests.cs" />
     <Compile Include="Interpreter\RpnInterpreterTests.cs" />
     <Compile Include="Interpreter\SimpleTreeTests.cs" />
     <Compile Include="Interpreter\SuperBasicMathAst.cs" />
