@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Minesweeper.Test
 {
-
-
     public class PascalLexer
     {
         private readonly string _str;
         private int index = 0;
-
-
-
 
         public PascalLexer(string str)
         {
@@ -28,7 +21,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        public char Current => (index < _str.Length - 1) ? _str[index] : default(char);
+        public char Current => (index <= _str.Length - 1) ? _str[index] : default(char);
         public void Advance()
         {
             index++;
@@ -76,6 +69,26 @@ namespace Minesweeper.Test
                     Advance();
                     items.Add(CreateToken(Pascal.Assign, ":="));
                 }
+                else if (Current == ';')
+                {
+                    Advance();
+                    items.Add(CreateToken(Pascal.Semi, ";"));
+                }
+                else if(Current == '.')
+                {
+                    Advance();
+                    items.Add(CreateToken(Pascal.Dot, "."));
+                }
+                else if(char.IsNumber(Current))
+                {
+                    var num = "";
+                    while (char.IsNumber(Current))
+                    {
+                        num += Current;
+                        Advance();
+                    }
+                    items.Add(CreateToken(SimpleTree.Num, num));
+                }
                 else
                 {
                     throw new Exception($"did not recognize char '{Current}'");
@@ -86,61 +99,5 @@ namespace Minesweeper.Test
         }
 
 
-    }
-    public class Lexer
-    {
-        readonly IList<Token> tokens = new List<Token>();
-        public void Add(string name, string expression)
-        {
-            tokens.Add(new Token() { Expression = expression, Name = name });
-        }
-        readonly IList<string> ignoreables = new List<string>();
-        public void Ignore(string expression)
-        {
-            ignoreables.Add(expression);
-        }
-
-
-
-        public IList<TokenItem> Tokenize(string str)
-        {
-            var items = new List<TokenItem>();
-
-            var matches = tokens.Select(p => new { match = Regex.Matches(str, (string)p.Expression), p });
-            foreach (var match in matches)
-            {
-                foreach (Match o in match.match)
-                {
-                    if (o.Success)
-                    {
-                        items.Add(new TokenItem() { Token = match.p, Position = o.Index, Value = o.Value });
-                    }
-                }
-            }
-
-            //Validation
-            {
-                var rStr = str;
-                foreach (var token in tokens)
-                {
-                    rStr = Regex.Replace(rStr, token.Expression, "");
-                }
-
-                foreach (var ignoreable in ignoreables)
-                {
-                    rStr = Regex.Replace(rStr, ignoreable, "");
-                }
-
-                if (string.IsNullOrEmpty(rStr) != true)
-                {
-                    var index = str.IndexOf(rStr, StringComparison.InvariantCulture);
-                    throw new Exception($"Token '{rStr}' unrecognized at position {index} line 0");
-                }
-            }
-
-            var resultTokens = items.OrderBy(p => p.Position).ToList();
-
-            return resultTokens;
-        }
     }
 }

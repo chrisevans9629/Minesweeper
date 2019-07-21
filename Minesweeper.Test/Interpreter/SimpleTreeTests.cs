@@ -21,7 +21,7 @@ namespace Minesweeper.Test
         [TestCase("14 + 2 * 3 - 6 / 2", 17)]
         public void Evaluate_Test(string input, double output)
         {
-            var lex = new Lexer();
+            var lex = new RegexLexer();
             lex.Ignore(" ");
             lex.Add("LPA", @"\(");
             lex.Add("RPA", @"\)");

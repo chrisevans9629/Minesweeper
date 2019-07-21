@@ -58,6 +58,7 @@
     <Compile Include="Interpreter\MathParser\IMathNode.cs" />
     <Compile Include="Interpreter\MathParser\IMathParser.cs" />
     <Compile Include="Interpreter\MathParser\IMathValue.cs" />
+    <Compile Include="Interpreter\PascalLexer.cs" />
     <Compile Include="Interpreter\RpnInterpreterTests.cs" />
     <Compile Include="Interpreter\SimpleTreeTests.cs" />
     <Compile Include="Interpreter\SuperBasicMathAst.cs" />
@@ -67,7 +68,7 @@
     <Compile Include="ItemList.cs" />
     <Compile Include="Knapsack.cs" />
     <Compile Include="KnapsackTests.cs" />
-    <Compile Include="Interpreter\Lexer.cs" />
+    <Compile Include="Interpreter\RegexLexer.cs" />
     <Compile Include="Interpreter\LexerTests.cs" />
     <Compile Include="MainPageViewModelTests.cs" />
     <Compile Include="MathOperatorCollection.cs" />

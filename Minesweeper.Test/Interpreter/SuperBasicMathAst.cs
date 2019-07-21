@@ -1,14 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework.Constraints;
 
 namespace Minesweeper.Test
 {
     public class Node
     {
-
         public string Name => TokenItem.Token.Name;
         public TokenItem TokenItem { get; set; }
+    }
+
+    public class NoOp : Node
+    {
+
+    }
+    public class Variable : Node
+    {
+        public string VariableName { get; set; }
+        public Variable(TokenItem token)
+        {
+            TokenItem = token;
+            VariableName = token.Value;
+        }
+    }
+    public class Assign : Node
+    {
+        public Variable Left { get; set; }
+        public Node Right { get; set; }
+        public Assign(Variable left, TokenItem item, Node right)
+        {
+            Left = left;
+            Right = right;
+            TokenItem = item;
+        }
+    }
+    public class Compound : Node
+    {
+        public Compound()
+        {
+            Nodes = new List<Node>();
+        }
+        public IList<Node> Nodes { get; set; }
     }
     public class NumberLeaf : Node
     {
@@ -52,7 +85,7 @@ namespace Minesweeper.Test
         public const string Id = "ID";
         public const string Assign = "ASSIGN";
         public const string Semi = "SEMI";
-        public static void AddPascalTokens(Lexer lex)
+        public static void AddPascalTokens(RegexLexer lex)
         {
             lex.Add(Begin, Begin);
             lex.Add(End, End);
@@ -63,20 +96,127 @@ namespace Minesweeper.Test
 
         }
     }
-    public class SuperBasicMathAst : IDisposable
+
+
+
+    public class PascalAst : AbstractSyntaxTreeBase
     {
-        private readonly IEnumerator<TokenItem> _tokens;
+        public PascalAst(string str)
+        {
+            var lex = new PascalLexer(str);
+            this._tokens = lex.Tokenize().GetEnumerator();
+        }
+
+        Node CompoundStatement()
+        {
+            Eat(Pascal.Begin);
+            var nodes = StatementList();
+            Eat(Pascal.End);
+            var root = new Compound();
+            root.Nodes = nodes.ToList();
+            return root;
+        }
+
+        IList<Node> StatementList()
+        {
+            var node = Statement();
+
+            var results = new List<Node> {node};
+
+            while (this._tokens.Current.Token.Name == Pascal.Semi)
+            {
+                Eat(Pascal.Semi);
+                results.Add(Statement());
+            }
+
+            if (_tokens.Current.Token.Name == Pascal.Id)
+            {
+                throw new NotImplementedException();
+            }
+
+            return results;
+        }
+
+        Node Statement()
+        {
+            Node node = null;
+            if (_tokens.Current.Token.Name == Pascal.Begin)
+                node = CompoundStatement();
+            else if (_tokens.Current.Token.Name == Pascal.Id)
+                node = AssignmentStatement();
+            else node = Empty();
+            return node;
+        }
+
+        Node AssignmentStatement()
+        {
+            var left = new Variable(_tokens.Current);
+            var token = _tokens.Current;
+            Eat(Pascal.Assign);
+            var right = Expression();
+            var node = new Assign(left, token, right);
+            return node;
+        }
+
+        Node Variable()
+        {
+            var node = new Variable(_tokens.Current);
+            Eat(Pascal.Id);
+            return node;
+        }
+        Node Expression()
+        {
+            throw new NotImplementedException();
+        }
+        Node Empty()
+        {
+            return new NoOp();
+        }
+        Node Program()
+        {
+            var node = CompoundStatement();
+            Eat(Pascal.Dot);
+            return node;
+        }
+        public override Node Evaluate()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public abstract class AbstractSyntaxTreeBase : IDisposable
+    {
+        protected IEnumerator<TokenItem> _tokens;
+        public void Dispose()
+        {
+            _tokens?.Dispose();
+        }
+        public void Eat(string name)
+        {
+            if (_tokens.Current?.Token.Name == name)
+            {
+                _tokens.MoveNext();
+            }
+            else
+            {
+                throw new Exception($"expected {name} but was {_tokens.Current?.Token.Name}");
+            }
+        }
+
+        public abstract Node Evaluate();
+    }
+    public class SuperBasicMathAst : AbstractSyntaxTreeBase
+    {
         public SuperBasicMathAst(string data)
         {
-            var lex = new Lexer();
+            var lex = new RegexLexer();
             AddMathTokens(lex);
             _tokens = lex.Tokenize(data).GetEnumerator();
             //_tokens = GetTokens();
         }
 
-        
 
-        public static void AddMathTokens(Lexer lex)
+
+        public static void AddMathTokens(RegexLexer lex)
         {
             lex.Ignore(" ");
             lex.Add("LPA", @"\(");
@@ -88,17 +228,7 @@ namespace Minesweeper.Test
             lex.Add("DIV", @"/");
         }
 
-        void Eat(string name)
-        {
-            if (_tokens.Current?.Token.Name == name)
-            {
-                _tokens.MoveNext();
-            }
-            else
-            {
-                throw new Exception($"expected {name} but was {_tokens.Current?.Token.Name}");
-            }
-        }
+
 
         NumberLeaf ParseNumber()
         {
@@ -159,7 +289,7 @@ namespace Minesweeper.Test
             return result;
         }
 
-        public Node Evaluate()
+        public override Node Evaluate()
         {
             Eat(null);
             var result = Expression();
@@ -193,9 +323,6 @@ namespace Minesweeper.Test
             return result;
         }
 
-        public void Dispose()
-        {
-            _tokens?.Dispose();
-        }
+
     }
 }

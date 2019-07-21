@@ -7,24 +7,24 @@ namespace Minesweeper.Test
     [TestFixture]
     public class LexerTests
     {
-        private Lexer lexer;
+        private RegexLexer _regexLexer;
 
         [SetUp]
         public void Setup()
         {
-            lexer = new Lexer();
+            _regexLexer = new RegexLexer();
         }
 
         [Test]
         public void Tokenize_App()
         {
-            lexer.Ignore(" ");
-            lexer.Add("Name", "[a-zA-Z]+");
-            lexer.Add("Equal", "=");
-            lexer.Add("Number", @"\d+");
+            _regexLexer.Ignore(" ");
+            _regexLexer.Add("Name", "[a-zA-Z]+");
+            _regexLexer.Add("Equal", "=");
+            _regexLexer.Add("Number", @"\d+");
 
 
-            var tokens = lexer.Tokenize("var test = 10");
+            var tokens = _regexLexer.Tokenize("var test = 10");
 
             tokens.Should().HaveCount(4);
         }
@@ -32,14 +32,14 @@ namespace Minesweeper.Test
         [Test]
         public void Tokenize_FullOperations()
         {
-            lexer.Ignore(" ");
-            lexer.Add("Number", @"\d+");
-            lexer.Add("Add", @"\+");
-            lexer.Add("Subtract", @"\-");
-            lexer.Add("ParLeft", @"\(");
-            lexer.Add("ParRight", @"\)");
+            _regexLexer.Ignore(" ");
+            _regexLexer.Add("Number", @"\d+");
+            _regexLexer.Add("Add", @"\+");
+            _regexLexer.Add("Subtract", @"\-");
+            _regexLexer.Add("ParLeft", @"\(");
+            _regexLexer.Add("ParRight", @"\)");
 
-            var tokens = lexer.Tokenize("10 + (10 - 100)");
+            var tokens = _regexLexer.Tokenize("10 + (10 - 100)");
 
             tokens.Should().HaveCount(7);
             tokens[5].Value.Should().Be("100");
@@ -49,9 +49,9 @@ namespace Minesweeper.Test
         [Test]
         public void Tokenize_Number()
         {
-            lexer.Add("Number", @"\d+");
+            _regexLexer.Add("Number", @"\d+");
 
-            var tokens = lexer.Tokenize("10");
+            var tokens = _regexLexer.Tokenize("10");
 
             tokens.Should().HaveCount(1);
             tokens[0].Token.Name.Should().Be("Number");
@@ -60,31 +60,31 @@ namespace Minesweeper.Test
         [Test]
         public void Tokenize_Ignored()
         {
-            lexer.Ignore(" ");
-            var tokens = lexer.Tokenize(" ");
+            _regexLexer.Ignore(" ");
+            var tokens = _regexLexer.Tokenize(" ");
             tokens.Should().BeEmpty();
         }
 
         [Test]
         public void Tokenize_TokenUnrecognized()
         {
-            var ex = Assert.Throws<Exception>(() => lexer.Tokenize(" "));
+            var ex = Assert.Throws<Exception>(() => _regexLexer.Tokenize(" "));
             ex.Message.Should().Be("Token ' ' unrecognized at position 0 line 0");
         }
 
         [Test]
         public void Subtraction()
         {
-            lexer.Add("Sub", "-");
-            var token = lexer.Tokenize("-");
+            _regexLexer.Add("Sub", "-");
+            var token = _regexLexer.Tokenize("-");
             token.Should().HaveCount(1);
         }
         [Test]
         public void Tokenize_Addition()
         {
-            lexer.Add("Number", @"\d+");
-            lexer.Add("Add", @"\+");
-            var tokens = lexer.Tokenize("10+15");
+            _regexLexer.Add("Number", @"\d+");
+            _regexLexer.Add("Add", @"\+");
+            var tokens = _regexLexer.Tokenize("10+15");
             tokens.Should().HaveCount(3);
 
             tokens[1].Token.Name.Should().Be("Add");
