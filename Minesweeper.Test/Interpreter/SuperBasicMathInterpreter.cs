@@ -1,98 +1,82 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Minesweeper.Test
 {
-    public class SuperBasicMathLispInterpreter
+    public class PascalInterpreter : SuperBasicMathInterpreter
     {
-        string VisitNum(NumberLeaf num)
+        public object GetVar(string key)
         {
-            return num.Value.ToString();
+            return scope[key.ToLower()];
         }
-
-        string VisitNode(Node node)
+        private IDictionary<string, object> scope = new Dictionary<string, object>();
+        object VisitCompound(Compound compound)
         {
-            if (node is NumberLeaf leaf)
+            foreach (var compoundNode in compound.Nodes)
             {
-                return VisitNum(leaf);
+                VisitNode(compoundNode);
             }
 
-            if (node is BinaryOperator op) return VisitBin(op);
-
-            throw new Exception($"did not recognize node {node.Name}");
-        }
-        string VisitBin(BinaryOperator op)
-        {
-            if (op.Name == SimpleTree.Add) return "(+ " + (VisitNode(op.Left) + " " + VisitNode(op.Right) + ")");
-            if (op.Name == SimpleTree.Sub) return "(- " + VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
-            if (op.Name == SimpleTree.Multi) return "(* "+ VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
-            if (op.Name == SimpleTree.Div) return "(/ " + VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
-
-            throw new Exception($"did not recognize operation {op.Name}");
-
+            return compound;
         }
 
-        public string Evaluate(Node node)
+        public override object VisitNode(Node node)
         {
-            return VisitNode(node).Trim();
-        }
-    }
-
-
-    public class SuperBasicRpnMathInterpreter
-    {
-        string VisitNum(NumberLeaf num)
-        {
-            return num.Value.ToString();
+            if (node is Compound compound) return VisitCompound(compound);
+            if (node is Assign assign) return VisitAssign(assign);
+            if (node is Variable var) return VisitVariable(var);
+            if (node is NoOp no) return VisitNoOp(no);
+            return base.VisitNode(node);
         }
 
-        string VisitNode(Node node)
+        object VisitAssign(Assign node)
         {
-            if (node is NumberLeaf leaf)
+            var name = node.Left.VariableName;
+            var value = VisitNode(node.Right);
+            if (scope.ContainsKey(name))
             {
-                return VisitNum(leaf);
+                scope[name] = value;
+            }
+            else
+            {
+                scope.Add(name, value);
             }
 
-            if (node is BinaryOperator op) return VisitBin(op);
-
-            throw new Exception($"did not recognize node {node.Name}");
-        }
-        string VisitBin(BinaryOperator op)
-        {
-            if (op.Name == SimpleTree.Add) return  (VisitNode(op.Left) + " " + VisitNode(op.Right) + " +");
-            if (op.Name == SimpleTree.Sub) return VisitNode(op.Left) + " " + VisitNode(op.Right) + " -";
-            if (op.Name == SimpleTree.Multi) return VisitNode(op.Left) + " " + VisitNode(op.Right) + " *";
-            if (op.Name == SimpleTree.Div) return VisitNode(op.Left) + " " + VisitNode(op.Right) + " /";
-
-            throw new Exception($"did not recognize operation {op.Name}");
-
+            return value;
         }
 
-        public string Evaluate(Node node)
+        object VisitVariable(Variable var)
         {
-            return VisitNode(node).Trim();
+            var name = var.VariableName;
+            var value = scope[name];
+            return value;
+        }
+
+        object VisitNoOp(NoOp noop)
+        {
+            return noop;
         }
     }
-
     public class SuperBasicMathInterpreter
     {
-        double VisitNum(NumberLeaf num)
+        object VisitNum(NumberLeaf num)
         {
             return num.Value;
         }
 
-        double VisitUnary(UnaryOperator op)
+        object VisitUnary(UnaryOperator op)
         {
             if (op.Name == SimpleTree.Add) return VisitNode(op.Value);
-            if (op.Name == SimpleTree.Sub) return -VisitNode(op.Value);
+            if (op.Name == SimpleTree.Sub) return -((double)VisitNode(op.Value));
             return Fail(op);
         }
 
-        double Fail(Node node)
+        object Fail(Node node)
         {
             throw new Exception($"did not recognize node {node.Name}");
         }
 
-        double VisitNode(Node node)
+        public virtual object VisitNode(Node node)
         {
             if (node is NumberLeaf leaf)
             {
@@ -103,18 +87,18 @@ namespace Minesweeper.Test
             if (node is UnaryOperator un) return VisitUnary(un);
             return Fail(node);
         }
-        double VisitBin(BinaryOperator op)
+        object VisitBin(BinaryOperator op)
         {
-            if (op.Name == SimpleTree.Add) return VisitNode(op.Left) + VisitNode(op.Right);
-            if (op.Name == SimpleTree.Sub) return VisitNode(op.Left) - VisitNode(op.Right);
-            if (op.Name == SimpleTree.Multi) return VisitNode(op.Left) * VisitNode(op.Right);
-            if (op.Name == SimpleTree.Div) return VisitNode(op.Left) / VisitNode(op.Right);
+            if (op.Name == SimpleTree.Add) return ((double)VisitNode(op.Left)) + ((double)VisitNode(op.Right));
+            if (op.Name == SimpleTree.Sub) return ((double)VisitNode(op.Left)) - ((double)VisitNode(op.Right));
+            if (op.Name == SimpleTree.Multi) return ((double)VisitNode(op.Left)) * ((double)VisitNode(op.Right));
+            if (op.Name == SimpleTree.Div) return ((double)VisitNode(op.Left)) / ((double)VisitNode(op.Right));
 
             return Fail(op);
 
         }
 
-        public double Evaluate(Node node)
+        public object Evaluate(Node node)
         {
             return VisitNode(node);
         }

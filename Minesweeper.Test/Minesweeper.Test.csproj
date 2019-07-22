@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interpreter\AbstractSyntaxTree.cs" />
+    <Compile Include="Interpreter\AbstractSyntaxTreeBase.cs" />
     <Compile Include="Interpreter\AbstractSyntaxTreeTests.cs" />
     <Compile Include="CandiateSolutionPath.cs" />
     <Compile Include="CandidateSolution.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Interpreter\MathParser\IMathNode.cs" />
     <Compile Include="Interpreter\MathParser\IMathParser.cs" />
     <Compile Include="Interpreter\MathParser\IMathValue.cs" />
+    <Compile Include="Interpreter\PascalAst.cs" />
     <Compile Include="Interpreter\PascalLexer.cs" />
     <Compile Include="Interpreter\PascalTests.cs" />
     <Compile Include="Interpreter\RpnInterpreterTests.cs" />
@@ -65,6 +67,8 @@
     <Compile Include="Interpreter\SuperBasicMathAst.cs" />
     <Compile Include="Interpreter\SuperBasicMathInterpreter.cs" />
     <Compile Include="Interpreter\SuperBasicMathInterpreter_Tests.cs" />
+    <Compile Include="Interpreter\SuperBasicMathLispInterpreter.cs" />
+    <Compile Include="Interpreter\SuperBasicRpnMathInterpreter.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemList.cs" />
     <Compile Include="Knapsack.cs" />

@@ -10,7 +10,7 @@ namespace Minesweeper.Test
 
         public PascalLexer(string str)
         {
-            _str = str;
+            _str = str.ToLower();
         }
 
 
@@ -30,7 +30,7 @@ namespace Minesweeper.Test
         TokenItem Id()
         {
             var result = "";
-            while (char.IsLetterOrDigit(Current))
+            while (char.IsLetterOrDigit(Current) || Current == '_')
             {
                 result += Current;
                 Advance();
@@ -39,8 +39,9 @@ namespace Minesweeper.Test
 
 
             var token = CreateToken(Pascal.Id, result);
-            if (result == Pascal.Begin) token.Token.Name = Pascal.Begin;
-            else if (result == Pascal.End) token.Token.Name = Pascal.End;
+            if (result == "div") token.Token.Name = SimpleTree.Div;
+            if (result.ToUpper() == Pascal.Begin) token.Token.Name = Pascal.Begin;
+            else if (result.ToUpper() == Pascal.End) token.Token.Name = Pascal.End;
             return token;
         }
 
@@ -59,7 +60,7 @@ namespace Minesweeper.Test
                 {
                     Advance();
                 }
-                else if (char.IsLetter(Current))
+                else if (char.IsLetter(Current) || Current == '_')
                 {
                     items.Add(Id());
                 }
@@ -88,6 +89,42 @@ namespace Minesweeper.Test
                         Advance();
                     }
                     items.Add(CreateToken(SimpleTree.Num, num));
+                }
+                else if (Current == '+')
+                {
+                    Advance();
+
+                    items.Add(CreateToken(SimpleTree.Add, "+"));
+                }
+                else if (Current == '-')
+                {
+                    Advance();
+
+                    items.Add(CreateToken(SimpleTree.Sub, "-"));
+                }
+                else if (Current == '*')
+                {
+                    Advance();
+
+                    items.Add(CreateToken(SimpleTree.Multi, "*"));
+                }
+                else if (Current == '/')
+                {
+                    Advance();
+
+                    items.Add(CreateToken(SimpleTree.Div, "/"));
+                }
+                else if (Current == '(')
+                {
+                    Advance();
+
+                    items.Add(CreateToken(SimpleTree.LParinth, "("));
+                }
+                else if (Current == ')')
+                {
+                    Advance();
+
+                    items.Add(CreateToken(SimpleTree.RParinth, ")"));
                 }
                 else
                 {

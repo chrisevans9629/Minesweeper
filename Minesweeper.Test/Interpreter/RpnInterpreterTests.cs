@@ -10,7 +10,9 @@ namespace Minesweeper.Test
         public void RpnTest()
         {
             var input = "(5 + 3) * 12 / 3";
-            var tree = new SuperBasicMathAst(input);
+            var lex = new RegexLexer();
+            SuperBasicMathAst.AddMathTokens(lex);
+            var tree = new SuperBasicMathAst(lex.Tokenize(input));
 
             var t = tree.Evaluate();
 
@@ -25,7 +27,9 @@ namespace Minesweeper.Test
         [TestCase("(2 + 3 * 5)", "(+ 2 (* 3 5))")]
         public void LispTest(string input, string output)
         {
-            var tree = new SuperBasicMathAst(input);
+            var lex = new RegexLexer();
+            SuperBasicMathAst.AddMathTokens(lex);
+            var tree = new SuperBasicMathAst(lex.Tokenize(input));
 
             var t = tree.Evaluate();
 

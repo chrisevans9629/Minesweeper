@@ -19,7 +19,9 @@ namespace Minesweeper.Test
         [TestCase("--2",2)]
         public void Evaluate_Test(string input, double output)
         {
-            var tree = new SuperBasicMathAst(input);
+            var lex = new RegexLexer();
+            SuperBasicMathAst.AddMathTokens(lex);
+            var tree = new SuperBasicMathAst(lex.Tokenize(input));
             var t = tree.Evaluate();
 
             var inter = new SuperBasicMathInterpreter();
@@ -34,7 +36,9 @@ namespace Minesweeper.Test
         {
             var input = "-2";
 
-            var tree = new SuperBasicMathAst(input);
+            var lex = new RegexLexer();
+            SuperBasicMathAst.AddMathTokens(lex);
+            var tree = new SuperBasicMathAst(lex.Tokenize(input));
 
             var node = tree.Evaluate();
             node.Should().BeOfType<UnaryOperator>();
@@ -45,7 +49,9 @@ namespace Minesweeper.Test
         public void BasicAst_Should_Add()
         {
             var input = "1+2";
-            var tree = new SuperBasicMathAst(input);
+            var lex = new RegexLexer();
+            SuperBasicMathAst.AddMathTokens(lex);
+            var tree = new SuperBasicMathAst(lex.Tokenize(input));
             var t = tree.Evaluate();
 
             t.TokenItem.Token.Name.Should().Be(SimpleTree.Add);
@@ -60,7 +66,9 @@ namespace Minesweeper.Test
         {
             var input = "1+2-3";
 
-            var tree = new SuperBasicMathAst(input);
+            var lex = new RegexLexer();
+            SuperBasicMathAst.AddMathTokens(lex);
+            var tree = new SuperBasicMathAst(lex.Tokenize(input));
 
             var t = tree.Evaluate();
             t.Name.Should().Be(SimpleTree.Sub);
@@ -70,7 +78,9 @@ namespace Minesweeper.Test
         public void BasicAst_Should_Subtract()
         {
             var input = "1-2";
-            var tree = new SuperBasicMathAst(input);
+            var lex = new RegexLexer();
+            SuperBasicMathAst.AddMathTokens(lex);
+            var tree = new SuperBasicMathAst(lex.Tokenize(input));
             var t = tree.Evaluate();
 
             t.TokenItem.Token.Name.Should().Be(SimpleTree.Sub);
