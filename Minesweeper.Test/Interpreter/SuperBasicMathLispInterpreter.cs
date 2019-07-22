@@ -25,7 +25,7 @@ namespace Minesweeper.Test
             if (op.Name == SimpleTree.Add) return "(+ " + (VisitNode(op.Left) + " " + VisitNode(op.Right) + ")");
             if (op.Name == SimpleTree.Sub) return "(- " + VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
             if (op.Name == SimpleTree.Multi) return "(* "+ VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
-            if (op.Name == SimpleTree.Div) return "(/ " + VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
+            if (op.Name == SimpleTree.FloatDiv) return "(/ " + VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
 
             throw new Exception($"did not recognize operation {op.Name}");
 

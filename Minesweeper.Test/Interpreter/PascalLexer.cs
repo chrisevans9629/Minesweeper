@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Minesweeper.Test
 {
@@ -14,11 +15,11 @@ namespace Minesweeper.Test
         }
 
 
-        public char? Peek()
+        public char Peek()
         {
             if (index + 1 < _str.Length - 1)
                 return _str[index + 1];
-            return null;
+            return default(char);
         }
 
         public char Current => (index <= _str.Length - 1) ? _str[index] : default(char);
@@ -30,6 +31,16 @@ namespace Minesweeper.Test
         TokenItem Id()
         {
             var result = "";
+
+            var reservations = new List<string>()
+            {
+                SimpleTree.IntDiv,
+                Pascal.Begin,
+                Pascal.End,
+                Pascal.Var,
+                Pascal.Int,
+                Pascal.Real,
+            };
             while (char.IsLetterOrDigit(Current) || Current == '_')
             {
                 result += Current;
@@ -39,15 +50,19 @@ namespace Minesweeper.Test
 
 
             var token = CreateToken(Pascal.Id, result);
-            if (result == "div") token.Token.Name = SimpleTree.Div;
-            if (result.ToUpper() == Pascal.Begin) token.Token.Name = Pascal.Begin;
-            else if (result.ToUpper() == Pascal.End) token.Token.Name = Pascal.End;
+
+
+            var reserved = reservations.FirstOrDefault(p => result.ToUpper() == p);
+            if (reserved != null)
+            {
+                token.Token.Name = reserved;
+            }
             return token;
         }
 
         TokenItem CreateToken(string name, string value)
         {
-            var token = new TokenItem() { Position = index, Value = value, Token = new Token() {Name = name}};
+            var token = new TokenItem() { Position = index, Value = value, Token = new Token() { Name = name } };
             return token;
         }
         public IList<TokenItem> Tokenize()
@@ -64,7 +79,7 @@ namespace Minesweeper.Test
                 {
                     items.Add(Id());
                 }
-                else if(Current == ':' && Peek() == '=')
+                else if (Current == ':' && Peek() == '=')
                 {
                     Advance();
                     Advance();
@@ -75,20 +90,38 @@ namespace Minesweeper.Test
                     Advance();
                     items.Add(CreateToken(Pascal.Semi, ";"));
                 }
-                else if(Current == '.')
+
+                else if (char.IsNumber(Current) || (Current == '.' && char.IsNumber(Peek())))
                 {
-                    Advance();
-                    items.Add(CreateToken(Pascal.Dot, "."));
-                }
-                else if(char.IsNumber(Current))
-                {
+                    //10.10 valid
+                    //10.10.10 invalid
+                    //10. 10 invalid
                     var num = "";
-                    while (char.IsNumber(Current))
+                    bool hasFloat = false;
+                    while (char.IsNumber(Current) || Current == '.')
                     {
+                        if (Current == '.' && hasFloat) throw new InvalidOperationException($"Number {num} cannot have two periods");
+                        if (Current == '.')
+                        {
+                            hasFloat = true;
+                        }
                         num += Current;
                         Advance();
                     }
-                    items.Add(CreateToken(SimpleTree.Num, num));
+
+                    if (hasFloat)
+                    {
+                        items.Add(CreateToken(Pascal.RealConst, num));
+                    }
+                    else
+                    {
+                        items.Add(CreateToken(SimpleTree.Num, num));
+                    }
+                }
+                else if (Current == '.')
+                {
+                    Advance();
+                    items.Add(CreateToken(Pascal.Dot, "."));
                 }
                 else if (Current == '+')
                 {
@@ -112,7 +145,7 @@ namespace Minesweeper.Test
                 {
                     Advance();
 
-                    items.Add(CreateToken(SimpleTree.Div, "/"));
+                    items.Add(CreateToken(SimpleTree.FloatDiv, "/"));
                 }
                 else if (Current == '(')
                 {
@@ -125,6 +158,25 @@ namespace Minesweeper.Test
                     Advance();
 
                     items.Add(CreateToken(SimpleTree.RParinth, ")"));
+                }
+                else if (Current == ':')
+                {
+                    Advance();
+                    items.Add(CreateToken(Pascal.Colon, ":"));
+                }
+                else if (Current == ',')
+                {
+                    Advance();
+                    items.Add(CreateToken(Pascal.Comma, ","));
+                }
+                else if(Current == '{')
+                {
+                    Advance();
+                    while (Current != '}' && Current != default(char))
+                    {
+                        Advance();
+                    }
+                    Advance();
                 }
                 else
                 {

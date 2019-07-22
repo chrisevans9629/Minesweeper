@@ -6,6 +6,11 @@ namespace Minesweeper.Test
 {
     public abstract class Node
     {
+        public static string Aggregate(IEnumerable<Node> nodes)
+        {
+            return (nodes.Any() ? nodes.Select(p => p.Display()).Aggregate((f, s) => $"{f}, {s}") : "");
+        }
+
         public string Name => TokenItem.Token.Name;
         public TokenItem TokenItem { get; set; }
 
@@ -58,7 +63,7 @@ namespace Minesweeper.Test
         public IList<Node> Nodes { get; set; }
         public override string Display()
         {
-            return $"Compound({(Nodes.Any() ? Nodes.Select(p=> p.Display()).Aggregate((f, s) => $"{f}, {s}" ) : "")}";
+            return $"Compound({Aggregate(Nodes)}";
         }
     }
     public class NumberLeaf : Node
@@ -109,12 +114,19 @@ namespace Minesweeper.Test
 
     public class Pascal
     {
+        public const string Real = "REAL";
+        public const string Colon = "SEMICOLON";
         public const string Begin = "BEGIN";
         public const string End = "END";
         public const string Dot = "DOT";
         public const string Id = "ID";
         public const string Assign = "ASSIGN";
         public const string Semi = "SEMI";
+        public const string Comma = "COMMA";
+        public const string Var = "VAR";
+        public const string Int = "INTEGER";
+        public const string RealConst = "Real_Const";
+
         public static void AddPascalTokens(RegexLexer lex)
         {
             lex.Add(Begin, Begin);
@@ -146,7 +158,7 @@ namespace Minesweeper.Test
             lex.Add("ADD", @"\+");
             lex.Add("SUB", @"-");
             lex.Add("MUL", @"\*");
-            lex.Add("DIV", @"/");
+            lex.Add(SimpleTree.FloatDiv, @"/");
         }
 
         

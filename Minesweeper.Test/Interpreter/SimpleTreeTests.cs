@@ -29,7 +29,7 @@ namespace Minesweeper.Test
             lex.Add("ADD", @"\+");
             lex.Add("SUB", @"-");
             lex.Add("MUL", @"\*");
-            lex.Add("DIV", @"/");
+            lex.Add(SimpleTree.FloatDiv, @"/");
             var tokens = lex.Tokenize(input);
             var t = tree.Evaluate(tokens);
 

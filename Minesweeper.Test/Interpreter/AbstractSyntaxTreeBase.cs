@@ -84,10 +84,16 @@ namespace Minesweeper.Test
                     result = new BinaryOperator(result, ParaAddSub(), token);
                 }
 
-                else if (_tokens.Current.Token.Name == SimpleTree.Div)
+                else if (_tokens.Current.Token.Name == SimpleTree.FloatDiv)
                 {
                     var token = _tokens.Current;
-                    Eat(SimpleTree.Div);
+                    Eat(SimpleTree.FloatDiv);
+                    result = new BinaryOperator(result, ParaAddSub(), token);
+                }
+                else if (_tokens.Current.Token.Name == SimpleTree.IntDiv)
+                {
+                    var token = _tokens.Current;
+                    Eat(SimpleTree.IntDiv);
                     result = new BinaryOperator(result, ParaAddSub(), token);
                 }
                 else

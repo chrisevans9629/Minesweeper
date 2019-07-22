@@ -10,10 +10,10 @@ namespace Minesweeper.Test
         public const string LParinth = "LPA";
         public const string RParinth = "RPA";
         public const string Multi = "MUL";
-        public const string Div = "DIV";
+        public const string FloatDiv = "FDIV";
         public const string Add = "ADD";
         public const string Sub = "SUB";
-        
+        public const string IntDiv = "DIV";
 
         double Number(IEnumerator<TokenItem> token)
         {
@@ -61,9 +61,9 @@ namespace Minesweeper.Test
                     result *= Par(numerator);
                     //numerator.MoveNext();
                 }
-                else if (numerator.Current.Token.Name == Div)
+                else if (numerator.Current.Token.Name == FloatDiv)
                 {
-                    Eat(numerator, Div);
+                    Eat(numerator, FloatDiv);
                     result /= Par(numerator);
                     //numerator.MoveNext();
                 }
