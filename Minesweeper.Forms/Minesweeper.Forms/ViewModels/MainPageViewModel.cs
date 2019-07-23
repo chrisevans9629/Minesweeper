@@ -51,7 +51,9 @@ namespace Minesweeper.Forms.ViewModels
         private void Tap(bool? flag)
         {
             if (flag is bool b)
+            {
                 _minesweeper.ClickOnCell(this, b);
+            }
         }
 
         public override void Show()
@@ -61,10 +63,12 @@ namespace Minesweeper.Forms.ViewModels
 
         public override void Highlight()
         {
+            //should be handled by xamarin
         }
 
         public override void UnHighLight()
         {
+            //should be handled by xamarin
         }
     }
 

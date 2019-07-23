@@ -30,6 +30,11 @@
             return (child1, child2);
         }
 
+        public (ICandidateSolution<ItemList> child1, ICandidateSolution<ItemList> child2) CrossOver(ICandidateSolution<ItemList> male, ICandidateSolution<ItemList> female)
+        {
+            return CrossOver(male, female, null);
+        }
+
         public ICandidateSolution<ItemList> Mutate(ICandidateSolution<ItemList> candidate, Knapsack input, double mutationRate)
         {
             for (int i = 0; i < candidate.CandidateItem.Count; i++)
