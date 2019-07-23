@@ -74,7 +74,6 @@
     <Compile Include="Tests\PascalAstTests.cs" />
     <Compile Include="Tests\PascalInterpreterTests.cs" />
     <Compile Include="Tests\PascalLexerTests.cs" />
-    <Compile Include="Tests\PascalTests.cs" />
     <Compile Include="Tests\MathInterpreterTests.cs" />
     <Compile Include="Tests\MathSimpleTreeTests.cs" />
     <Compile Include="Interpreter\Ast\SuperBasicMathAst.cs" />
