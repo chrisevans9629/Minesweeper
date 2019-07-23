@@ -89,6 +89,7 @@
     <Compile Include="Evolution\KnapsackTests.cs" />
     <Compile Include="Interpreter\RegexLexer.cs" />
     <Compile Include="Interpreter\LexerTests.cs" />
+    <Compile Include="Interpreter\Symbols\Symbol.cs" />
     <Compile Include="Minesweeper\MainPageViewModelTests.cs" />
     <Compile Include="Interpreter\MathOperatorCollection.cs" />
     <Compile Include="Interpreter\MathParser\MathParser.cs" />
@@ -151,9 +152,7 @@
       <Name>Minesweeper.Forms</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interpreter\Symbols\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
