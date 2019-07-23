@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="Interpreter\Ast\AbstractSyntaxTree.cs" />
     <Compile Include="Interpreter\Ast\AbstractSyntaxTreeBase.cs" />
-    <Compile Include="Interpreter\Ast\AbstractSyntaxTreeTests.cs" />
+    <Compile Include="Tests\AbstractSyntaxTreeTests.cs" />
     <Compile Include="Evolution\CandiateSolutionPath.cs" />
     <Compile Include="Evolution\CandidateSolution.cs" />
     <Compile Include="Evolution\CandidateSolutionItem.cs" />
@@ -86,7 +86,7 @@
     <Compile Include="Evolution\Item.cs" />
     <Compile Include="Evolution\ItemList.cs" />
     <Compile Include="Evolution\Knapsack.cs" />
-    <Compile Include="Evolution\KnapsackTests.cs" />
+    <Compile Include="Tests\KnapsackTests.cs" />
     <Compile Include="Interpreter\RegexLexer.cs" />
     <Compile Include="Tests\LexerTests.cs" />
     <Compile Include="Interpreter\Symbols\Symbol.cs" />
@@ -98,7 +98,7 @@
     <Compile Include="Interpreter\MathParser\MathParserTree.cs" />
     <Compile Include="Interpreter\MathParser\MathTree.cs" />
     <Compile Include="Minesweeper\MineSweeperTests.cs" />
-    <Compile Include="Evolution\NeuralNetworkTest.cs" />
+    <Compile Include="Tests\NeuralNetworkTest.cs" />
     <Compile Include="Interpreter\Number.cs" />
     <Compile Include="Interpreter\NumberOperator.cs" />
     <Compile Include="Interpreter\NumberOperatorInject.cs" />
@@ -107,7 +107,7 @@
     <Compile Include="Interpreter\Operation.cs" />
     <Compile Include="Interpreter\Operator.cs" />
     <Compile Include="Interpreter\OperatorValue.cs" />
-    <Compile Include="Interpreter\MathParser\ParserTests.cs" />
+    <Compile Include="Tests\ParserTests.cs" />
     <Compile Include="Evolution\PathChosen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Evolution\Road.cs" />
