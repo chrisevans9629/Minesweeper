@@ -54,8 +54,8 @@ namespace Minesweeper.Test
         }
 
         object VisitVarDeclaration(VarDeclaration varDeclaration)
-        { 
-            this.scope.Add(varDeclaration.VarNode.VariableName,null);
+        {
+            this.scope.Add(varDeclaration.VarNode.VariableName, null);
             return null;
         }
         private object VisitBlock(Block block)
@@ -91,7 +91,7 @@ namespace Minesweeper.Test
             return value;
         }
 
-        object VisitNoOp(NoOp noop)
+        static object VisitNoOp(NoOp noop)
         {
             return noop;
         }
