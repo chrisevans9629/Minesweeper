@@ -4,6 +4,7 @@
     {
         public Variable Left { get; set; }
         public Node Right { get; set; }
+        public TokenItem TokenItem { get; set; }
         public Assign(Variable left, TokenItem item, Node right)
         {
             Left = left;

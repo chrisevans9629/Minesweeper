@@ -9,6 +9,8 @@
             TokenItem = @operator;
         }
 
+        public string Name => TokenItem.Token.Name;
+        public TokenItem TokenItem { get; set; }
         public Node Left { get; set; }
         public Node Right { get; set; }
         public override string Display()

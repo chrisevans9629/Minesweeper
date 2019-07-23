@@ -33,7 +33,7 @@ namespace Minesweeper.Test.Symbols
         public Symbol LookupSymbol(string name)
         {
             Console.WriteLine($"Lookup: {name}");
-            return symbols.FirstOrDefault(p => p.Name == name);
+            return symbols.FirstOrDefault(p => p.Name.ToLower() == name.ToLower());
         }
     }
 }

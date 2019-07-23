@@ -12,12 +12,12 @@ namespace Minesweeper.Test
             this._tokens = tokens.GetEnumerator();
         }
 
-        Node CompoundStatement()
+        CompoundStatement CompoundStatement()
         {
             Eat(Pascal.Begin);
             var nodes = StatementList();
             Eat(Pascal.End);
-            var root = new Compound();
+            var root = new CompoundStatement();
             root.Nodes = nodes.ToList();
             return root;
         }
@@ -140,7 +140,7 @@ namespace Minesweeper.Test
             return node;
         }
 
-        Node AssignmentStatement()
+        Assign AssignmentStatement()
         {
             var left = Variable();
             var token = _tokens.Current;
@@ -163,7 +163,7 @@ namespace Minesweeper.Test
                 throw new Exception($"did not expect {_tokens.Current.Token.Name}");
             return node;
         }
-        Node Empty()
+        NoOp Empty()
         {
             return new NoOp();
         }

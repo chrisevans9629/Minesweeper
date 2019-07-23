@@ -2,9 +2,9 @@
 
 namespace Minesweeper.Test
 {
-    public class Compound : Node
+    public class CompoundStatement : Node
     {
-        public Compound()
+        public CompoundStatement()
         {
             Nodes = new List<Node>();
         }

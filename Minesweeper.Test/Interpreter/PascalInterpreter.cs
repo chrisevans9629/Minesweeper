@@ -2,14 +2,20 @@
 
 namespace Minesweeper.Test
 {
+
+    public class GlobalMemory : Dictionary<string, object>
+    {
+
+    }
+
     public class PascalInterpreter : SuperBasicMathInterpreter
     {
         public object GetVar(string key)
         {
             return scope[key.ToLower()];
         }
-        private IDictionary<string, object> scope = new Dictionary<string, object>();
-        object VisitCompound(Compound compound)
+        private GlobalMemory scope = new GlobalMemory();
+        object VisitCompound(CompoundStatement compound)
         {
             foreach (var compoundNode in compound.Nodes)
             {
@@ -21,7 +27,7 @@ namespace Minesweeper.Test
 
         public override object VisitNode(Node node)
         {
-            if (node is Compound compound)
+            if (node is CompoundStatement compound)
             {
                 return VisitCompound(compound);
             }

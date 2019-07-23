@@ -57,7 +57,7 @@
     <Compile Include="Interpreter\Assign.cs" />
     <Compile Include="Interpreter\BinaryOperator.cs" />
     <Compile Include="Interpreter\Ast\Block.cs" />
-    <Compile Include="Interpreter\Ast\Compound.cs" />
+    <Compile Include="Interpreter\Ast\CompoundStatement.cs" />
     <Compile Include="Interpreter\Grammer.cs" />
     <Compile Include="Interpreter\Ast\IAbstractSyntaxTree.cs" />
     <Compile Include="Interpreter\MathParser\IMathNode.cs" />
@@ -116,6 +116,7 @@
     <Compile Include="Interpreter\Token.cs" />
     <Compile Include="Interpreter\TokenItem.cs" />
     <Compile Include="Interpreter\SingleChar.cs" />
+    <Compile Include="Tests\SymbolTableBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture">

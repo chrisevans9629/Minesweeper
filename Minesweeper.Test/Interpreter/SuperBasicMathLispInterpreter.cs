@@ -18,7 +18,7 @@ namespace Minesweeper.Test
 
             if (node is BinaryOperator op) return VisitBin(op);
 
-            throw new Exception($"did not recognize node {node.Name}");
+            throw new Exception($"did not recognize node {node}");
         }
         string VisitBin(BinaryOperator op)
         {

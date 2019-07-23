@@ -18,7 +18,7 @@ namespace Minesweeper.Test
 
         object Fail(Node node)
         {
-            throw new Exception($"did not recognize node {node.Name}");
+            throw new Exception($"did not recognize node {node}");
         }
 
         public virtual object VisitNode(Node node)

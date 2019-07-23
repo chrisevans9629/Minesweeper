@@ -3,6 +3,7 @@
     public class Variable : Node
     {
         public string VariableName { get; set; }
+        public TokenItem TokenItem { get; set; }
         public Variable(TokenItem token)
         {
             TokenItem = token;
