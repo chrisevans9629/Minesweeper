@@ -52,12 +52,13 @@ namespace Minesweeper.Test
     public class PascalProgram : Node
     {
         public string ProgramName { get; set; }
-        public Node Block { get; set; }
+        public Block Block { get; set; }
 
-        public PascalProgram(string name, Node block)
+        public PascalProgram(TokenItem name, Block block)
         {
-            ProgramName = name;
+            ProgramName = name.Value;
             Block = block;
+            TokenItem = name;
         }
         public override string Display()
         {
@@ -67,6 +68,7 @@ namespace Minesweeper.Test
 
     public class PascalAst : AbstractSyntaxTreeBase
     {
+        private TokenItem Current => _tokens.Current;
         public PascalAst(IList<TokenItem> tokens)
         {
             this._tokens = tokens.GetEnumerator();
@@ -82,7 +84,7 @@ namespace Minesweeper.Test
             return root;
         }
 
-        Node Block()
+        Block Block()
         {
             var dec = Declarations();
             var comStat = CompoundStatement();
@@ -126,7 +128,14 @@ namespace Minesweeper.Test
 
         private TypeNode TypeSpec()
         {
-            throw new NotImplementedException();
+            var result = new TypeNode(Current);
+
+            if (Current.Token.Name == Pascal.Int)
+            {
+                Eat(Pascal.Int);
+            }
+            if(Current.Token.Name == Pascal.Real) Eat(Pascal.Real);
+            return result;
         }
 
         IList<Node> StatementList()
@@ -218,9 +227,14 @@ namespace Minesweeper.Test
         }
         Node Program()
         {
-            var node = CompoundStatement();
+            Eat(Pascal.Program);
+            var name = _tokens.Current;
+            Eat(Pascal.Id);
+            Eat(Pascal.Semi);
+            var node = Block();
             Eat(Pascal.Dot);
-            return node;
+            var programNode = new PascalProgram(name, node);
+            return programNode;
         }
         public override Node Evaluate()
         {

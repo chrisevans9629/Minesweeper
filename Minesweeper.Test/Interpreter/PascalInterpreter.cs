@@ -25,7 +25,28 @@ namespace Minesweeper.Test
             if (node is Assign assign) return VisitAssign(assign);
             if (node is Variable var) return VisitVariable(var);
             if (node is NoOp no) return VisitNoOp(no);
+            if (node is PascalProgram program) return VisitProgram(program);
             return base.VisitNode(node);
+        }
+
+        private object VisitProgram(PascalProgram program)
+        {
+            return VisitBlock(program.Block);
+        }
+
+        object VisitVarDeclaration(VarDeclaration varDeclaration)
+        { 
+            this.scope.Add(varDeclaration.VarNode.VariableName,null);
+            return null;
+        }
+        private object VisitBlock(Block block)
+        {
+            foreach (var blockDeclaration in block.Declarations)
+            {
+                VisitVarDeclaration(blockDeclaration);
+            }
+
+            return VisitNode(block.CompoundStatement);
         }
 
         object VisitAssign(Assign node)

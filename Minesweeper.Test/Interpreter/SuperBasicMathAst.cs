@@ -114,6 +114,7 @@ namespace Minesweeper.Test
 
     public class Pascal
     {
+        public const string Program = "PROGRAM";
         public const string Real = "REAL";
         public const string Colon = "SEMICOLON";
         public const string Begin = "BEGIN";
