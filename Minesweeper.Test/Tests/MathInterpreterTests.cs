@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Minesweeper.Test
 {
     [TestFixture]
-    public class InterpreterTests
+    public class MathInterpreterTests
     {
         [Test]
         public void RpnTest()

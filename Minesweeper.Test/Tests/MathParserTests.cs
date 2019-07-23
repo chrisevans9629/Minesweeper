@@ -23,7 +23,7 @@ namespace Minesweeper.Test
 
 
     [TestFixture]
-    public class ParserTests
+    public class MathParserTests
     {
         private MathParser parser;
 

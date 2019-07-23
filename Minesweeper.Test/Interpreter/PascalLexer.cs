@@ -6,9 +6,14 @@ namespace Minesweeper.Test
 {
     public class PascalLexer
     {
-        private readonly string _str;
+        private string _str;
         private int index = 0;
 
+
+        public PascalLexer()
+        {
+            
+        }
         public PascalLexer(string str)
         {
             _str = str.ToLower();
@@ -66,8 +71,11 @@ namespace Minesweeper.Test
             var token = new TokenItem() { Position = index, Value = value, Token = new Token() { Name = name } };
             return token;
         }
-        public IList<TokenItem> Tokenize()
+
+        public IList<TokenItem> Tokenize(string str)
         {
+            _str = str;
+            index = 0;
             //rawr
             var items = new List<TokenItem>();
             while (Current != default(char))
@@ -170,7 +178,7 @@ namespace Minesweeper.Test
                     Advance();
                     items.Add(CreateToken(Pascal.Comma, ","));
                 }
-                else if(Current == '{')
+                else if (Current == '{')
                 {
                     Advance();
                     while (Current != '}' && Current != default(char))
@@ -186,6 +194,11 @@ namespace Minesweeper.Test
             }
 
             return items;
+        }
+
+        public IList<TokenItem> Tokenize()
+        {
+            return Tokenize(_str);
         }
 
 

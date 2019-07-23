@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Minesweeper.Test
 {
     [TestFixture]
-    public class SimpleTreeTests
+    public class MathSimpleTreeTests
     {
         private SimpleTree tree;
 

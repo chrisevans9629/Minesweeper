@@ -72,8 +72,8 @@
     <Compile Include="Interpreter\PascalLexer.cs" />
     <Compile Include="Interpreter\PascalProgram.cs" />
     <Compile Include="Tests\PascalTests.cs" />
-    <Compile Include="Tests\InterpreterTests.cs" />
-    <Compile Include="Tests\SimpleTreeTests.cs" />
+    <Compile Include="Tests\MathInterpreterTests.cs" />
+    <Compile Include="Tests\MathSimpleTreeTests.cs" />
     <Compile Include="Interpreter\Ast\SuperBasicMathAst.cs" />
     <Compile Include="Interpreter\SuperBasicMathInterpreter.cs" />
     <Compile Include="Tests\SuperBasicMathInterpreter_Tests.cs" />
@@ -88,7 +88,7 @@
     <Compile Include="Evolution\Knapsack.cs" />
     <Compile Include="Tests\KnapsackTests.cs" />
     <Compile Include="Interpreter\RegexLexer.cs" />
-    <Compile Include="Tests\LexerTests.cs" />
+    <Compile Include="Tests\RegexLexerTests.cs" />
     <Compile Include="Interpreter\Symbols\Symbol.cs" />
     <Compile Include="Interpreter\Symbols\SymbolTable.cs" />
     <Compile Include="Interpreter\Symbols\SymbolTableBuilder.cs" />
@@ -107,7 +107,7 @@
     <Compile Include="Interpreter\Operation.cs" />
     <Compile Include="Interpreter\Operator.cs" />
     <Compile Include="Interpreter\OperatorValue.cs" />
-    <Compile Include="Tests\ParserTests.cs" />
+    <Compile Include="Tests\MathParserTests.cs" />
     <Compile Include="Evolution\PathChosen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Evolution\Road.cs" />
@@ -116,7 +116,7 @@
     <Compile Include="Interpreter\Token.cs" />
     <Compile Include="Interpreter\TokenItem.cs" />
     <Compile Include="Interpreter\SingleChar.cs" />
-    <Compile Include="Tests\SymbolTableBuilderTests.cs" />
+    <Compile Include="Tests\PascalSymbolTableBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture">

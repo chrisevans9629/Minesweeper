@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace Minesweeper.Test
 {
     [TestFixture]
-    public class SymbolTableBuilderTests
+    public class PascalSymbolTableBuilderTests
     {
         [Test]
         public void PascalProgram_ShouldGetSymbols()

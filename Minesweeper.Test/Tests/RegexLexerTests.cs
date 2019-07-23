@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Minesweeper.Test
 {
     [TestFixture]
-    public class LexerTests
+    public class RegexLexerTests
     {
         private RegexLexer _regexLexer;
 
