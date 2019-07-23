@@ -4,10 +4,10 @@ namespace Minesweeper.Test
 {
     public class Block : Node
     {
-        public IList<VarDeclaration> Declarations { get; }
+        public IList<Node> Declarations { get; }
         public CompoundStatement CompoundStatement { get; }
 
-        public Block(IList<VarDeclaration> declarations, CompoundStatement compoundStatement)
+        public Block(IList<Node> declarations, CompoundStatement compoundStatement)
         {
             Declarations = declarations;
             CompoundStatement = compoundStatement;

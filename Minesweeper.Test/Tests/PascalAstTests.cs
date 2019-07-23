@@ -35,5 +35,14 @@ namespace Minesweeper.Test.Tests
             node.Should().BeOfType<PascalProgram>();
         }
 
+        [Test]
+        public void PascalProgram_WithProcedures_ShouldPass()
+        {
+            var input = PascalTestInputs.PascalProgramWithProcedures;
+            var tokens = lexer.Tokenize(input);
+            var inter = ast.Evaluate(tokens);
+
+        }
+
     }
 }

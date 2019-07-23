@@ -12,49 +12,59 @@ namespace Minesweeper.Test.Symbols
             return table;
         }
 
-        void Error(Node node)
-        {
-            throw new InvalidOperationException($"did not recognize node {node}");
-        }
+       
 
-        private void VisitNode(Node rootNode)
+        private void VisitNode(Node node)
         {
-            if (rootNode is PascalProgram program)
+            if (node is PascalProgram program)
             {
                 VisitProgram(program);
             }
-            else if (rootNode is CompoundStatement compound)
+            else if (node is CompoundStatement compound)
             {
                 VisitCompoundStatement(compound);
             }
-            else if (rootNode is Assign ass)
+            else if (node is Assign ass)
             {
                 VisitAssign(ass);
             }
-            else if (rootNode is NoOp nope)
+            else if (node is NoOp nope)
             {
                 VisitNoOp(nope);
             }
-            else if (rootNode is NumberLeaf)
+            else if (node is NumberLeaf)
             {
 
             }
-            else if (rootNode is Variable variable)
+            else if (node is Variable variable)
             {
                 VisitVariable(variable);
             }
-            else if (rootNode is BinaryOperator)
+            else if (node is BinaryOperator)
             {
                 
             }
-            else if (rootNode is UnaryOperator)
+            else if (node is UnaryOperator)
             {
 
             }
+            else if(node is VarDeclaration declaration)
+            {
+                VisitDeclaration(declaration);
+            }
+            else if(node is ProcedureDeclaration procedureDeclaration)
+            {
+                VisitProcedureDec(procedureDeclaration);
+            }
             else
             {
-                Error(rootNode);
+                throw new InvalidOperationException($"did not recognize node {node}");
             }
+        }
+
+        private void VisitProcedureDec(ProcedureDeclaration procedureDeclaration)
+        {
+            
         }
 
         private void VisitNoOp(NoOp nope)
@@ -87,7 +97,7 @@ namespace Minesweeper.Test.Symbols
         {
             foreach (var programBlockDeclaration in programBlock.Declarations)
             {
-                VisitDeclaration(programBlockDeclaration);
+                VisitNode(programBlockDeclaration);
             }
             VisitCompoundStatement(programBlock.CompoundStatement);
         }

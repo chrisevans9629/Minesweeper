@@ -58,6 +58,11 @@ namespace Minesweeper.Test
             {
                 return VisitProgram(program);
             }
+
+            if (node is VarDeclaration declaration)
+            {
+                return VisitVarDeclaration(declaration);
+            }
             return base.VisitNode(node);
         }
 
@@ -75,7 +80,7 @@ namespace Minesweeper.Test
         {
             foreach (var blockDeclaration in block.Declarations)
             {
-                VisitVarDeclaration(blockDeclaration);
+                VisitNode(blockDeclaration);
             }
 
             return VisitNode(block.CompoundStatement);

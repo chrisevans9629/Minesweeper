@@ -38,9 +38,9 @@ namespace Minesweeper.Test
             return node;
         }
 
-        private IList<VarDeclaration> Declarations()
+        private IList<Node> Declarations()
         {
-            var dec = new List<VarDeclaration>();
+            var dec = new List<Node>();
             if (this._tokens.Current.Token.Name == Pascal.Var)
             {
                 Eat(Pascal.Var);
@@ -53,6 +53,17 @@ namespace Minesweeper.Test
                     }
                     Eat(Pascal.Semi);
                 }
+            }
+
+            while (Current.Token.Name == Pascal.Procedure)
+            {
+                Eat(Pascal.Procedure);
+                var procedureId = Current.Value;
+                Eat(Pascal.Id);
+                Eat(Pascal.Semi);
+                var block = Block();
+                Eat(Pascal.Semi);
+                dec.Add(new ProcedureDeclaration(procedureId, block));
             }
 
             return dec;
@@ -196,6 +207,23 @@ namespace Minesweeper.Test
             _tokens = tokens.GetEnumerator();
             Eat(null);
             return Parse();
+        }
+    }
+
+    public class ProcedureDeclaration : Node
+    {
+        public string ProcedureId { get; }
+        public Block Block { get; }
+
+        public ProcedureDeclaration(string procedureId, Block block)
+        {
+            ProcedureId = procedureId;
+            Block = block;
+        }
+
+        public override string Display()
+        {
+            return $"Procedure({ProcedureId},{Block.Display()}";
         }
     }
 }

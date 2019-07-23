@@ -54,5 +54,16 @@ namespace Minesweeper.Test.Tests
             memory.Should().BeOfType<GlobalMemory>().Which.Should().ContainKey("a");
         }
 
+        [Test]
+        public void PascalProgram_WithProcedures_ShouldPass()
+        {
+            var input = PascalTestInputs.PascalProgramWithProcedures;
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+            var table = new SymbolTableBuilder().CreateTable(node);
+        }
+
+
+
     }
 }
