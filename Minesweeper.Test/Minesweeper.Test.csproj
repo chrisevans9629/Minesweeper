@@ -78,6 +78,7 @@
     <Compile Include="Tests\MathSimpleTreeTests.cs" />
     <Compile Include="Interpreter\Ast\SuperBasicMathAst.cs" />
     <Compile Include="Interpreter\SuperBasicMathInterpreter.cs" />
+    <Compile Include="Tests\PascalTestInputs.cs" />
     <Compile Include="Tests\SuperBasicMathInterpreter_Tests.cs" />
     <Compile Include="Interpreter\SuperBasicMathLispInterpreter.cs" />
     <Compile Include="Interpreter\SuperBasicRpnMathInterpreter.cs" />

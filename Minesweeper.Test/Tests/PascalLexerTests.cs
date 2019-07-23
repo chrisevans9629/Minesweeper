@@ -54,5 +54,14 @@ namespace Minesweeper.Test
 
             result.Should().HaveCount(36);
         }
+
+        [TestCase(PascalTestInputs.PascalProgramWithProcedures)]
+        public void PascalLexer_ShouldContainProcedureToken(string input)
+        {
+            var tokens = lexer.Tokenize(input);
+
+            tokens.Should().Contain(p => p.Token.Name == Pascal.Procedure);
+        }
+
     }
 }

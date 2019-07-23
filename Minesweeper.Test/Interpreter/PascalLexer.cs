@@ -45,7 +45,8 @@ namespace Minesweeper.Test
                 Pascal.Var,
                 Pascal.Int,
                 Pascal.Real,
-                Pascal.Program
+                Pascal.Program,
+                Pascal.Procedure
             };
             while (char.IsLetterOrDigit(Current) || Current == '_')
             {
