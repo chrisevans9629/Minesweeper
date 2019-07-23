@@ -81,6 +81,18 @@ namespace Minesweeper.Test
         }
 
 
+        [Test]
+        public void FullProgramTestTreeOutput()
+        {
+            var input = "PROGRAM Part10AST;\r\nVAR\r\n   a, b : INTEGER;\r\n   y    : REAL;\r\n\r\nBEGIN {Part10AST}\r\n   a := 2;\r\n   b := 10 * a + 10 * a DIV 4;\r\n   y := 20 / 7 + 3.14;\r\nEND.  {Part10AST}";
+            var lexer = new PascalLexer(input);
+            var ast = new PascalAst(lexer.Tokenize());
+
+            Console.WriteLine(ast.Evaluate().Display());
+            //var interpreter = new PascalInterpreter();
+            //interpreter.Evaluate(ast.Evaluate());
+        }
+
 
         [Test]
         public void RealConstTest()
