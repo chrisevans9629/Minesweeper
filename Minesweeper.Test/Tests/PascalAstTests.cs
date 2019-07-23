@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Minesweeper.Test
+namespace Minesweeper.Test.Tests
 {
     [TestFixture]
     public class PascalAstTests

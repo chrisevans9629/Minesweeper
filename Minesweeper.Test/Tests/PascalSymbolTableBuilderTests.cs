@@ -3,7 +3,7 @@ using FluentAssertions;
 using Minesweeper.Test.Symbols;
 using NUnit.Framework;
 
-namespace Minesweeper.Test
+namespace Minesweeper.Test.Tests
 {
     [TestFixture]
     public class PascalSymbolTableBuilderTests

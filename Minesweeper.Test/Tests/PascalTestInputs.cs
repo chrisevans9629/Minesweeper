@@ -1,4 +1,4 @@
-﻿namespace Minesweeper.Test
+﻿namespace Minesweeper.Test.Tests
 {
     public static class PascalTestInputs
     {
