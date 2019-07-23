@@ -7,9 +7,17 @@ namespace Minesweeper.Test
     public class PascalAst : AbstractSyntaxTreeBase
     {
         private TokenItem Current => _tokens.Current;
+
+        private IList<TokenItem> items;
         public PascalAst(IList<TokenItem> tokens)
         {
+            items = tokens;
             this._tokens = tokens.GetEnumerator();
+        }
+
+        public PascalAst()
+        {
+            
         }
 
         CompoundStatement CompoundStatement()
@@ -180,6 +188,12 @@ namespace Minesweeper.Test
         }
         public override Node Evaluate()
         {
+            return Evaluate(items);
+        }
+
+        public Node Evaluate(IList<TokenItem> tokens)
+        {
+            _tokens = tokens.GetEnumerator();
             Eat(null);
             return Parse();
         }

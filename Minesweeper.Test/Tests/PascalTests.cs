@@ -39,24 +39,41 @@ namespace Minesweeper.Test
 
 
     [TestFixture]
-    public class PascalTests
+    public class PascalAstTests
     {
-
-
+        private PascalLexer lexer;
+        private PascalAst ast;
+        [SetUp]
+        public void Setup()
+        {
+            lexer = new PascalLexer();
+            ast = new PascalAst();
+        }
 
         [Test]
         public void PascalAst_ShouldStartWithProgram()
         {
             var input =
                 "Program test; BEGIN\r\n    BEGIN\r\n        number := 2;\r\n        a := number;\r\n        b := 10 * a + 10 * number / 4;\r\n        c := a - - b\r\n    END;\r\n    x := 11;\r\nEND.";
-            var lexer = new PascalLexer(input);
-            var tokens = lexer.Tokenize();
-
-            var ast = new PascalAst(tokens);
-
-            var node = ast.Evaluate();
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
             var t = node.Display();
             node.Should().BeOfType<PascalProgram>();
+        }
+
+    }
+
+    public class PascalInterpreterTests
+    {
+        private PascalInterpreter interpreter;
+        private PascalLexer lexer;
+        private PascalAst ast;
+        [SetUp]
+        public void Setup()
+        {
+            interpreter = new PascalInterpreter();
+            lexer = new PascalLexer();
+            ast = new PascalAst();
         }
 
         [TestCase("PRogram test; BEGIN\r\n\r\n    BEGIN\r\n        number := 2;\r\n        a := NumBer;\r\n        B := 10 * a + 10 * NUMBER / 4;\r\n        c := a - - b\r\n    end;\r\n\r\n    x := 11;\r\nEND.")]
@@ -64,15 +81,12 @@ namespace Minesweeper.Test
         [TestCase("Program test; BEGIN\r\n    BEGIN\r\n    {THIS IS A COMMENT}number := 2;\r\n        a := number;\r\n        b := 10 * a + 10 * number / 4;\r\n        c := a - - b\r\n    END;\r\n    x := 11;\r\nEND.")]
         public void PascalInterpreter_ShouldExcludeCommentsAndCasing(string input)
         {
-            var lexer = new PascalLexer(input);
-            var tokens = lexer.Tokenize();
+            var tokens = lexer.Tokenize(input);
 
-            var ast = new PascalAst(tokens);
 
-            var node = ast.Evaluate();
+            var node = ast.Evaluate(tokens);
 
-            var interpreter = new PascalInterpreter();
-            interpreter.Evaluate(node);
+            interpreter.Interpret(node);
 
             interpreter.GetVar("a").Should().Be(2);
             interpreter.GetVar("x").Should().Be(11);
@@ -86,11 +100,20 @@ namespace Minesweeper.Test
         {
             var input =
                 "PROGRAM Part10;\r\nVAR\r\n   number     : INTEGER;\r\n   a, b, c, x : INTEGER;\r\n   y          : REAL;\r\n\r\nBEGIN {Part10}\r\n   BEGIN\r\n      number := 2;\r\n      a := number;\r\n      b := 10 * a + 10 * number DIV 4;\r\n      c := a - - b\r\n   END;\r\n   x := 11;\r\n   y := 20 / 7 + 3.14;\r\n   { writeln('a = ', a); }\r\n   { writeln('b = ', b); }\r\n   { writeln('c = ', c); }\r\n   { writeln('number = ', number); }\r\n   { writeln('x = ', x); }\r\n   { writeln('y = ', y); }\r\nEND.  {Part10}";
-            var lexer = new PascalLexer(input);
-            var ast = new PascalAst(lexer.Tokenize());
-            var interpreter = new PascalInterpreter();
-            interpreter.Evaluate(ast.Evaluate());
+            var node = ast.Evaluate(lexer.Tokenize(input));
+            interpreter.Interpret(node);
         }
+    }
+
+    [TestFixture]
+    public class PascalTests
+    {
+
+
+
+      
+
+        
 
         [Test]
         public void FullProgramTestTreeOutput()
@@ -126,7 +149,7 @@ namespace Minesweeper.Test
             var node = ast.Evaluate();
 
             var interpreter = new PascalInterpreter();
-            interpreter.Evaluate(node);
+            interpreter.Interpret(node);
 
             interpreter.GetVar("num").Should().BeOfType<double>().Which.Should().BeInRange(result - 0.5, result);
         }
@@ -143,7 +166,7 @@ namespace Minesweeper.Test
             var node = ast.Evaluate();
 
             var interpreter = new PascalInterpreter();
-            interpreter.Evaluate(node);
+            interpreter.Interpret(node);
         }
 
         
@@ -177,7 +200,7 @@ namespace Minesweeper.Test
             var node = ast.Evaluate();
 
             var interpreter = new PascalInterpreter();
-            interpreter.Evaluate(node);
+            interpreter.Interpret(node);
 
             interpreter.GetVar("_num").Should().Be(1);
         }

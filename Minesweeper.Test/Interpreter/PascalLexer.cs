@@ -74,7 +74,7 @@ namespace Minesweeper.Test
 
         public IList<TokenItem> Tokenize(string str)
         {
-            _str = str;
+            _str = str.ToLower();
             index = 0;
             //rawr
             var items = new List<TokenItem>();

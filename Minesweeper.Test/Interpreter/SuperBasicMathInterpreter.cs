@@ -4,6 +4,7 @@ namespace Minesweeper.Test
 {
     public class SuperBasicMathInterpreter
     {
+
         object VisitNum(NumberLeaf num)
         {
             return num.Value;
@@ -21,7 +22,7 @@ namespace Minesweeper.Test
             throw new Exception($"did not recognize node {node}");
         }
 
-        public virtual object VisitNode(Node node)
+        protected virtual object VisitNode(Node node)
         {
             if (node is NumberLeaf leaf)
             {
@@ -44,7 +45,7 @@ namespace Minesweeper.Test
 
         }
 
-        public object Evaluate(Node node)
+        public virtual object Interpret(Node node)
         {
             return VisitNode(node);
         }

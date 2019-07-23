@@ -10,11 +10,18 @@ namespace Minesweeper.Test
 
     public class PascalInterpreter : SuperBasicMathInterpreter
     {
+        public override object Interpret(Node node)
+        {
+            _scope = new GlobalMemory();
+            var result = base.Interpret(node);
+            return _scope;
+        }
+
         public object GetVar(string key)
         {
-            return scope[key.ToLower()];
+            return _scope[key.ToLower()];
         }
-        private GlobalMemory scope = new GlobalMemory();
+        private GlobalMemory _scope = new GlobalMemory();
         object VisitCompound(CompoundStatement compound)
         {
             foreach (var compoundNode in compound.Nodes)
@@ -25,7 +32,7 @@ namespace Minesweeper.Test
             return compound;
         }
 
-        public override object VisitNode(Node node)
+        protected override object VisitNode(Node node)
         {
             if (node is CompoundStatement compound)
             {
@@ -61,7 +68,7 @@ namespace Minesweeper.Test
 
         object VisitVarDeclaration(VarDeclaration varDeclaration)
         {
-            this.scope.Add(varDeclaration.VarNode.VariableName, null);
+            this._scope.Add(varDeclaration.VarNode.VariableName, null);
             return null;
         }
         private object VisitBlock(Block block)
@@ -78,13 +85,13 @@ namespace Minesweeper.Test
         {
             var name = node.Left.VariableName;
             var value = VisitNode(node.Right);
-            if (scope.ContainsKey(name))
+            if (_scope.ContainsKey(name))
             {
-                scope[name] = value;
+                _scope[name] = value;
             }
             else
             {
-                scope.Add(name, value);
+                _scope.Add(name, value);
             }
 
             return value;
@@ -93,7 +100,7 @@ namespace Minesweeper.Test
         object VisitVariable(Variable var)
         {
             var name = var.VariableName;
-            var value = scope[name];
+            var value = _scope[name];
             return value;
         }
 

@@ -26,7 +26,7 @@ namespace Minesweeper.Test
 
             var inter = new SuperBasicMathInterpreter();
 
-            var r = inter.Evaluate(t);
+            var r = inter.Interpret(t);
             r.Should().Be(output);
         }
 

@@ -42,7 +42,8 @@ namespace Minesweeper.Test
             var lexer = new PascalLexer(input).Tokenize();
             var ast = new PascalAst(lexer).Evaluate();
             var table = new SymbolTableBuilder().CreateTable(ast);
-            var memory = new PascalInterpreter().VisitNode(ast);
+            var memory = new PascalInterpreter().Interpret(ast);
+            memory.Should().BeOfType<GlobalMemory>().Which.Should().ContainKey("a");
         }
 
     }
