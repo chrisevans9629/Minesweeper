@@ -129,9 +129,13 @@ namespace Minesweeper.Test
         {
             Node node = null;
             if (_tokens.Current.Token.Name == Pascal.Begin)
+            {
                 node = CompoundStatement();
+            }
             else if (_tokens.Current.Token.Name == Pascal.Id)
+            {
                 node = AssignmentStatement();
+            }
             else node = Empty();
             return node;
         }

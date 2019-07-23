@@ -30,7 +30,7 @@ namespace Minesweeper.Test
         [Test]
         public void Ctor_Passes()
         {
-       
+            Assert.Pass();
         }
     }
 }

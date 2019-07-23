@@ -5,10 +5,7 @@ namespace Minesweeper.Test
 {
     public class MathOperatorCollection
     {
-        public void Sort()
-        {
-
-        }
+      
 
         public IMathValue ParseChar(char value, NumberOperator lastOp, NumberValue previousValue)
         {
