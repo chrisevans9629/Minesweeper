@@ -90,6 +90,7 @@
     <Compile Include="Interpreter\RegexLexer.cs" />
     <Compile Include="Interpreter\LexerTests.cs" />
     <Compile Include="Interpreter\Symbols\Symbol.cs" />
+    <Compile Include="Interpreter\Symbols\SymbolTable.cs" />
     <Compile Include="Minesweeper\MainPageViewModelTests.cs" />
     <Compile Include="Interpreter\MathOperatorCollection.cs" />
     <Compile Include="Interpreter\MathParser\MathParser.cs" />
