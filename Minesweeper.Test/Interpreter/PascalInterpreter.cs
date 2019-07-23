@@ -21,11 +21,30 @@ namespace Minesweeper.Test
 
         public override object VisitNode(Node node)
         {
-            if (node is Compound compound) return VisitCompound(compound);
-            if (node is Assign assign) return VisitAssign(assign);
-            if (node is Variable var) return VisitVariable(var);
-            if (node is NoOp no) return VisitNoOp(no);
-            if (node is PascalProgram program) return VisitProgram(program);
+            if (node is Compound compound)
+            {
+                return VisitCompound(compound);
+            }
+
+            if (node is Assign assign)
+            {
+                return VisitAssign(assign);
+            }
+
+            if (node is Variable var)
+            {
+                return VisitVariable(var);
+            }
+
+            if (node is NoOp no)
+            {
+                return VisitNoOp(no);
+            }
+
+            if (node is PascalProgram program)
+            {
+                return VisitProgram(program);
+            }
             return base.VisitNode(node);
         }
 

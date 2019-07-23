@@ -22,7 +22,7 @@ namespace Minesweeper.Test
             return root;
         }
 
-        Block Block()
+        private Block Block()
         {
             var dec = Declarations();
             var comStat = CompoundStatement();
@@ -52,7 +52,7 @@ namespace Minesweeper.Test
 
         private IList<VarDeclaration> VariableDeclaration()
         {
-            var nodes = new List<Variable>(){Variable()};
+            var nodes = new List<Variable>{Variable()};
             while (_tokens.Current.Token.Name == Pascal.Comma)
             {
                 Eat(Pascal.Comma);
