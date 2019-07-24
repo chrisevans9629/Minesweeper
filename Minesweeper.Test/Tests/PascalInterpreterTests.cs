@@ -75,5 +75,14 @@ namespace Minesweeper.Test.Tests
             var node = ast.Evaluate(tokens);
             interpreter.Interpret(node);
         }
+
+        [Test]
+        public void PascalProgram_WithProcedures_ShouldPass()
+        {
+            var input = PascalTestInputs.PascalProgramWithProcedures;
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+            var memory = interpreter.Interpret(node);
+        }
     }
 }

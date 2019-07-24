@@ -59,11 +59,20 @@ namespace Minesweeper.Test
                 return VisitProgram(program);
             }
 
+            if (node is ProcedureDeclaration procedure)
+            {
+                return VisitProcedureDeclaration(procedure);
+            }
             if (node is VarDeclaration declaration)
             {
                 return VisitVarDeclaration(declaration);
             }
             return base.VisitNode(node);
+        }
+
+        private object VisitProcedureDeclaration(ProcedureDeclaration procedure)
+        {
+            return null;
         }
 
         private object VisitProgram(PascalProgram program)
