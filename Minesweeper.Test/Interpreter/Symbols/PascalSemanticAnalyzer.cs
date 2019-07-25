@@ -8,9 +8,9 @@ namespace Minesweeper.Test.Symbols
     {
         private readonly ILogger _logger;
         private ScopedSymbolTable _currentScope;
-        private void VisitProgram(PascalProgram program)
+        private void VisitProgram(PascalProgramNode programNode)
         {
-            var levelZero = new ScopedSymbolTable(program.ProgramName, 0, null, _logger);
+            var levelZero = new ScopedSymbolTable(programNode.ProgramName, 0, null, _logger);
             CurrentScope = levelZero;
 
             levelZero.Define(new BuiltInTypeSymbol(Pascal.Int));
@@ -18,7 +18,7 @@ namespace Minesweeper.Test.Symbols
 
             var global = new ScopedSymbolTable("Global", 1, levelZero, _logger);
             CurrentScope = global;
-            VisitBlock(program.Block);
+            VisitBlock(programNode.Block);
             CurrentScope = global;
         }
         public ScopedSymbolTable CurrentScope
@@ -52,7 +52,7 @@ namespace Minesweeper.Test.Symbols
 
         private void VisitNode(Node node)
         {
-            if (node is PascalProgram program)
+            if (node is PascalProgramNode program)
             {
                 VisitProgram(program);
             }

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Minesweeper.Test.Tests;
 using NUnit.Framework.Constraints;
 
 namespace Minesweeper.Test
 {
     public class SuperBasicMathAst : AbstractSyntaxTreeBase
     {
-        public SuperBasicMathAst(IList<TokenItem> data)
+        public SuperBasicMathAst(IList<TokenItem> data, ILogger logger = null) : base(logger)
         {
            
             _tokens = data.GetEnumerator();

@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Minesweeper.Test.Tests;
 
 namespace Minesweeper.Test
 {
     public class PascalLexer
     {
+        private readonly ILogger _logger;
         private string _str;
         private int index = 0;
 
 
-        public PascalLexer()
+        public PascalLexer(ILogger logger = null)
         {
-            
+            _logger = logger ?? new Logger();
         }
-        public PascalLexer(string str)
+        public PascalLexer(string str, ILogger logger = null) : this(logger)
         {
             _str = str.ToLower();
         }
@@ -76,6 +78,7 @@ namespace Minesweeper.Test
         public IList<TokenItem> Tokenize(string str)
         {
             _str = str.ToLower();
+            _logger.Log($"Tokenizing String:\n'{_str}'");
             index = 0;
             //rawr
             var items = new List<TokenItem>();

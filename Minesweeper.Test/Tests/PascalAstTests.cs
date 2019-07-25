@@ -32,12 +32,13 @@ namespace Minesweeper.Test.Tests
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
             var t = node.Display();
-            node.Should().BeOfType<PascalProgram>();
+            node.Should().BeOfType<PascalProgramNode>();
         }
 
         [TestCase(PascalTestInputs.PascalProgramWithProcedures)]
         [TestCase(PascalTestInputs.PascalProgramWithProceduresWithParameters)]
         [TestCase(PascalTestInputs.PascalProgramWithProceduresWithMultipleParameters)]
+        [TestCase(PascalTestInputs.PascalProgramWithMultipleVarDeclarations)]
         public void PascalProgram_WithProcedures_ShouldPass(string input)
         {
             var tokens = lexer.Tokenize(input);

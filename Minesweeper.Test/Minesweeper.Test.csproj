@@ -73,7 +73,7 @@
     <Compile Include="Interpreter\Ast\PascalAst.cs" />
     <Compile Include="Interpreter\PascalInterpreter.cs" />
     <Compile Include="Interpreter\PascalLexer.cs" />
-    <Compile Include="Interpreter\PascalProgram.cs" />
+    <Compile Include="Interpreter\PascalProgramNode.cs" />
     <Compile Include="Tests\PascalAstTests.cs" />
     <Compile Include="Tests\PascalInterpreterTests.cs" />
     <Compile Include="Tests\PascalLexerTests.cs" />

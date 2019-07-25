@@ -1,11 +1,11 @@
 ﻿namespace Minesweeper.Test
 {
-    public class PascalProgram : Node
+    public class PascalProgramNode : Node
     {
         public string ProgramName { get; set; }
         public Block Block { get; set; }
         public TokenItem TokenItem { get; set; }
-        public PascalProgram(TokenItem name, Block block)
+        public PascalProgramNode(TokenItem name, Block block)
         {
             ProgramName = name.Value;
             Block = block;

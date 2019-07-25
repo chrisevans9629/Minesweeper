@@ -60,7 +60,7 @@ namespace Minesweeper.Test
                 return VisitNoOp(no);
             }
 
-            if (node is PascalProgram program)
+            if (node is PascalProgramNode program)
             {
                 return VisitProgram(program);
             }
@@ -81,9 +81,9 @@ namespace Minesweeper.Test
             return null;
         }
 
-        private object VisitProgram(PascalProgram program)
+        private object VisitProgram(PascalProgramNode programNode)
         {
-            return VisitBlock(program.Block);
+            return VisitBlock(programNode.Block);
         }
 
         object VisitVarDeclaration(VarDeclaration varDeclaration)

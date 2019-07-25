@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using Minesweeper.Test.Tests;
 
 namespace Minesweeper.Test
 {
     public abstract class AbstractSyntaxTreeBase : IDisposable
     {
+        protected readonly ILogger Logger;
+
+        public AbstractSyntaxTreeBase(ILogger logger)
+        {
+            Logger = logger ?? new Logger();
+        }
         protected Node Expression()
         {
             var result = MultiDiv();
@@ -114,14 +121,23 @@ namespace Minesweeper.Test
         {
             if (_tokens.Current?.Token.Name == name)
             {
+                Logger.Log($"Ate: {name}");
                 _tokens.MoveNext();
             }
             else
             {
-                throw new Exception($"expected {name} but was {_tokens.Current?.Token.Name}");
+                throw new GrammerException($"expected {name} but was {_tokens.Current?.Token.Name}");
             }
         }
 
         public abstract Node Evaluate();
+    }
+
+    public class GrammerException : Exception
+    {
+        public GrammerException(string message) : base(message)
+        {
+            
+        }
     }
 }

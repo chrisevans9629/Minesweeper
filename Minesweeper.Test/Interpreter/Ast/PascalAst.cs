@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Minesweeper.Test.Tests;
 
 namespace Minesweeper.Test
 {
@@ -9,13 +10,13 @@ namespace Minesweeper.Test
         private TokenItem Current => _tokens.Current;
 
         private IList<TokenItem> items;
-        public PascalAst(IList<TokenItem> tokens)
+        public PascalAst(IList<TokenItem> tokens, ILogger logger = null) : base(logger)
         {
             items = tokens;
             this._tokens = tokens.GetEnumerator();
         }
 
-        public PascalAst()
+        public PascalAst(ILogger logger = null) : base(logger)
         {
 
         }
@@ -213,7 +214,7 @@ namespace Minesweeper.Test
             Eat(Pascal.Semi);
             var node = Block();
             Eat(Pascal.Dot);
-            var programNode = new PascalProgram(name, node);
+            var programNode = new PascalProgramNode(name, node);
             return programNode;
         }
         public override Node Evaluate()
