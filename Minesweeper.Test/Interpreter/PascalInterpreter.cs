@@ -91,7 +91,7 @@ namespace Minesweeper.Test
             this._scope.Add(varDeclaration.VarNode.VariableName, null);
             return null;
         }
-        private object VisitBlock(Block block)
+        private object VisitBlock(BlockNode block)
         {
             foreach (var blockDeclaration in block.Declarations)
             {

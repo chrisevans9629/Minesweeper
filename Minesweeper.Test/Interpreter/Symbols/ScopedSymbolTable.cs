@@ -45,6 +45,17 @@ namespace Minesweeper.Test.Symbols
             return str;
         }
 
+        public int LookupSymbolScope(string name)
+        {
+            _logger.Log($"Lookup Scope: {name}");
+            var current = symbols.FirstOrDefault(p => p.Name.ToLower() == name.ToLower());
+            if (current == null && ParentScope != null)
+            {
+                return ParentScope.LookupSymbolScope(name);
+            }
+            return ScopeLevel;
+        }
+
         public Symbol LookupSymbol(string name, bool searchParent)
         {
             _logger.Log($"Lookup: {name}");

@@ -31,11 +31,11 @@ namespace Minesweeper.Test
             return root;
         }
 
-        private Block Block()
+        private BlockNode Block()
         {
             var dec = Declarations();
             var comStat = CompoundStatement();
-            var node = new Block(dec, comStat);
+            var node = new BlockNode(dec, comStat);
             return node;
         }
 

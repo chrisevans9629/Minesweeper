@@ -3,9 +3,9 @@
     public class PascalProgramNode : Node
     {
         public string ProgramName { get; set; }
-        public Block Block { get; set; }
+        public BlockNode Block { get; set; }
         public TokenItem TokenItem { get; set; }
-        public PascalProgramNode(TokenItem name, Block block)
+        public PascalProgramNode(TokenItem name, BlockNode block)
         {
             ProgramName = name.Value;
             Block = block;

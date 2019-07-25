@@ -59,7 +59,7 @@
     <Compile Include="Interpreter\GoUntil.cs" />
     <Compile Include="Interpreter\Assign.cs" />
     <Compile Include="Interpreter\BinaryOperator.cs" />
-    <Compile Include="Interpreter\Ast\Block.cs" />
+    <Compile Include="Interpreter\Ast\BlockNode.cs" />
     <Compile Include="Interpreter\Ast\CompoundStatement.cs" />
     <Compile Include="Interpreter\Grammer.cs" />
     <Compile Include="Interpreter\Ast\IAbstractSyntaxTree.cs" />
@@ -81,6 +81,7 @@
     <Compile Include="Tests\MathSimpleTreeTests.cs" />
     <Compile Include="Interpreter\Ast\SuperBasicMathAst.cs" />
     <Compile Include="Interpreter\SuperBasicMathInterpreter.cs" />
+    <Compile Include="Tests\PascalSourceToSourceCompiler.cs" />
     <Compile Include="Tests\PascalSourceToSourceTests.cs" />
     <Compile Include="Tests\PascalTestInputs.cs" />
     <Compile Include="Tests\SuperBasicMathInterpreter_Tests.cs" />

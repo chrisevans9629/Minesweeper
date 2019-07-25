@@ -143,7 +143,7 @@ namespace Minesweeper.Test.Symbols
 
      
 
-        private void VisitBlock(Block programBlock)
+        private void VisitBlock(BlockNode programBlock)
         {
             foreach (var programBlockDeclaration in programBlock.Declarations)
             {

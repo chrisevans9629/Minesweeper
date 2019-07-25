@@ -5,10 +5,10 @@ namespace Minesweeper.Test
     public class ProcedureDeclaration : Node
     {
         public string ProcedureId { get; }
-        public Block Block { get; }
+        public BlockNode Block { get; }
         public IList<ProcedureParameter> Parameters { get; }
 
-        public ProcedureDeclaration(string procedureId, Block block, IList<ProcedureParameter> parameters)
+        public ProcedureDeclaration(string procedureId, BlockNode block, IList<ProcedureParameter> parameters)
         {
             ProcedureId = procedureId;
             Block = block;
