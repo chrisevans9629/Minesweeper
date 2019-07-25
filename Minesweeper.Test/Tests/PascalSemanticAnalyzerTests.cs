@@ -145,10 +145,10 @@ namespace Minesweeper.Test.Tests
             var memory = table.CheckSyntax(node);
             
             
-            logger.Calls.Should().Contain("Opened Scope globaltest");
+            logger.Calls.Should().Contain("Opened Scope globalTest");
             logger.Calls.Should().Contain("Opened Scope test");
             logger.Calls.Should().Contain("Closed Scope test");
-            logger.Calls.Should().Contain("Closed Scope globaltest");
+            logger.Calls.Should().Contain("Closed Scope globalTest");
         }
         [TestCase(PascalTestInputs.PascalProgramWithProcedures)]
         [TestCase(PascalTestInputs.PascalProgramWithProceduresWithMultipleParameters)]

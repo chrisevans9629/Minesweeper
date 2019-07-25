@@ -18,7 +18,7 @@ namespace Minesweeper.Test
         }
         public PascalLexer(string str, ILogger logger = null) : this(logger)
         {
-            _str = str.ToLower();
+            _str = str;
         }
 
 
@@ -61,7 +61,7 @@ namespace Minesweeper.Test
             var token = CreateToken(Pascal.Id, result);
 
 
-            var reserved = reservations.FirstOrDefault(p => result.ToUpper() == p);
+            var reserved = reservations.FirstOrDefault(p => result.ToUpper() == p.ToUpper());
             if (reserved != null)
             {
                 token.Token.Name = reserved;
@@ -77,7 +77,7 @@ namespace Minesweeper.Test
 
         public IList<TokenItem> Tokenize(string str)
         {
-            _str = str.ToLower();
+            _str = str;
             _logger.Log($"Tokenizing String:\n'{_str}'");
             index = 0;
             //rawr

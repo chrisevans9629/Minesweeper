@@ -35,7 +35,7 @@ namespace Minesweeper.Test.Tests
 
         private string VisitProgram(PascalProgramNode program)
         {
-            return $"program {program.ProgramName}0";
+            return $"program {program.ProgramName}0;\n" + VisitNode(program.Block);
         }
     }
 

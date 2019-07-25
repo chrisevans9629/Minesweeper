@@ -42,7 +42,7 @@ namespace Minesweeper.Test
         private IList<Node> Declarations()
         {
             var dec = new List<Node>();
-            if (this._tokens.Current.Token.Name == Pascal.Var)
+            while (this._tokens.Current.Token.Name == Pascal.Var)
             {
                 Eat(Pascal.Var);
                 while (_tokens.Current.Token.Name == Pascal.Id)

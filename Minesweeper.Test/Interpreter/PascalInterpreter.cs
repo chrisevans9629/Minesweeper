@@ -25,7 +25,7 @@ namespace Minesweeper.Test
 
         public object GetVar(string key)
         {
-            return _scope[key.ToLower()];
+            return _scope[key.ToUpper()];
         }
         private GlobalMemory _scope = new GlobalMemory();
         object VisitCompound(CompoundStatement compound)
@@ -103,7 +103,7 @@ namespace Minesweeper.Test
 
         object VisitAssign(Assign node)
         {
-            var name = node.Left.VariableName;
+            var name = node.Left.VariableName.ToUpper();
             var value = VisitNode(node.Right);
             if (_scope.ContainsKey(name))
             {
@@ -119,7 +119,7 @@ namespace Minesweeper.Test
 
         object VisitVariable(Variable var)
         {
-            var name = var.VariableName;
+            var name = var.VariableName.ToUpper();
             var value = _scope[name];
             return value;
         }

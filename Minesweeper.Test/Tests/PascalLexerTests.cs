@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Minesweeper.Test.Tests
@@ -53,6 +54,17 @@ namespace Minesweeper.Test.Tests
             var result = lexer.Tokenize(input);
 
             result.Should().HaveCount(36);
+        }
+
+
+        [Test]
+        public void CasingTest()
+        {
+            var input = "program TEst; begin END.";
+
+            var tokens = lexer.Tokenize(input);
+
+            tokens.Select(p => p.Value).Should().ContainInOrder("program", "TEst", ";", "begin", "END", ".");
         }
 
         [TestCase(PascalTestInputs.PascalProgramWithProcedures)]
