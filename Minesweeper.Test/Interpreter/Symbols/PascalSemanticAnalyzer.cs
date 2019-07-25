@@ -90,16 +90,22 @@ namespace Minesweeper.Test.Symbols
         {
             var previous = CurrentScope;
             var name = procedureDeclaration.ProcedureId;
-            var scope = new ScopedSymbolTable(name, CurrentScope.ScopeLevel + 1, _logger);
+            var scope = new ScopedSymbolTable(name, CurrentScope.ScopeLevel + 1, previous, _logger);
             CurrentScope = scope;
-            var param = procedureDeclaration.Parameters.Select(p => p.Declaration);
-            foreach (var varDeclaration in param)
+            var param = procedureDeclaration.Parameters;
+            foreach (var varDeclaration in param.Select(p => p.Declaration))
             {
-                VisitVarDeclaration(varDeclaration);
+                //VisitVarDeclaration(varDeclaration);
+                var typeName = varDeclaration.TypeNode.TypeValue;
+                var varName = varDeclaration.VarNode.VariableName;
+                var symbol = this.CurrentScope.LookupSymbol(typeName, true);
+                var varSymbol = new VariableSymbol(varName, symbol);
+                CurrentScope.Define(varSymbol);
             }
             VisitBlock(procedureDeclaration.Block);
             CurrentScope = previous;
-
+            var procedure = new ProcedureSymbol(name, param);
+            CurrentScope.Define(procedure);
         }
 
         private void VisitNoOp(NoOp nope)
@@ -116,7 +122,7 @@ namespace Minesweeper.Test.Symbols
         private void VisitVariable(Variable assLeft)
         {
             var varName = assLeft.VariableName;
-            var symbol = CurrentScope.LookupSymbol(varName);
+            var symbol = CurrentScope.LookupSymbol(varName, true);
             if (symbol == null)
             {
                 throw new InvalidOperationException($"Variable '{varName}' was not declared");
@@ -125,7 +131,7 @@ namespace Minesweeper.Test.Symbols
 
         private void VisitProgram(PascalProgram program)
         {
-            var global = new ScopedSymbolTable(program.ProgramName, 1, _logger);
+            var global = new ScopedSymbolTable(program.ProgramName, 1,null, _logger);
             CurrentScope = global;
             VisitBlock(program.Block);
             CurrentScope = global;
@@ -152,13 +158,13 @@ namespace Minesweeper.Test.Symbols
         {
             var typeName = node.TypeNode.TypeValue;
             var varName = node.VarNode.VariableName;
-            var variable = CurrentScope.LookupSymbol(varName);
+            var variable = CurrentScope.LookupSymbol(varName, false);
             if (variable != null)
             {
                 throw new InvalidOperationException($"Variable '{varName}' has already been defined as {variable}");
             }
 
-            var symbol = this.CurrentScope.LookupSymbol(typeName);
+            var symbol = this.CurrentScope.LookupSymbol(typeName, false);
             if (symbol == null)
             {
                 throw new InvalidOperationException($"Could not find type {typeName}");

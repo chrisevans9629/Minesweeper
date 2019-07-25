@@ -13,7 +13,12 @@ namespace Minesweeper.Test.Symbols
 
         public override string ToString()
         {
-            return $"<{GetType()}(name={Name}, parameters={Parameters})>";
+            var str = "";
+            foreach (var procedureParameter in Parameters)
+            {
+                str += procedureParameter.Display() + ", ";
+            }
+            return $"<{GetType()}(name={Name}, parameters={str})>";
         }
     }
 }

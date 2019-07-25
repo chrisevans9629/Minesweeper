@@ -42,7 +42,7 @@ namespace Minesweeper.Test.Tests
             var result = table.CreateTable(ast.Evaluate(lexer.Tokenize(input)));
             result.Should().NotBeNull();
 
-            var symbol = result.LookupSymbol("number");
+            var symbol = result.LookupSymbol("number", true);
 
             symbol.Type.Name.Should().Be(Pascal.Int);
         }
@@ -98,16 +98,25 @@ namespace Minesweeper.Test.Tests
             var node = ast.Evaluate(tokens);
             var memory = table.CreateTable(node);
 
-
-            memory.LookupSymbol("x").Should().NotBeNull();
-            memory.LookupSymbol("a").Should().BeNull();
-            memory.LookupSymbol("b").Should().BeNull();
+            memory.LookupSymbol("test", true).Should().NotBeNull();
+            memory.LookupSymbol("x", true).Should().NotBeNull();
+            memory.LookupSymbol("a", true).Should().BeNull();
+            memory.LookupSymbol("b", true).Should().BeNull();
         }
 
         [Test]
         public void LimitedScopes_ProcedureScope_Should_CallGlobalVariable()
         {
             var input = "program globalTest; var x : integer; procedure test(a : integer;); var b : integer; begin x := 2; end; begin end.";
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+            var memory = table.CreateTable(node);
+        }
+
+        [Test]
+        public void LimitedScopes_Should_BeAbleToOverrideGlobalValue()
+        {
+            var input = "program globalTest; var x : integer; procedure test(x : integer;); var b : integer; begin x := 2; end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
             var memory = table.CreateTable(node);
