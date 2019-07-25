@@ -46,6 +46,9 @@
   <ItemGroup>
     <Compile Include="Interpreter\Ast\AbstractSyntaxTree.cs" />
     <Compile Include="Interpreter\Ast\AbstractSyntaxTreeBase.cs" />
+    <Compile Include="Interpreter\Ast\ProcedureDeclaration.cs" />
+    <Compile Include="Interpreter\Ast\ProcedureParameter.cs" />
+    <Compile Include="Interpreter\Symbols\ProcedureSymbol.cs" />
     <Compile Include="Tests\AbstractSyntaxTreeTests.cs" />
     <Compile Include="Evolution\CandiateSolutionPath.cs" />
     <Compile Include="Evolution\CandidateSolution.cs" />
@@ -93,8 +96,8 @@
     <Compile Include="Interpreter\RegexLexer.cs" />
     <Compile Include="Tests\RegexLexerTests.cs" />
     <Compile Include="Interpreter\Symbols\Symbol.cs" />
-    <Compile Include="Interpreter\Symbols\SymbolTable.cs" />
-    <Compile Include="Interpreter\Symbols\SymbolTableBuilder.cs" />
+    <Compile Include="Interpreter\Symbols\ScopedSymbolTable.cs" />
+    <Compile Include="Interpreter\Symbols\PascalSemanticAnalyzer.cs" />
     <Compile Include="Minesweeper\MainPageViewModelTests.cs" />
     <Compile Include="Interpreter\MathOperatorCollection.cs" />
     <Compile Include="Interpreter\MathParser\MathParser.cs" />
@@ -119,7 +122,7 @@
     <Compile Include="Interpreter\Token.cs" />
     <Compile Include="Interpreter\TokenItem.cs" />
     <Compile Include="Interpreter\SingleChar.cs" />
-    <Compile Include="Tests\PascalSymbolTableBuilderTests.cs" />
+    <Compile Include="Tests\PascalSemanticAnalyzerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture">

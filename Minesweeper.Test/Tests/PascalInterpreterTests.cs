@@ -1,8 +1,21 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Minesweeper.Test.Tests
 {
+    public class Logger : ILogger
+    {
+        public virtual void Log(object obj)
+        {
+            Console.WriteLine(obj);
+        }
+    }
+
+    public interface ILogger
+    {
+        void Log(object obj);
+    }
     public class PascalInterpreterTests
     {
         private PascalInterpreter interpreter;
@@ -77,9 +90,26 @@ namespace Minesweeper.Test.Tests
         }
 
         [Test]
-        public void PascalProgram_WithProcedures_ShouldPass()
+        public void LimitedScopes_GlobalMemory_ShouldNotContainVariablesInProcedure()
         {
-            var input = PascalTestInputs.PascalProgramWithProcedures;
+            var input =
+                "program test; var x : integer; procedure test(a : integer;); var b : integer; begin end; begin end.";
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+            var memory = interpreter.Interpret(node);
+
+            var global = memory.Should().BeOfType<GlobalMemory>().Which;
+
+            global.ContainsKey("x").Should().BeTrue();
+            global.ContainsKey("a").Should().BeFalse();
+            global.ContainsKey("b").Should().BeFalse();
+        }
+
+        [TestCase(PascalTestInputs.PascalProgramWithProcedures)]
+        [TestCase(PascalTestInputs.PascalProgramWithProceduresWithParameters)]
+        [TestCase(PascalTestInputs.PascalProgramWithProceduresWithMultipleParameters)]
+        public void PascalProgram_WithProcedures_ShouldPass(string input)
+        {
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
             var memory = interpreter.Interpret(node);

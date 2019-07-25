@@ -1,18 +1,42 @@
 ﻿using System;
+using System.Linq;
+using Minesweeper.Test.Tests;
 
 namespace Minesweeper.Test.Symbols
 {
-    public class SymbolTableBuilder
+    public class PascalSemanticAnalyzer
     {
-        SymbolTable table = new SymbolTable();
+        private readonly ILogger _logger;
+        private ScopedSymbolTable _currentScope;
 
-        public SymbolTable CreateTable(Node rootNode)
+        public ScopedSymbolTable CurrentScope
         {
-            VisitNode(rootNode);
-            return table;
+            get => _currentScope;
+            private set
+            {
+                if (_currentScope != null)
+                {
+                    _logger.Log($"Closed Scope {_currentScope.ScopeName}");
+                }
+                _currentScope = value;
+                if (value != null)
+                {
+                    _logger.Log($"Opened Scope {value.ScopeName}");
+                }
+            }
         }
 
-       
+        public PascalSemanticAnalyzer(ILogger logger = null)
+        {
+            _logger = logger ?? new Logger();
+        }
+        public ScopedSymbolTable CreateTable(Node rootNode)
+        {
+            VisitNode(rootNode);
+            return CurrentScope;
+        }
+
+
 
         private void VisitNode(Node node)
         {
@@ -42,17 +66,17 @@ namespace Minesweeper.Test.Symbols
             }
             else if (node is BinaryOperator)
             {
-                
+
             }
             else if (node is UnaryOperator)
             {
 
             }
-            else if(node is VarDeclaration declaration)
+            else if (node is VarDeclaration declaration)
             {
-                VisitDeclaration(declaration);
+                VisitVarDeclaration(declaration);
             }
-            else if(node is ProcedureDeclaration procedureDeclaration)
+            else if (node is ProcedureDeclaration procedureDeclaration)
             {
                 VisitProcedureDec(procedureDeclaration);
             }
@@ -64,7 +88,18 @@ namespace Minesweeper.Test.Symbols
 
         private void VisitProcedureDec(ProcedureDeclaration procedureDeclaration)
         {
-            
+            var previous = CurrentScope;
+            var name = procedureDeclaration.ProcedureId;
+            var scope = new ScopedSymbolTable(name, CurrentScope.ScopeLevel + 1, _logger);
+            CurrentScope = scope;
+            var param = procedureDeclaration.Parameters.Select(p => p.Declaration);
+            foreach (var varDeclaration in param)
+            {
+                VisitVarDeclaration(varDeclaration);
+            }
+            VisitBlock(procedureDeclaration.Block);
+            CurrentScope = previous;
+
         }
 
         private void VisitNoOp(NoOp nope)
@@ -81,7 +116,7 @@ namespace Minesweeper.Test.Symbols
         private void VisitVariable(Variable assLeft)
         {
             var varName = assLeft.VariableName;
-            var symbol = table.LookupSymbol(varName);
+            var symbol = CurrentScope.LookupSymbol(varName);
             if (symbol == null)
             {
                 throw new InvalidOperationException($"Variable '{varName}' was not declared");
@@ -90,7 +125,10 @@ namespace Minesweeper.Test.Symbols
 
         private void VisitProgram(PascalProgram program)
         {
+            var global = new ScopedSymbolTable(program.ProgramName, 1, _logger);
+            CurrentScope = global;
             VisitBlock(program.Block);
+            CurrentScope = global;
         }
 
         private void VisitBlock(Block programBlock)
@@ -110,18 +148,24 @@ namespace Minesweeper.Test.Symbols
             }
         }
 
-        private void VisitDeclaration(VarDeclaration node)
+        private void VisitVarDeclaration(VarDeclaration node)
         {
             var typeName = node.TypeNode.TypeValue;
-            var symbol = this.table.LookupSymbol(typeName);
+            var varName = node.VarNode.VariableName;
+            var variable = CurrentScope.LookupSymbol(varName);
+            if (variable != null)
+            {
+                throw new InvalidOperationException($"Variable '{varName}' has already been defined as {variable}");
+            }
+
+            var symbol = this.CurrentScope.LookupSymbol(typeName);
             if (symbol == null)
             {
                 throw new InvalidOperationException($"Could not find type {typeName}");
             }
-            var varName = node.VarNode.VariableName;
 
             var varSymbol = new VariableSymbol(varName, symbol);
-            table.Define(varSymbol);
+            CurrentScope.Define(varSymbol);
         }
     }
 }

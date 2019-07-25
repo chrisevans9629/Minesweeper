@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Minesweeper.Test.Tests;
 
 namespace Minesweeper.Test
 {
@@ -10,6 +11,11 @@ namespace Minesweeper.Test
 
     public class PascalInterpreter : SuperBasicMathInterpreter
     {
+        private ILogger logger;
+        public PascalInterpreter(ILogger logger = null)
+        {
+            this.logger = logger ?? new Logger();
+        }
         public override object Interpret(Node node)
         {
             _scope = new GlobalMemory();

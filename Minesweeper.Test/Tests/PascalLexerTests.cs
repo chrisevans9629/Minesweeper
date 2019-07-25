@@ -56,6 +56,8 @@ namespace Minesweeper.Test.Tests
         }
 
         [TestCase(PascalTestInputs.PascalProgramWithProcedures)]
+        [TestCase(PascalTestInputs.PascalProgramWithProceduresWithParameters)]
+        [TestCase(PascalTestInputs.PascalProgramWithProceduresWithMultipleParameters)]
         public void PascalLexer_ShouldContainProcedureToken(string input)
         {
             var tokens = lexer.Tokenize(input);

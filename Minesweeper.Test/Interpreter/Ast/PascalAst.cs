@@ -17,7 +17,7 @@ namespace Minesweeper.Test
 
         public PascalAst()
         {
-            
+
         }
 
         CompoundStatement CompoundStatement()
@@ -57,21 +57,37 @@ namespace Minesweeper.Test
 
             while (Current.Token.Name == Pascal.Procedure)
             {
+                var parameters = new List<ProcedureParameter>();
                 Eat(Pascal.Procedure);
                 var procedureId = Current.Value;
                 Eat(Pascal.Id);
+                if (Current.Token.Name == SimpleTree.LParinth)
+                {
+                    Eat(SimpleTree.LParinth);
+                    while (Current.Token.Name != SimpleTree.RParinth)
+                    {
+                        parameters.AddRange(VariableDeclaration().Select(p=> new ProcedureParameter(p)));
+                        if (Current.Token.Name == Pascal.Semi)
+                        {
+                            Eat(Pascal.Semi);
+                        }
+                    }
+                    Eat(SimpleTree.RParinth);
+                }
                 Eat(Pascal.Semi);
                 var block = Block();
                 Eat(Pascal.Semi);
-                dec.Add(new ProcedureDeclaration(procedureId, block));
+                dec.Add(new ProcedureDeclaration(procedureId, block, parameters));
             }
 
             return dec;
         }
 
+      
+
         private IList<VarDeclaration> VariableDeclaration()
         {
-            var nodes = new List<Variable>{Variable()};
+            var nodes = new List<Variable> { Variable() };
             while (_tokens.Current.Token.Name == Pascal.Comma)
             {
                 Eat(Pascal.Comma);
@@ -91,7 +107,10 @@ namespace Minesweeper.Test
             {
                 Eat(Pascal.Int);
             }
-            if(Current.Token.Name == Pascal.Real) Eat(Pascal.Real);
+            else if (Current.Token.Name == Pascal.Real)
+            {
+                Eat(Pascal.Real);
+            }
             return result;
         }
 
@@ -99,7 +118,7 @@ namespace Minesweeper.Test
         {
             var node = Statement();
 
-            var results = new List<Node> {node};
+            var results = new List<Node> { node };
 
             while (this._tokens.Current.Token.Name == Pascal.Semi)
             {
@@ -178,7 +197,7 @@ namespace Minesweeper.Test
         Node Parse()
         {
             var node = Program();
-            if(this._tokens.Current != null)
+            if (this._tokens.Current != null)
                 throw new Exception($"did not expect {_tokens.Current.Token.Name}");
             return node;
         }
@@ -207,23 +226,6 @@ namespace Minesweeper.Test
             _tokens = tokens.GetEnumerator();
             Eat(null);
             return Parse();
-        }
-    }
-
-    public class ProcedureDeclaration : Node
-    {
-        public string ProcedureId { get; }
-        public Block Block { get; }
-
-        public ProcedureDeclaration(string procedureId, Block block)
-        {
-            ProcedureId = procedureId;
-            Block = block;
-        }
-
-        public override string Display()
-        {
-            return $"Procedure({ProcedureId},{Block.Display()}";
         }
     }
 }

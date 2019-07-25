@@ -3,9 +3,9 @@
     public class Symbol
     {
         public string Name { get; protected set; }
-        public string Type { get; protected set; }
+        public Symbol Type { get; protected set; }
 
-        public Symbol(string name, string type = null)
+        public Symbol(string name, Symbol type = null)
         {
             Name = name;
             Type = type;
@@ -26,12 +26,9 @@
 
     public class VariableSymbol : Symbol
     {
-        public Symbol TypeSymbol { get; }
 
-        public VariableSymbol(string name, Symbol type) : base(name)
+        public VariableSymbol(string name, Symbol type) : base(name, type)
         {
-            TypeSymbol = type;
-            Type = type.Name;
         }
 
         public override string ToString()
