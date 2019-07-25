@@ -39,7 +39,7 @@ namespace Minesweeper.Test.Tests
         {
             var input =
                 "PROGRAM Part10;\r\nVAR\r\n   number     : INTEGER;\r\n   a, b, c, x : INTEGER;\r\n   y          : REAL;\r\n\r\nBEGIN {Part10}\r\n   BEGIN\r\n      number := 2;\r\n      a := number;\r\n      b := 10 * a + 10 * number DIV 4;\r\n      c := a - - b\r\n   END;\r\n   x := 11;\r\n   y := 20 / 7 + 3.14;\r\n   { writeln('a = ', a); }\r\n   { writeln('b = ', b); }\r\n   { writeln('c = ', c); }\r\n   { writeln('number = ', number); }\r\n   { writeln('x = ', x); }\r\n   { writeln('y = ', y); }\r\nEND.  {Part10}";
-            var result = table.CreateTable(ast.Evaluate(lexer.Tokenize(input)));
+            var result = table.CheckSyntax(ast.Evaluate(lexer.Tokenize(input)));
             result.Should().NotBeNull();
 
             var symbol = result.LookupSymbol("number", true);
@@ -57,7 +57,7 @@ namespace Minesweeper.Test.Tests
 
             var tableBuilder = this.table;
 
-            var t = Assert.Throws<InvalidOperationException>(()=> tableBuilder.CreateTable(node));
+            var t = Assert.Throws<InvalidOperationException>(()=> tableBuilder.CheckSyntax(node));
         }
 
         [TestCase("program SymTab6;\r\n   var x, y : integer;\r\n  y : real;\r\nbegin\r\n   x := x + y;\r\nend.")]
@@ -65,8 +65,22 @@ namespace Minesweeper.Test.Tests
         {
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            Assert.Throws<InvalidOperationException>(() => table.CreateTable(node));
+            Assert.Throws<InvalidOperationException>(() => table.CheckSyntax(node));
         }
+
+        [Test]
+        public void LevelZeroScope_Should_Return2Symbols()
+        {
+            var input = "program SymTab3; begin end.";
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+            var result = table.CheckSyntax(node);
+
+            result.Count.Should().Be(2);
+        }
+
+       
+
 
         [Test]
         public void VariableSymbols_Should_Return4Symbols()
@@ -74,7 +88,7 @@ namespace Minesweeper.Test.Tests
             var input = "program SymTab3;\r\n   var x, y : integer;\r\n\r\nbegin\r\n\r\nend.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var result = table.CreateTable(node);
+            var result = table.CheckSyntax(node);
 
             result.Count.Should().Be(4);
         }
@@ -84,7 +98,7 @@ namespace Minesweeper.Test.Tests
         {
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var result = table.CreateTable(node);
+            var result = table.CheckSyntax(node);
             var memory = interpreter.Interpret(node);
             memory.Should().BeOfType<GlobalMemory>().Which.Should().ContainKey("a");
         }
@@ -96,7 +110,7 @@ namespace Minesweeper.Test.Tests
                 "program test; var x : integer; procedure test(a : integer;); var b : integer; begin end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var memory = table.CreateTable(node);
+            var memory = table.CheckSyntax(node);
 
             memory.LookupSymbol("test", true).Should().NotBeNull();
             memory.LookupSymbol("x", true).Should().NotBeNull();
@@ -110,7 +124,7 @@ namespace Minesweeper.Test.Tests
             var input = "program globalTest; var x : integer; procedure test(a : integer;); var b : integer; begin x := 2; end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var memory = table.CreateTable(node);
+            var memory = table.CheckSyntax(node);
         }
 
         [Test]
@@ -119,7 +133,7 @@ namespace Minesweeper.Test.Tests
             var input = "program globalTest; var x : integer; procedure test(x : integer;); var b : integer; begin x := 2; end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var memory = table.CreateTable(node);
+            var memory = table.CheckSyntax(node);
         }
 
         [Test]
@@ -128,7 +142,7 @@ namespace Minesweeper.Test.Tests
             var input ="program globalTest; var x : integer; procedure test(a : integer;); var b : integer; begin a := 2; end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var memory = table.CreateTable(node);
+            var memory = table.CheckSyntax(node);
             
             
             logger.Calls.Should().Contain("Opened Scope globaltest");
@@ -143,7 +157,7 @@ namespace Minesweeper.Test.Tests
         {
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var result = table.CreateTable(node);
+            var result = table.CheckSyntax(node);
         }
 
 

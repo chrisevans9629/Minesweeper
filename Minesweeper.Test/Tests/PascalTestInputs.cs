@@ -2,7 +2,11 @@
 {
     public static class PascalTestInputs
     {
+        public const string PascalSourceToSource =
+            "program Main;\r\n   var b, x, y : real;\r\n   var z : integer;\r\n\r\n   procedure AlphaA(a : integer);\r\n      var b : integer;\r\n\r\n      procedure Beta(c : integer);\r\n         var y : integer;\r\n\r\n         procedure Gamma(c : integer);\r\n            var x : integer;\r\n         begin { Gamma }\r\n            x := a + b + c + x + y + z;\r\n         end;  { Gamma }\r\n\r\n      begin { Beta }\r\n\r\n      end;  { Beta }\r\n\r\n   begin { AlphaA }\r\n\r\n   end;  { AlphaA }\r\n\r\n   procedure AlphaB(a : integer);\r\n      var c : real;\r\n   begin { AlphaB }\r\n      c := a + b;\r\n   end;  { AlphaB }\r\n\r\nbegin { Main }\r\nend.  { Main }";
 
+        public const string PascalSourceToSourceResult = 
+            "program Main0;\r\n   var b1 : REAL;\r\n   var x1 : REAL;\r\n   var y1 : REAL;\r\n   var z1 : INTEGER;\r\n   procedure AlphaA1(a2 : INTEGER);\r\n      var b2 : INTEGER;\r\n      procedure Beta2(c3 : INTEGER);\r\n         var y3 : INTEGER;\r\n         procedure Gamma3(c4 : INTEGER);\r\n            var x4 : INTEGER;\r\n\r\n         begin\r\n            <x4:INTEGER> := <a2:INTEGER> + <b2:INTEGER> + <c4:INTEGER> + <x4:INTEGER> + <y3:INTEGER> + <z1:INTEGER>;\r\n         end; {END OF Gamma}\r\n\r\n      begin\r\n\r\n      end; {END OF Beta}\r\n\r\n   begin\r\n\r\n   end; {END OF AlphaA}\r\n   procedure AlphaB1(a2 : INTEGER);\r\n      var c2 : REAL;\r\n\r\n   begin\r\n      <c2:REAL> := <a2:INTEGER> + <b1:REAL>;\r\n   end; {END OF AlphaB}\r\n\r\nbegin\r\n\r\nend. {END OF Main}";
         public const string PascalProgramWithProceduresWithMultipleParameters =
             "program Main;\r\n   var x, y: real;\r\n\r\n   procedure Foo(a, b : INTEGER; c : REAL);\r\n      var y : integer;\r\n   begin\r\n      x := a + x + y;\r\n   end;\r\n\r\nbegin { Main }\r\n\r\nend.  { Main }";
 

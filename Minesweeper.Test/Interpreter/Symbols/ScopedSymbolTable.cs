@@ -19,15 +19,14 @@ namespace Minesweeper.Test.Symbols
             _logger = logger ?? new Logger();
             ScopeName = scopeName;
             ScopeLevel = scopeLevel;
-            Define(new BuiltInTypeSymbol(Pascal.Int));
-            Define(new BuiltInTypeSymbol(Pascal.Real));
+            
             if (parentScope?.ScopeLevel >= scopeLevel)
             {
                 throw new InvalidOperationException($"Parent scope must be greater:\nParent: {parentScope}, Current: {this}");
             }
         }
 
-        public int Count => symbols.Count;
+        public int Count => symbols.Count + (ParentScope?.Count ?? 0);
 
         public void Define(Symbol symbol)
         {

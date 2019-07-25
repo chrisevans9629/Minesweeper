@@ -8,7 +8,19 @@ namespace Minesweeper.Test.Symbols
     {
         private readonly ILogger _logger;
         private ScopedSymbolTable _currentScope;
+        private void VisitProgram(PascalProgram program)
+        {
+            var levelZero = new ScopedSymbolTable(program.ProgramName, 0, null, _logger);
+            CurrentScope = levelZero;
 
+            levelZero.Define(new BuiltInTypeSymbol(Pascal.Int));
+            levelZero.Define(new BuiltInTypeSymbol(Pascal.Real));
+
+            var global = new ScopedSymbolTable("Global", 1, levelZero, _logger);
+            CurrentScope = global;
+            VisitBlock(program.Block);
+            CurrentScope = global;
+        }
         public ScopedSymbolTable CurrentScope
         {
             get => _currentScope;
@@ -30,7 +42,7 @@ namespace Minesweeper.Test.Symbols
         {
             _logger = logger ?? new Logger();
         }
-        public ScopedSymbolTable CreateTable(Node rootNode)
+        public ScopedSymbolTable CheckSyntax(Node rootNode)
         {
             VisitNode(rootNode);
             return CurrentScope;
@@ -129,13 +141,7 @@ namespace Minesweeper.Test.Symbols
             }
         }
 
-        private void VisitProgram(PascalProgram program)
-        {
-            var global = new ScopedSymbolTable(program.ProgramName, 1,null, _logger);
-            CurrentScope = global;
-            VisitBlock(program.Block);
-            CurrentScope = global;
-        }
+     
 
         private void VisitBlock(Block programBlock)
         {
@@ -164,7 +170,7 @@ namespace Minesweeper.Test.Symbols
                 throw new InvalidOperationException($"Variable '{varName}' has already been defined as {variable}");
             }
 
-            var symbol = this.CurrentScope.LookupSymbol(typeName, false);
+            var symbol = this.CurrentScope.LookupSymbol(typeName, true);
             if (symbol == null)
             {
                 throw new InvalidOperationException($"Could not find type {typeName}");
