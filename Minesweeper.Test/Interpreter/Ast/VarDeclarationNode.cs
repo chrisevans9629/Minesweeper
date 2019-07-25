@@ -1,11 +1,11 @@
 ﻿namespace Minesweeper.Test
 {
-    public class VarDeclaration : Node
+    public class VarDeclarationNode : Node
     {
         public Variable VarNode { get; set; }
         public TypeNode TypeNode { get; set; }
 
-        public VarDeclaration(Variable varNode, TypeNode typeNode)
+        public VarDeclarationNode(Variable varNode, TypeNode typeNode)
         {
             VarNode = varNode;
             TypeNode = typeNode;

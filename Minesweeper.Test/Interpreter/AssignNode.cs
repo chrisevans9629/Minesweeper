@@ -1,11 +1,11 @@
 ﻿namespace Minesweeper.Test
 {
-    public class Assign : Node
+    public class AssignNode : Node
     {
         public Variable Left { get; set; }
         public Node Right { get; set; }
         public TokenItem TokenItem { get; set; }
-        public Assign(Variable left, TokenItem item, Node right)
+        public AssignNode(Variable left, TokenItem item, Node right)
         {
             Left = left;
             Right = right;

@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="Interpreter\Ast\AbstractSyntaxTree.cs" />
     <Compile Include="Interpreter\Ast\AbstractSyntaxTreeBase.cs" />
-    <Compile Include="Interpreter\Ast\ProcedureDeclaration.cs" />
+    <Compile Include="Interpreter\Ast\ProcedureDeclarationNode.cs" />
     <Compile Include="Interpreter\Ast\ProcedureParameter.cs" />
     <Compile Include="Interpreter\Symbols\ProcedureSymbol.cs" />
     <Compile Include="Tests\AbstractSyntaxTreeTests.cs" />
@@ -57,7 +57,7 @@
     <Compile Include="Evolution\CityCollection.cs" />
     <Compile Include="Interpreter\Component.cs" />
     <Compile Include="Interpreter\GoUntil.cs" />
-    <Compile Include="Interpreter\Assign.cs" />
+    <Compile Include="Interpreter\AssignNode.cs" />
     <Compile Include="Interpreter\BinaryOperator.cs" />
     <Compile Include="Interpreter\Ast\BlockNode.cs" />
     <Compile Include="Interpreter\Ast\CompoundStatement.cs" />
@@ -89,7 +89,7 @@
     <Compile Include="Interpreter\SuperBasicRpnMathInterpreter.cs" />
     <Compile Include="Interpreter\Ast\TypeNode.cs" />
     <Compile Include="Interpreter\Ast\UnaryOperator.cs" />
-    <Compile Include="Interpreter\Ast\VarDeclaration.cs" />
+    <Compile Include="Interpreter\Ast\VarDeclarationNode.cs" />
     <Compile Include="Interpreter\Ast\Variable.cs" />
     <Compile Include="Evolution\Item.cs" />
     <Compile Include="Evolution\ItemList.cs" />

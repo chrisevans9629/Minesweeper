@@ -45,7 +45,7 @@ namespace Minesweeper.Test
                 return VisitCompound(compound);
             }
 
-            if (node is Assign assign)
+            if (node is AssignNode assign)
             {
                 return VisitAssign(assign);
             }
@@ -65,18 +65,18 @@ namespace Minesweeper.Test
                 return VisitProgram(program);
             }
 
-            if (node is ProcedureDeclaration procedure)
+            if (node is ProcedureDeclarationNode procedure)
             {
                 return VisitProcedureDeclaration(procedure);
             }
-            if (node is VarDeclaration declaration)
+            if (node is VarDeclarationNode declaration)
             {
                 return VisitVarDeclaration(declaration);
             }
             return base.VisitNode(node);
         }
 
-        private object VisitProcedureDeclaration(ProcedureDeclaration procedure)
+        private object VisitProcedureDeclaration(ProcedureDeclarationNode procedure)
         {
             return null;
         }
@@ -86,7 +86,7 @@ namespace Minesweeper.Test
             return VisitBlock(programNode.Block);
         }
 
-        object VisitVarDeclaration(VarDeclaration varDeclaration)
+        object VisitVarDeclaration(VarDeclarationNode varDeclaration)
         {
             this._scope.Add(varDeclaration.VarNode.VariableName, null);
             return null;
@@ -101,7 +101,7 @@ namespace Minesweeper.Test
             return VisitNode(block.CompoundStatement);
         }
 
-        object VisitAssign(Assign node)
+        object VisitAssign(AssignNode node)
         {
             var name = node.Left.VariableName.ToUpper();
             var value = VisitNode(node.Right);

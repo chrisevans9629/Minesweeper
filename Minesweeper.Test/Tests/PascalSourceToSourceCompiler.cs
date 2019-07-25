@@ -31,29 +31,47 @@ namespace Minesweeper.Test.Tests
         private string VisitNode(Node node)
         {
             if (node is PascalProgramNode program) return VisitProgram(program);
-            if (node is BlockNode block) return VisitBlock(block);
-            if (node is VarDeclaration declaration) return VisitVarDeclaration(declaration);
-            if (node is ProcedureDeclaration procedureDeclaration)
+            if (node is BlockNode block) return VisitBlock(block, ";");
+            if (node is VarDeclarationNode declaration) return VisitVarDeclaration(declaration);
+            if (node is ProcedureDeclarationNode procedureDeclaration)
             {
                 return VisitProcedureDec(procedureDeclaration);
             }
 
-            if (node is Assign assign)
+            if (node is AssignNode assign)
             {
+                return $"{AddSpaces()}{VisitVariable(assign.Left)} := {VisitNode(assign.Right)};\r\n";
+            }
 
+            if (node is Variable varaible)
+            {
+                return VisitVariable(varaible);
+            }
+            if (node is BinaryOperator op)
+            {
+                return $"{VisitNode(op.Left)} {op.TokenItem.Value} {VisitNode(op.Right)}";
+            }
+            if (node is NoOp no)
+            {
+                return "";
             }
             //return "";
             throw new NotImplementedException($"no implementation for node {node}");
         }
 
-        private string VisitProcedureDec(ProcedureDeclaration procedureDeclaration)
+        private string VisitVariable(Variable variable)
+        {
+            return $"<{variable.VariableName}{CurrentScope.LookupSymbolScope(variable.VariableName)}:{CurrentScope.LookupSymbol(variable.VariableName, true).Type.Name}>";
+        }
+
+        private string VisitProcedureDec(ProcedureDeclarationNode procedureDeclaration)
         {
             var prev = CurrentScope;
-            var namedec = $"{AddSpaces()}procedure {procedureDeclaration.ProcedureId}";
+            var namedec = $"{AddSpaces()}procedure {procedureDeclaration.ProcedureId}{CurrentScope.ScopeLevel}";
             CurrentScope = new ScopedSymbolTable(procedureDeclaration.ProcedureId, prev.ScopeLevel + 1, prev);
             var dec =
                 $"{namedec}({VisitProcedureDecParams(procedureDeclaration.Parameters)});\r\n" +
-                VisitBlock(procedureDeclaration.Block);
+                VisitBlock(procedureDeclaration.Block, ";");
             CurrentScope = prev;
             return dec;
         }
@@ -63,6 +81,10 @@ namespace Minesweeper.Test.Tests
             var str = "";
             foreach (var procedureParameter in parameters)
             {
+                var symbol = new VariableSymbol(procedureParameter.Declaration.VarNode.VariableName,
+                    CurrentScope.LookupSymbol(procedureParameter.Declaration.TypeNode.TypeValue, true));
+
+                CurrentScope.Define(symbol);
                 str +=
                     $"{procedureParameter.Declaration.VarNode.VariableName}{CurrentScope.ScopeLevel} : {procedureParameter.Declaration.TypeNode.TypeValue.ToUpper()};";
             }
@@ -74,40 +96,45 @@ namespace Minesweeper.Test.Tests
             return str;
         }
 
-        string AddSpaces()
+        string AddSpaces(int add = 0)
         {
             var spaces = "";
-            for (int i = 0; i < CurrentScope.ScopeLevel * 3; i++)
+            for (int i = 0; i < (CurrentScope.ScopeLevel * 3) + add; i++)
             {
                 spaces += " ";
             }
 
             return spaces;
         }
-        private string VisitVarDeclaration(VarDeclaration declaration)
+        private string VisitVarDeclaration(VarDeclarationNode declaration)
         {
-            
+            var symbol = new VariableSymbol(declaration.VarNode.VariableName,
+                CurrentScope.LookupSymbol(declaration.TypeNode.TypeValue, true));
+
+            CurrentScope.Define(symbol);
             return $"{AddSpaces()}var {declaration.VarNode.VariableName}{CurrentScope.ScopeLevel} : {declaration.TypeNode.TypeValue.ToUpper()};\r\n";
         }
 
-        private string VisitBlock(BlockNode block)
+        private string VisitBlock(BlockNode block, string end)
         {
             var str = "";
             foreach (var blockDeclaration in block.Declarations)
             {
                 str += VisitNode(blockDeclaration);
             }
-            str += VisitCompoundStatement(block.CompoundStatement);
+            str += VisitCompoundStatement(block.CompoundStatement, end);
             return str;
         }
 
-        private string VisitCompoundStatement(CompoundStatement compoundStatement)
+        private string VisitCompoundStatement(CompoundStatement compoundStatement, string end)
         {
-            var str = "";
+            var str = $"{AddSpaces(-3)}begin\r\n";
             foreach (var compoundStatementNode in compoundStatement.Nodes)
             {
                 str += VisitNode(compoundStatementNode);
             }
+
+            str += AddSpaces(-3) + "end" + end + " {END OF " + CurrentScope.ScopeName + "}\r\n";
             return str;
         }
 
@@ -116,10 +143,13 @@ namespace Minesweeper.Test.Tests
             var zero = new ScopedSymbolTable(program.ProgramName, 0);
             zero.Define(new BuiltInTypeSymbol(Pascal.Int));
             zero.Define(new BuiltInTypeSymbol(Pascal.Real));
-
+            CurrentScope = zero;
+            var programStr = $"program {program.ProgramName}{CurrentScope.ScopeLevel};\r\n";
             var global = new ScopedSymbolTable("Global", zero.ScopeLevel + 1, zero);
             CurrentScope = global;
-            return $"program {program.ProgramName}{zero.ScopeLevel};\r\n" + VisitNode(program.Block);
+            programStr += VisitBlock(program.Block, ".");
+
+            return programStr;
         }
     }
 }

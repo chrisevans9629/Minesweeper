@@ -60,7 +60,7 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitCompoundStatement(compound);
             }
-            else if (node is Assign ass)
+            else if (node is AssignNode ass)
             {
                 VisitAssign(ass);
             }
@@ -84,11 +84,11 @@ namespace Minesweeper.Test.Symbols
             {
 
             }
-            else if (node is VarDeclaration declaration)
+            else if (node is VarDeclarationNode declaration)
             {
                 VisitVarDeclaration(declaration);
             }
-            else if (node is ProcedureDeclaration procedureDeclaration)
+            else if (node is ProcedureDeclarationNode procedureDeclaration)
             {
                 VisitProcedureDec(procedureDeclaration);
             }
@@ -98,7 +98,7 @@ namespace Minesweeper.Test.Symbols
             }
         }
 
-        private void VisitProcedureDec(ProcedureDeclaration procedureDeclaration)
+        private void VisitProcedureDec(ProcedureDeclarationNode procedureDeclaration)
         {
             var previous = CurrentScope;
             var name = procedureDeclaration.ProcedureId;
@@ -125,7 +125,7 @@ namespace Minesweeper.Test.Symbols
 
         }
 
-        private void VisitAssign(Assign ass)
+        private void VisitAssign(AssignNode ass)
         {
             VisitVariable(ass.Left);
             VisitNode(ass.Right);
@@ -160,7 +160,7 @@ namespace Minesweeper.Test.Symbols
             }
         }
 
-        private void VisitVarDeclaration(VarDeclaration node)
+        private void VisitVarDeclaration(VarDeclarationNode node)
         {
             var typeName = node.TypeNode.TypeValue;
             var varName = node.VarNode.VariableName;

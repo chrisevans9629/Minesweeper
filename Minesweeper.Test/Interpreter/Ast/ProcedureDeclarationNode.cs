@@ -2,13 +2,13 @@
 
 namespace Minesweeper.Test
 {
-    public class ProcedureDeclaration : Node
+    public class ProcedureDeclarationNode : Node
     {
         public string ProcedureId { get; }
         public BlockNode Block { get; }
         public IList<ProcedureParameter> Parameters { get; }
 
-        public ProcedureDeclaration(string procedureId, BlockNode block, IList<ProcedureParameter> parameters)
+        public ProcedureDeclarationNode(string procedureId, BlockNode block, IList<ProcedureParameter> parameters)
         {
             ProcedureId = procedureId;
             Block = block;

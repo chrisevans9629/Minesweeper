@@ -78,7 +78,7 @@ namespace Minesweeper.Test
                 Eat(Pascal.Semi);
                 var block = Block();
                 Eat(Pascal.Semi);
-                dec.Add(new ProcedureDeclaration(procedureId, block, parameters));
+                dec.Add(new ProcedureDeclarationNode(procedureId, block, parameters));
             }
 
             return dec;
@@ -86,7 +86,7 @@ namespace Minesweeper.Test
 
       
 
-        private IList<VarDeclaration> VariableDeclaration()
+        private IList<VarDeclarationNode> VariableDeclaration()
         {
             var nodes = new List<Variable> { Variable() };
             while (_tokens.Current.Token.Name == Pascal.Comma)
@@ -97,7 +97,7 @@ namespace Minesweeper.Test
             Eat(Pascal.Colon);
 
             var type = TypeSpec();
-            return nodes.Select(p => new VarDeclaration(p, type)).ToList();
+            return nodes.Select(p => new VarDeclarationNode(p, type)).ToList();
         }
 
         private TypeNode TypeSpec()
@@ -179,13 +179,13 @@ namespace Minesweeper.Test
             return node;
         }
 
-        Assign AssignmentStatement()
+        AssignNode AssignmentStatement()
         {
             var left = Variable();
             var token = _tokens.Current;
             Eat(Pascal.Assign);
             var right = Expression();
-            var node = new Assign(left, token, right);
+            var node = new AssignNode(left, token, right);
             return node;
         }
 

@@ -2,9 +2,9 @@
 {
     public class ProcedureParameter : Node
     {
-        public VarDeclaration Declaration { get; }
+        public VarDeclarationNode Declaration { get; }
 
-        public ProcedureParameter(VarDeclaration declaration)
+        public ProcedureParameter(VarDeclarationNode declaration)
         {
             Declaration = declaration;
         }

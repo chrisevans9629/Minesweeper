@@ -24,7 +24,19 @@ namespace Minesweeper.Test.Tests
             var output = compiler.Convert(input);
             var result = PascalTestInputs.PascalSourceToSourceResult;
 
-            output.Should().Be(result);
+            var match = "";
+
+            for (var i = 0; i < result.Length; i++)
+            {
+                if (output[i] == result[i])
+                {
+                    match += output[i];
+                }
+                else
+                {
+                    throw new Exception($"output matched until: '{match}'...\r\n expected '{result[i]}' but was '{output[i]}'");
+                }
+            }
         }
     }
 }
