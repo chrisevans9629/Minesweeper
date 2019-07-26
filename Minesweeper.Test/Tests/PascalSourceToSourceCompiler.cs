@@ -31,7 +31,7 @@ namespace Minesweeper.Test.Tests
         private string VisitNode(Node node)
         {
             if (node is PascalProgramNode program) return VisitProgram(program);
-            if (node is BlockNode block) return VisitBlock(block, ";");
+            if (node is BlockNode block) return VisitBlock(block);
             if (node is VarDeclarationNode declaration) return VisitVarDeclaration(declaration);
             if (node is ProcedureDeclarationNode procedureDeclaration)
             {
@@ -71,7 +71,7 @@ namespace Minesweeper.Test.Tests
             CurrentScope = new ScopedSymbolTable(procedureDeclaration.ProcedureId, prev.ScopeLevel + 1, prev);
             var dec =
                 $"{namedec}({VisitProcedureDecParams(procedureDeclaration.Parameters)});\r\n" +
-                VisitBlock(procedureDeclaration.Block, ";");
+                VisitBlock(procedureDeclaration.Block);
             CurrentScope = prev;
             return dec;
         }
@@ -115,18 +115,18 @@ namespace Minesweeper.Test.Tests
             return $"{AddSpaces()}var {declaration.VarNode.VariableName}{CurrentScope.ScopeLevel} : {declaration.TypeNode.TypeValue.ToUpper()};\r\n";
         }
 
-        private string VisitBlock(BlockNode block, string end)
+        private string VisitBlock(BlockNode block)
         {
             var str = "";
             foreach (var blockDeclaration in block.Declarations)
             {
                 str += VisitNode(blockDeclaration);
             }
-            str += VisitCompoundStatement(block.CompoundStatement, end);
+            str += VisitCompoundStatement(block.CompoundStatement);
             return str;
         }
 
-        private string VisitCompoundStatement(CompoundStatement compoundStatement, string end)
+        private string VisitCompoundStatement(CompoundStatement compoundStatement)
         {
             var str = $"{AddSpaces(-3)}begin\r\n";
             foreach (var compoundStatementNode in compoundStatement.Nodes)
@@ -134,21 +134,38 @@ namespace Minesweeper.Test.Tests
                 str += VisitNode(compoundStatementNode);
             }
 
-            str += AddSpaces(-3) + "end" + end + " {END OF " + CurrentScope.ScopeName + "}\r\n";
+            str += AddSpaces(-3) + "end; {END OF " + CurrentScope.ScopeName + "}\r\n";
             return str;
         }
 
+       
         private string VisitProgram(PascalProgramNode program)
         {
             var zero = new ScopedSymbolTable(program.ProgramName, 0);
             zero.Define(new BuiltInTypeSymbol(Pascal.Int));
             zero.Define(new BuiltInTypeSymbol(Pascal.Real));
             CurrentScope = zero;
-            var programStr = $"program {program.ProgramName}{CurrentScope.ScopeLevel};\r\n";
-            var global = new ScopedSymbolTable("Global", zero.ScopeLevel + 1, zero);
-            CurrentScope = global;
-            programStr += VisitBlock(program.Block, ".");
+            var programStr = VisitProgramBlockNode(program);
+            return programStr;
+        }
 
+        private string VisitProgramBlockNode(PascalProgramNode program)
+        {
+            var programStr = $"program {program.ProgramName}{CurrentScope.ScopeLevel};\r\n";
+            var global = new ScopedSymbolTable("Global", CurrentScope.ScopeLevel + 1, CurrentScope);
+            CurrentScope = global;
+
+            foreach (var blockDeclaration in program.Block.Declarations)
+            {
+                programStr += VisitNode(blockDeclaration);
+            }
+            programStr += $"{AddSpaces(-3)}begin\r\n";
+            foreach (var compoundStatementNode in program.Block.CompoundStatement.Nodes)
+            {
+                programStr += VisitNode(compoundStatementNode);
+            }
+            CurrentScope = CurrentScope.ParentScope;
+            programStr += AddSpaces(-3) + "end. {END OF " + CurrentScope.ScopeName + "}\r\n";
             return programStr;
         }
     }
