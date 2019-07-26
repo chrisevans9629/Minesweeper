@@ -79,7 +79,17 @@ namespace Minesweeper.Test
 
         TokenItem CreateToken(string name, string value)
         {
-            var token = new TokenItem() { Index = index, Column = Column, Line = Line, Value = value, Token = new Token() { Name = name } };
+            var token = new TokenItem()
+            {
+                Index = index-value.Length,
+                Column = Column-value.Length,
+                Line = Line,
+                Value = value,
+                Token = new Token()
+                {
+                    Name = name
+                }
+            };
             return token;
         }
 
@@ -88,7 +98,7 @@ namespace Minesweeper.Test
             _str = str;
             _logger.Log($"Tokenizing String:\n'{_str}'");
             index = 0;
-            Column = 0;
+            Column = 1;
             Line = 1;
             //rawr
             var items = new List<TokenItem>();
@@ -203,7 +213,11 @@ namespace Minesweeper.Test
                 }
                 else
                 {
-                    throw new Exception($"did not recognize char '{Current}'");
+                    var current = Current;
+                    Advance();
+                    var token = CreateToken("Error", current.ToString());
+                    throw new LexerException(ErrorCode.UnexpectedToken, token, 
+                        $"Unexpected token '{current}' at index {token.Index} line {token.Line} column {token.Column}");
                 }
             }
 

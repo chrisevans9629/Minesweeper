@@ -33,7 +33,7 @@ namespace Minesweeper.Test.Tests
         public void RealConstTest()
         {
             var input = "10.5";
-            
+
             lexer.Tokenize(input)[0].Token.Name.Should().Be(Pascal.RealConst);
         }
         [Test]
@@ -64,9 +64,21 @@ namespace Minesweeper.Test.Tests
             var input = "program Test;\nbegin end.";
             var tokens = lexer.Tokenize(input);
 
-           tokens.Take(3).ForEach(p => p.Line.Should().Be(1));
-           
+            tokens.Take(3).ForEach(p => p.Line.Should().Be(1));
+
             tokens.Skip(3).Take(3).ForEach(p => p.Line.Should().Be(2));
+        }
+
+        [TestCase("    .", 5)]
+        [TestCase("    test", 5)]
+        [TestCase("    asdf", 5)]
+        [TestCase("    as", 5)]
+        [TestCase("    \nas", 1)]
+        public void ColumnTests(string input, int column)
+        {
+            var tokens = lexer.Tokenize(input);
+
+            tokens[0].Column.Should().Be(column);
         }
 
         [Test]
@@ -76,7 +88,31 @@ namespace Minesweeper.Test.Tests
             var tokens = lexer.Tokenize(input);
 
             tokens[0].Column.Should().Be(1);
-            tokens.Last().Column.Should().Be(7);
+            tokens.Last().Column.Should().Be(10);
+        }
+
+
+        [TestCase("~",1)]
+        [TestCase(" ~",2)]
+        [TestCase("  ~",3)]
+        public void InvalidToken_ThrowsLexerExceptions(string input, int column)
+        {
+            var ex = Assert.Throws<LexerException>(() => lexer.Tokenize(input));
+            ex.Token.Column.Should().Be(column);
+        }
+
+        [Test]
+        public void InvalidToken_ThrowsLexerException()
+        {
+            var input = "test test2\nadsf ~";
+            input.Length.Should().Be(17);
+            var ex = Assert.Throws<LexerException>(() => lexer.Tokenize(input));
+            ex.Token.Line.Should().Be(2);
+            ex.Token.Column.Should().Be(6);
+            ex.Token.Index.Should().Be(16);
+            ex.Token.Value.Should().Be("~");
+            ex.Error.Should().Be(ErrorCode.UnexpectedToken);
+            ex.Message.Should().Be("Unexpected token '~' at index 16 line 2 column 6");
         }
 
         [Test]
