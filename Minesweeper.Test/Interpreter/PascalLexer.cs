@@ -9,8 +9,9 @@ namespace Minesweeper.Test
     {
         private readonly ILogger _logger;
         private string _str;
-        private int index = 0;
-
+        private int index;
+        private int Line;
+        private int Column;
 
         public PascalLexer(ILogger logger = null)
         {
@@ -32,6 +33,13 @@ namespace Minesweeper.Test
         public char Current => (index <= _str.Length - 1) ? _str[index] : default(char);
         public void Advance()
         {
+            if (Current == '\n')
+            {
+                Line++;
+                Column = 0;
+            }
+
+            Column++;
             index++;
         }
 
@@ -71,7 +79,7 @@ namespace Minesweeper.Test
 
         TokenItem CreateToken(string name, string value)
         {
-            var token = new TokenItem() { Position = index, Value = value, Token = new Token() { Name = name } };
+            var token = new TokenItem() { Index = index, Column = Column, Line = Line, Value = value, Token = new Token() { Name = name } };
             return token;
         }
 
@@ -80,6 +88,8 @@ namespace Minesweeper.Test
             _str = str;
             _logger.Log($"Tokenizing String:\n'{_str}'");
             index = 0;
+            Column = 0;
+            Line = 1;
             //rawr
             var items = new List<TokenItem>();
             while (Current != default(char))

@@ -89,7 +89,7 @@ namespace Minesweeper.Test.Tests
 
             tokens[1].Token.Name.Should().Be("Add");
             tokens[1].Line.Should().Be(0);
-            tokens[1].Position.Should().Be(2);
+            tokens[1].Index.Should().Be(2);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using Xamarin.Forms.Internals;
 
 namespace Minesweeper.Test.Tests
 {
@@ -56,6 +57,27 @@ namespace Minesweeper.Test.Tests
             result.Should().HaveCount(36);
         }
 
+
+        [Test]
+        public void LineTest()
+        {
+            var input = "program Test;\nbegin end.";
+            var tokens = lexer.Tokenize(input);
+
+           tokens.Take(3).ForEach(p => p.Line.Should().Be(1));
+           
+            tokens.Skip(3).Take(3).ForEach(p => p.Line.Should().Be(2));
+        }
+
+        [Test]
+        public void ColumnTest()
+        {
+            var input = "program Test;\nbegin end.";
+            var tokens = lexer.Tokenize(input);
+
+            tokens[0].Column.Should().Be(1);
+            tokens.Last().Column.Should().Be(7);
+        }
 
         [Test]
         public void CasingTest()

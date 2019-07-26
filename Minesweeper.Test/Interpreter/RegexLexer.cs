@@ -31,7 +31,7 @@ namespace Minesweeper.Test
                 {
                     if (o.Success)
                     {
-                        items.Add(new TokenItem() { Token = match.p, Position = o.Index, Value = o.Value });
+                        items.Add(new TokenItem() { Token = match.p, Index = o.Index, Value = o.Value });
                     }
                 }
             }
@@ -56,7 +56,7 @@ namespace Minesweeper.Test
                 }
             }
 
-            var resultTokens = items.OrderBy(p => p.Position).ToList();
+            var resultTokens = items.OrderBy(p => p.Index).ToList();
 
             return resultTokens;
         }

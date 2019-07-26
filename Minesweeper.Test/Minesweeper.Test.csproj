@@ -48,6 +48,7 @@
     <Compile Include="Interpreter\Ast\AbstractSyntaxTreeBase.cs" />
     <Compile Include="Interpreter\Ast\ProcedureDeclarationNode.cs" />
     <Compile Include="Interpreter\Ast\ProcedureParameter.cs" />
+    <Compile Include="Interpreter\ErrorCodes.cs" />
     <Compile Include="Interpreter\Symbols\ProcedureSymbol.cs" />
     <Compile Include="Tests\AbstractSyntaxTreeTests.cs" />
     <Compile Include="Evolution\CandiateSolutionPath.cs" />
