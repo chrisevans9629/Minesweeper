@@ -4,7 +4,7 @@ using Minesweeper.Test.Tests;
 
 namespace Minesweeper.Test
 {
-    public abstract class AbstractSyntaxTreeBase : IDisposable
+    public abstract class AbstractSyntaxTreeBase
     {
         protected readonly ILogger Logger;
 
@@ -41,7 +41,7 @@ namespace Minesweeper.Test
         protected virtual NumberLeaf ParseNumber()
         {
             var value = new NumberLeaf(_tokens.Current);
-            _tokens.MoveNext();
+            _tokens.Advance();
             return value;
         }
 
@@ -112,17 +112,14 @@ namespace Minesweeper.Test
 
             return result;
         }
-        protected IEnumerator<TokenItem> _tokens;
-        public void Dispose()
-        {
-            _tokens?.Dispose();
-        }
+        protected Iterator<TokenItem> _tokens;
+        
         public void Eat(string name)
         {
             if (_tokens.Current?.Token.Name == name)
             {
                 Logger.Log($"Ate: {name}");
-                _tokens.MoveNext();
+                _tokens.Advance();
             }
             else
             {

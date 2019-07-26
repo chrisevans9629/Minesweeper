@@ -30,6 +30,21 @@ namespace Minesweeper.Test.Tests
         }
 
         [Test]
+        public void PascalProcedureCall()
+        {
+            var input = PascalTestInputs.ProcedureCallXEquals10;
+
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+
+            var interpret = interpreter.Interpret(node);
+
+            var scope = interpret.Should().BeOfType<GlobalMemory>().Which;
+
+            scope["x"].Should().Be(10);
+        }
+
+        [Test]
         public void PascalUnderScore_ShouldBeRecognized()
         {
             var input = "program test; Begin begin _num := 2 div 2; end; End.";

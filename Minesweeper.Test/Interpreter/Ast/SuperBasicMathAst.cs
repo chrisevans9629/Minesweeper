@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Minesweeper.Test.Tests;
 using NUnit.Framework.Constraints;
 
@@ -9,7 +10,7 @@ namespace Minesweeper.Test
         public SuperBasicMathAst(IList<TokenItem> data, ILogger logger = null) : base(logger)
         {
            
-            _tokens = data.GetEnumerator();
+            _tokens = new Iterator<TokenItem>(data.ToArray());
             //_tokens = GetTokens();
         }
 
@@ -29,7 +30,6 @@ namespace Minesweeper.Test
 
         public override Node Evaluate()
         {
-            Eat(null);
             var result = Expression();
             return result;
         }

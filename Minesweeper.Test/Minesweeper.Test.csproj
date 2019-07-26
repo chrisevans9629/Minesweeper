@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Interpreter\Ast\AbstractSyntaxTree.cs" />
     <Compile Include="Interpreter\Ast\AbstractSyntaxTreeBase.cs" />
+    <Compile Include="Interpreter\Ast\ProcedureCallNode.cs" />
     <Compile Include="Interpreter\Ast\ProcedureDeclarationNode.cs" />
     <Compile Include="Interpreter\Ast\ProcedureParameter.cs" />
     <Compile Include="Interpreter\ErrorCodes.cs" />

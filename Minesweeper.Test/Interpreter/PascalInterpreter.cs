@@ -65,6 +65,10 @@ namespace Minesweeper.Test
                 return VisitProgram(program);
             }
 
+            if (node is ProcedureCallNode call)
+            {
+                return VisitProcedureCall(call);
+            }
             if (node is ProcedureDeclarationNode procedure)
             {
                 return VisitProcedureDeclaration(procedure);
@@ -74,6 +78,11 @@ namespace Minesweeper.Test
                 return VisitVarDeclaration(declaration);
             }
             return base.VisitNode(node);
+        }
+
+        private object VisitProcedureCall(ProcedureCallNode call)
+        {
+            return null;
         }
 
         private object VisitProcedureDeclaration(ProcedureDeclarationNode procedure)

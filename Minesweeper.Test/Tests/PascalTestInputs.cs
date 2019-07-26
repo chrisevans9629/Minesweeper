@@ -2,6 +2,19 @@
 {
     public static class PascalTestInputs
     {
+
+        public const string ProcedureCallXEquals10 =
+            "program test; \n" +
+            "var x : integer; \n" +
+            "procedure Add(y : integer); \n" +
+            "begin \n" +
+                "x := x + y; \n" +
+            "end; \n" +
+            "begin \n" +
+            "x := 0; \n" +
+            "Add(10); \n" +
+            "end.";
+
         public const string PascalSourceToSource =
             "program Main;\r\n   var b, x, y : real;\r\n   var z : integer;\r\n\r\n   procedure AlphaA(a : integer);\r\n      var b : integer;\r\n\r\n      procedure Beta(c : integer);\r\n         var y : integer;\r\n\r\n         procedure Gamma(c : integer);\r\n            var x : integer;\r\n         begin { Gamma }\r\n            x := a + b + c + x + y + z;\r\n         end;  { Gamma }\r\n\r\n      begin { Beta }\r\n\r\n      end;  { Beta }\r\n\r\n   begin { AlphaA }\r\n\r\n   end;  { AlphaA }\r\n\r\n   procedure AlphaB(a : integer);\r\n      var c : real;\r\n   begin { AlphaB }\r\n      c := a + b;\r\n   end;  { AlphaB }\r\n\r\nbegin { Main }\r\nend.  { Main }";
 

@@ -1,47 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Minesweeper.Test;
 using Minesweeper.Test.Tests;
+using SkiaSharp;
 
 namespace Minesweeper.Test
 {
-    public class PascalLexer
-    {
-        private readonly ILogger _logger;
-        private string _str;
-        private int index;
-        private int Line;
-        private int Column;
 
-        public PascalLexer(ILogger logger = null)
+    public class Iterator<T>
+    {
+        private T[] _str;
+        public int index;
+
+        public Iterator(T[] str)
         {
-            _logger = logger ?? new Logger();
-        }
-        public PascalLexer(string str, ILogger logger = null) : this(logger)
-        {
+            index = 0;
             _str = str;
         }
-
-
-        public char Peek()
+        public T Peek()
         {
             if (index + 1 < _str.Length - 1)
                 return _str[index + 1];
-            return default(char);
+            return default(T);
         }
+         public T Current => (index <= _str.Length - 1) ? _str[index] : default(T);
+        public virtual void Advance()
+        {
+            index++;
+        }
+    }
 
-        public char Current => (index <= _str.Length - 1) ? _str[index] : default(char);
-        public void Advance()
+    public class LexerIterator : Iterator<char>
+    {
+        public int Line;
+        public int Column;
+        public override void Advance()
         {
             if (Current == '\n')
             {
                 Line++;
                 Column = 0;
             }
-
             Column++;
-            index++;
+            base.Advance();
         }
+
+        public LexerIterator(char[] str) : base(str)
+        {
+            Line = 1;
+            Column = 1;
+        }
+    }
+    public class PascalLexer
+    {
+        private readonly ILogger _logger;
+        private string _str;
+       
+        private LexerIterator iterator;
+        public PascalLexer(ILogger logger = null)
+        {
+            _logger = logger ?? new Logger();
+        }
+
+
+
+        public char Current => iterator.Current;
+        private int index => iterator.index;
+        private int Column => iterator.Column;
+        private int Line => iterator.Line;
+        void Advance()
+        {
+            iterator.Advance();
+        }
+
+       
 
         TokenItem Id()
         {
@@ -83,13 +116,15 @@ namespace Minesweeper.Test
             return token;
         }
 
+        public char Peek()
+        {
+            return iterator.Peek();
+        }
         public IList<TokenItem> Tokenize(string str)
         {
             _str = str;
             _logger.Log($"Tokenizing String:\n'{_str}'");
-            index = 0;
-            Column = 1;
-            Line = 1;
+            iterator = new LexerIterator(str.ToCharArray());
             //rawr
             var items = new List<TokenItem>();
             while (Current != default(char))

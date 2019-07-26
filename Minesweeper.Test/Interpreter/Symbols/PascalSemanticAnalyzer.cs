@@ -137,7 +137,7 @@ namespace Minesweeper.Test.Symbols
             var symbol = CurrentScope.LookupSymbol(varName, true);
             if (symbol == null)
             {
-                throw new InvalidOperationException($"Variable '{varName}' was not declared");
+                throw new SemanticException(ErrorCode.IdNotFound, assLeft.TokenItem,$"Variable '{varName}' was not declared");
             }
         }
 
@@ -167,13 +167,13 @@ namespace Minesweeper.Test.Symbols
             var variable = CurrentScope.LookupSymbol(varName, false);
             if (variable != null)
             {
-                throw new InvalidOperationException($"Variable '{varName}' has already been defined as {variable}");
+                throw new SemanticException(ErrorCode.DuplicateId, node.VarNode.TokenItem,$"Variable '{varName}' has already been defined as {variable}");
             }
 
             var symbol = this.CurrentScope.LookupSymbol(typeName, true);
             if (symbol == null)
             {
-                throw new InvalidOperationException($"Could not find type {typeName}");
+                throw new SemanticException(ErrorCode.IdNotFound, node.TypeNode.TokenItem,$"Could not find type {typeName}");
             }
 
             var varSymbol = new VariableSymbol(varName, symbol);

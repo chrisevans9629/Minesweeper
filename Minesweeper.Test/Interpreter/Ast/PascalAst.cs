@@ -10,11 +10,7 @@ namespace Minesweeper.Test
         private TokenItem Current => _tokens.Current;
 
         private IList<TokenItem> items;
-        public PascalAst(IList<TokenItem> tokens, ILogger logger = null) : base(logger)
-        {
-            items = tokens;
-            this._tokens = tokens.GetEnumerator();
-        }
+       
 
         public PascalAst(ILogger logger = null) : base(logger)
         {
@@ -171,12 +167,37 @@ namespace Minesweeper.Test
             {
                 node = CompoundStatement();
             }
-            else if (_tokens.Current.Token.Name == Pascal.Id)
+            else if (_tokens.Current.Token.Name == Pascal.Id && _tokens.Peek().Token.Name == Pascal.Assign)
             {
                 node = AssignmentStatement();
             }
+            else if (Current.Token.Name == Pascal.Id && _tokens.Peek().Token.Name == Pascal.LParinth)
+            {
+                node = ProcedureCall();
+            }
             else node = Empty();
             return node;
+        }
+
+        private Node ProcedureCall()
+        {
+            var procedureName = Current.Value;
+            var token = Current;
+            Eat(Pascal.Id);
+            Eat(Pascal.LParinth);
+            var parameters = new List<Node>();
+            while (Current.Token.Name != Pascal.RParinth)
+            {
+                parameters.Add(Expression());
+                if (Current.Token.Name == Pascal.Comma)
+                {
+                    Eat(Pascal.Comma);
+                }
+
+            }
+            Eat(Pascal.RParinth);
+            Eat(Pascal.Semi);
+            return new ProcedureCallNode(procedureName, parameters, token );
         }
 
         AssignNode AssignmentStatement()
@@ -224,8 +245,7 @@ namespace Minesweeper.Test
 
         public Node Evaluate(IList<TokenItem> tokens)
         {
-            _tokens = tokens.GetEnumerator();
-            Eat(null);
+            _tokens = new Iterator<TokenItem>(tokens.ToArray());
             return Parse();
         }
     }

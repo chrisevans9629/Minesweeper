@@ -34,6 +34,9 @@ namespace Minesweeper.Test.Tests
             table = new PascalSemanticAnalyzer(logger);
         }
 
+
+      
+
         [Test]
         public void PascalProgram_ShouldGetSymbols()
         {
@@ -57,7 +60,8 @@ namespace Minesweeper.Test.Tests
 
             var tableBuilder = this.table;
 
-            var t = Assert.Throws<InvalidOperationException>(()=> tableBuilder.CheckSyntax(node));
+            var t = Assert.Throws<SemanticException>(()=> tableBuilder.CheckSyntax(node));
+            t.Error.Should().Be(ErrorCode.IdNotFound);
         }
 
         [TestCase("program SymTab6;\r\n   var x, y : integer;\r\n  y : real;\r\nbegin\r\n   x := x + y;\r\nend.")]
@@ -65,7 +69,8 @@ namespace Minesweeper.Test.Tests
         {
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            Assert.Throws<InvalidOperationException>(() => table.CheckSyntax(node));
+            var result = Assert.Throws<SemanticException>(() => table.CheckSyntax(node));
+            result.Error.Should().Be(ErrorCode.DuplicateId);
         }
 
         [Test]
