@@ -22,10 +22,10 @@ namespace Minesweeper.Test
         }
         string VisitBin(BinaryOperator op)
         {
-            if (op.Name == SimpleTree.Add) return "(+ " + (VisitNode(op.Left) + " " + VisitNode(op.Right) + ")");
-            if (op.Name == SimpleTree.Sub) return "(- " + VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
-            if (op.Name == SimpleTree.Multi) return "(* "+ VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
-            if (op.Name == SimpleTree.FloatDiv) return "(/ " + VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
+            if (op.Name == Pascal.Add) return "(+ " + (VisitNode(op.Left) + " " + VisitNode(op.Right) + ")");
+            if (op.Name == Pascal.Sub) return "(- " + VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
+            if (op.Name == Pascal.Multi) return "(* "+ VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
+            if (op.Name == Pascal.FloatDiv) return "(/ " + VisitNode(op.Left) + " " + VisitNode(op.Right) + ")";
 
             throw new Exception($"did not recognize operation {op.Name}");
 

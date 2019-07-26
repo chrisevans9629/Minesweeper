@@ -62,10 +62,10 @@ namespace Minesweeper.Test
                 Eat(Pascal.Procedure);
                 var procedureId = Current.Value;
                 Eat(Pascal.Id);
-                if (Current.Token.Name == SimpleTree.LParinth)
+                if (Current.Token.Name == Pascal.LParinth)
                 {
-                    Eat(SimpleTree.LParinth);
-                    while (Current.Token.Name != SimpleTree.RParinth)
+                    Eat(Pascal.LParinth);
+                    while (Current.Token.Name != Pascal.RParinth)
                     {
                         parameters.AddRange(VariableDeclaration().Select(p=> new ProcedureParameter(p)));
                         if (Current.Token.Name == Pascal.Semi)
@@ -73,7 +73,7 @@ namespace Minesweeper.Test
                             Eat(Pascal.Semi);
                         }
                     }
-                    Eat(SimpleTree.RParinth);
+                    Eat(Pascal.RParinth);
                 }
                 Eat(Pascal.Semi);
                 var block = Block();
@@ -141,14 +141,14 @@ namespace Minesweeper.Test
             var par = Parenthese();
             if (par != null) return par;
 
-            if (current.Token.Name == SimpleTree.Add)
+            if (current.Token.Name == Pascal.Add)
             {
-                Eat(SimpleTree.Add);
+                Eat(Pascal.Add);
                 return new UnaryOperator(ParaAddSub(), current);
             }
-            if (current.Token.Name == SimpleTree.Sub)
+            if (current.Token.Name == Pascal.Sub)
             {
-                Eat(SimpleTree.Sub);
+                Eat(Pascal.Sub);
                 return new UnaryOperator(ParaAddSub(), current);
             }
 

@@ -20,14 +20,14 @@ namespace Minesweeper.Test.Tests
             var input = "VAR\r\n   number     : INTEGER;\r\n   a, b, c, x : INTEGER;\r\n   y          : REAL;";
             var tokens = lexer.Tokenize(input);
 
-            tokens[0].Token.Name.Should().Be("VAR");
-            tokens[1].Token.Name.Should().Be("ID");
-            tokens[2].Token.Name.Should().Be("SEMICOLON");
-            tokens[3].Token.Name.Should().Be("INTEGER");
-            tokens[4].Token.Name.Should().Be("SEMI");
-            tokens[5].Token.Name.Should().Be("ID");
-            tokens[6].Token.Name.Should().Be("COMMA");
-            tokens[17].Token.Name.Should().Be("REAL");
+            tokens[0].Token.Name.Should().Be(Pascal.Var);
+            tokens[1].Token.Name.Should().Be(Pascal.Id);
+            tokens[2].Token.Name.Should().Be(Pascal.Colon);
+            tokens[3].Token.Name.Should().Be(Pascal.Int);
+            tokens[4].Token.Name.Should().Be(Pascal.Semi);
+            tokens[5].Token.Name.Should().Be(Pascal.Id);
+            tokens[6].Token.Name.Should().Be(Pascal.Comma);
+            tokens[17].Token.Name.Should().Be(Pascal.Real);
         }
         [Test]
         public void RealConstTest()

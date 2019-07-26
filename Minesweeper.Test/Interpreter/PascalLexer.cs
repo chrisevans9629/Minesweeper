@@ -47,17 +47,7 @@ namespace Minesweeper.Test
         {
             var result = "";
 
-            var reservations = new List<string>()
-            {
-                SimpleTree.IntDiv,
-                Pascal.Begin,
-                Pascal.End,
-                Pascal.Var,
-                Pascal.Int,
-                Pascal.Real,
-                Pascal.Program,
-                Pascal.Procedure
-            };
+           
             while (char.IsLetterOrDigit(Current) || Current == '_')
             {
                 result += Current;
@@ -69,7 +59,7 @@ namespace Minesweeper.Test
             var token = CreateToken(Pascal.Id, result);
 
 
-            var reserved = reservations.FirstOrDefault(p => result.ToUpper() == p.ToUpper());
+            var reserved = Pascal.Reservations.FirstOrDefault(p => result.ToUpper() == p.ToUpper());
             if (reserved != null)
             {
                 token.Token.Name = reserved;
@@ -118,12 +108,6 @@ namespace Minesweeper.Test
                     Advance();
                     items.Add(CreateToken(Pascal.Assign, ":="));
                 }
-                else if (Current == ';')
-                {
-                    Advance();
-                    items.Add(CreateToken(Pascal.Semi, ";"));
-                }
-
                 else if (char.IsNumber(Current) || (Current == '.' && char.IsNumber(Peek())))
                 {
                     //10.10 valid
@@ -148,60 +132,10 @@ namespace Minesweeper.Test
                     }
                     else
                     {
-                        items.Add(CreateToken(SimpleTree.Num, num));
+                        items.Add(CreateToken(Pascal.Num, num));
                     }
                 }
-                else if (Current == '.')
-                {
-                    Advance();
-                    items.Add(CreateToken(Pascal.Dot, "."));
-                }
-                else if (Current == '+')
-                {
-                    Advance();
-
-                    items.Add(CreateToken(SimpleTree.Add, "+"));
-                }
-                else if (Current == '-')
-                {
-                    Advance();
-
-                    items.Add(CreateToken(SimpleTree.Sub, "-"));
-                }
-                else if (Current == '*')
-                {
-                    Advance();
-
-                    items.Add(CreateToken(SimpleTree.Multi, "*"));
-                }
-                else if (Current == '/')
-                {
-                    Advance();
-
-                    items.Add(CreateToken(SimpleTree.FloatDiv, "/"));
-                }
-                else if (Current == '(')
-                {
-                    Advance();
-
-                    items.Add(CreateToken(SimpleTree.LParinth, "("));
-                }
-                else if (Current == ')')
-                {
-                    Advance();
-
-                    items.Add(CreateToken(SimpleTree.RParinth, ")"));
-                }
-                else if (Current == ':')
-                {
-                    Advance();
-                    items.Add(CreateToken(Pascal.Colon, ":"));
-                }
-                else if (Current == ',')
-                {
-                    Advance();
-                    items.Add(CreateToken(Pascal.Comma, ","));
-                }
+               
                 else if (Current == '{')
                 {
                     Advance();
@@ -210,6 +144,14 @@ namespace Minesweeper.Test
                         Advance();
                     }
                     Advance();
+                }
+                else if (Pascal.SingleTokens.Contains(Current.ToString()))
+                {
+                    var item = Pascal.SingleTokens.First(p => p == Current.ToString());
+
+                    Advance();
+
+                    items.Add(CreateToken(item, item));
                 }
                 else
                 {

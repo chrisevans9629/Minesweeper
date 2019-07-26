@@ -15,19 +15,19 @@ namespace Minesweeper.Test
         protected Node Expression()
         {
             var result = MultiDiv();
-            while (_tokens.Current != null && _tokens.Current.Token.Name != SimpleTree.Num)
+            while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.Num)
             {
-                if (_tokens.Current.Token.Name == SimpleTree.Add)
+                if (_tokens.Current.Token.Name == Pascal.Add)
                 {
                     var token = _tokens.Current;
-                    Eat(SimpleTree.Add);
+                    Eat(Pascal.Add);
                     result = new BinaryOperator(result, MultiDiv(), token);
                 }
 
-                else if (_tokens.Current.Token.Name == SimpleTree.Sub)
+                else if (_tokens.Current.Token.Name == Pascal.Sub)
                 {
                     var token = _tokens.Current;
-                    Eat(SimpleTree.Sub);
+                    Eat(Pascal.Sub);
                     result = new BinaryOperator(result, MultiDiv(), token);
                 }
                 else
@@ -51,14 +51,14 @@ namespace Minesweeper.Test
             var par = Parenthese();
             if (par != null) return par;
 
-            if (current.Token.Name == SimpleTree.Add)
+            if (current.Token.Name == Pascal.Add)
             {
-                Eat(SimpleTree.Add);
+                Eat(Pascal.Add);
                 return new UnaryOperator(ParaAddSub(), current);
             }
-            if (current.Token.Name == SimpleTree.Sub)
+            if (current.Token.Name == Pascal.Sub)
             {
-                Eat(SimpleTree.Sub);
+                Eat(Pascal.Sub);
                 return new UnaryOperator(ParaAddSub(), current);
             }
             return ParseNumber();
@@ -66,11 +66,11 @@ namespace Minesweeper.Test
 
         protected virtual Node Parenthese()
         {
-            if (_tokens.Current.Token.Name == SimpleTree.LParinth)
+            if (_tokens.Current.Token.Name == Pascal.LParinth)
             {
-                Eat(SimpleTree.LParinth);
+                Eat(Pascal.LParinth);
                 var result = Expression();
-                Eat(SimpleTree.RParinth);
+                Eat(Pascal.RParinth);
                 var para = result;
                 return para;
             }
@@ -82,25 +82,25 @@ namespace Minesweeper.Test
         {
             var result = ParaAddSub();
 
-            while (_tokens.Current != null && _tokens.Current.Token.Name != SimpleTree.Num)
+            while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.Num)
             {
-                if (_tokens.Current.Token.Name == SimpleTree.Multi)
+                if (_tokens.Current.Token.Name == Pascal.Multi)
                 {
                     var token = _tokens.Current;
-                    Eat(SimpleTree.Multi);
+                    Eat(Pascal.Multi);
                     result = new BinaryOperator(result, ParaAddSub(), token);
                 }
 
-                else if (_tokens.Current.Token.Name == SimpleTree.FloatDiv)
+                else if (_tokens.Current.Token.Name == Pascal.FloatDiv)
                 {
                     var token = _tokens.Current;
-                    Eat(SimpleTree.FloatDiv);
+                    Eat(Pascal.FloatDiv);
                     result = new BinaryOperator(result, ParaAddSub(), token);
                 }
-                else if (_tokens.Current.Token.Name == SimpleTree.IntDiv)
+                else if (_tokens.Current.Token.Name == Pascal.IntDiv)
                 {
                     var token = _tokens.Current;
-                    Eat(SimpleTree.IntDiv);
+                    Eat(Pascal.IntDiv);
                     result = new BinaryOperator(result, ParaAddSub(), token);
                 }
                 else
@@ -126,7 +126,8 @@ namespace Minesweeper.Test
             }
             else
             {
-                throw new GrammerException($"expected {name} but was {_tokens.Current?.Token.Name}");
+                var current = _tokens.Current;
+                throw new ParserException(ErrorCode.UnexpectedToken, _tokens.Current, $"Expected an '{name}' token but was '{_tokens.Current?.Token.Name}' at index {current.Index} column {current.Column} line {current.Line}");
             }
         }
 

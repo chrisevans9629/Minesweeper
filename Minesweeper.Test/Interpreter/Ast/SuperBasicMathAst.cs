@@ -16,13 +16,13 @@ namespace Minesweeper.Test
         public static void AddMathTokens(RegexLexer lex)
         {
             lex.Ignore(" ");
-            lex.Add("LPA", @"\(");
-            lex.Add("RPA", @"\)");
-            lex.Add("NUM", @"\d+");
-            lex.Add("ADD", @"\+");
-            lex.Add("SUB", @"-");
-            lex.Add("MUL", @"\*");
-            lex.Add(SimpleTree.FloatDiv, @"/");
+            lex.Add(Pascal.LParinth, @"\(");
+            lex.Add(Pascal.RParinth, @"\)");
+            lex.Add(Pascal.Num, @"\d+");
+            lex.Add(Pascal.Add, @"\+");
+            lex.Add(Pascal.Sub, @"-");
+            lex.Add(Pascal.Multi, @"\*");
+            lex.Add(Pascal.FloatDiv, @"/");
         }
 
         

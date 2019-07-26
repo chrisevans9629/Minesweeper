@@ -22,14 +22,7 @@ namespace Minesweeper.Test.Tests
         public void Evaluate_Test(string input, double output)
         {
             var lex = new RegexLexer();
-            lex.Ignore(" ");
-            lex.Add("LPA", @"\(");
-            lex.Add("RPA", @"\)");
-            lex.Add("NUM", @"\d+");
-            lex.Add("ADD", @"\+");
-            lex.Add("SUB", @"-");
-            lex.Add("MUL", @"\*");
-            lex.Add(SimpleTree.FloatDiv, @"/");
+            SuperBasicMathAst.AddMathTokens(lex);
             var tokens = lex.Tokenize(input);
             var t = tree.Evaluate(tokens);
 

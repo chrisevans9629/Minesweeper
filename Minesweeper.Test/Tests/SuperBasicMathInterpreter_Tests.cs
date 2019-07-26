@@ -41,7 +41,7 @@ namespace Minesweeper.Test.Tests
             var tree = new SuperBasicMathAst(lex.Tokenize(input));
 
             var node = tree.Evaluate();
-            node.Should().BeOfType<UnaryOperator>().Which.Name.Should().Be(SimpleTree.Sub);
+            node.Should().BeOfType<UnaryOperator>().Which.Name.Should().Be(Pascal.Sub);
         }
 
         [Test]
@@ -54,13 +54,13 @@ namespace Minesweeper.Test.Tests
             var t = tree.Evaluate();
 
             var node = t.Should().BeOfType<BinaryOperator>().Which;
-            node.Name.Should().Be(SimpleTree.Add);
+            node.Name.Should().Be(Pascal.Add);
             var left = node.Left.Should().BeOfType<NumberLeaf>().Which;
-            left.TokenItem.Token.Name.Should().Be(SimpleTree.Num);
+            left.TokenItem.Token.Name.Should().Be(Pascal.Num);
             left.TokenItem.Value.Should().Be("1");
             var right = node.Right.Should().BeOfType<NumberLeaf>().Which;
 
-            right.TokenItem.Token.Name.Should().Be(SimpleTree.Num);
+            right.TokenItem.Token.Name.Should().Be(Pascal.Num);
             right.TokenItem.Value.Should().Be("2");
         }
 
@@ -74,7 +74,7 @@ namespace Minesweeper.Test.Tests
             var tree = new SuperBasicMathAst(lex.Tokenize(input));
 
             var t = tree.Evaluate().Should().BeOfType<BinaryOperator>().Which;
-            t.Name.Should().Be(SimpleTree.Sub);
+            t.Name.Should().Be(Pascal.Sub);
         }
 
         [Test]
@@ -86,32 +86,32 @@ namespace Minesweeper.Test.Tests
             var tree = new SuperBasicMathAst(lex.Tokenize(input));
             var t = tree.Evaluate().Should().BeOfType<BinaryOperator>().Which;
 
-            t.TokenItem.Token.Name.Should().Be(SimpleTree.Sub);
+            t.TokenItem.Token.Name.Should().Be(Pascal.Sub);
 
             var left = t.Left.Should().BeOfType<NumberLeaf>().Which;
             var right = t.Right.Should().BeOfType<NumberLeaf>().Which;
 
-            left.TokenItem.Token.Name.Should().Be(SimpleTree.Num);
+            left.TokenItem.Token.Name.Should().Be(Pascal.Num);
             left.TokenItem.Value.Should().Be("1");
-            right.TokenItem.Token.Name.Should().Be(SimpleTree.Num);
+            right.TokenItem.Token.Name.Should().Be(Pascal.Num);
             right.TokenItem.Value.Should().Be("2");
         }
 
         [Test]
         public void TestTree()
         {
-            var mulToken = new TokenItem() { Value = "*", Token = new Token() { Name = SimpleTree.Multi } };
-            var addToken = new TokenItem() { Value = "+", Token = new Token() { Name = SimpleTree.Add } };
+            var mulToken = new TokenItem() { Value = "*", Token = new Token() { Name = Pascal.Multi } };
+            var addToken = new TokenItem() { Value = "+", Token = new Token() { Name = Pascal.Add } };
             var mulop = new BinaryOperator(
-                new NumberLeaf(new TokenItem() { Value = "2", Token = new Token() { Name = SimpleTree.Num } }),
-                new NumberLeaf(new TokenItem() { Value = "7", Token = new Token() { Name = SimpleTree.Num } }),
+                new NumberLeaf(new TokenItem() { Value = "2", Token = new Token() { Name = Pascal.Num } }),
+                new NumberLeaf(new TokenItem() { Value = "7", Token = new Token() { Name = Pascal.Num } }),
                 mulToken);
             var addop = new BinaryOperator(
                 mulop,
-                new NumberLeaf(new TokenItem() { Value = "3", Token = new Token() { Name = SimpleTree.Num } }),
+                new NumberLeaf(new TokenItem() { Value = "3", Token = new Token() { Name = Pascal.Num } }),
                 addToken);
 
-            addop.TokenItem.Token.Name.Should().Be(SimpleTree.Add);
+            addop.TokenItem.Token.Name.Should().Be(Pascal.Add);
 
         }
     }

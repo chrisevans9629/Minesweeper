@@ -20,10 +20,28 @@ namespace Minesweeper.Test.Tests
         {
             var input = "PROGRAM Part10AST;\r\nVAR\r\n   a, b : INTEGER;\r\n   y    : REAL;\r\n\r\nBEGIN {Part10AST}\r\n   a := 2;\r\n   b := 10 * a + 10 * a DIV 4;\r\n   y := 20 / 7 + 3.14;\r\nEND.  {Part10AST}";
 
-            Console.WriteLine(ast.Evaluate(lexer.Tokenize(input)).Display());
+            var tokens = lexer.Tokenize(input);
+
+            var node = ast.Evaluate(tokens);
+
+
+            Console.WriteLine(node.Display());
             //var interpreter = new PascalInterpreter();
             //interpreter.Evaluate(ast.Evaluate());
         }
+
+        [Test]
+        public void ThrowParserException()
+        {
+            var input = "program;";
+
+            var tokens = lexer.Tokenize(input);
+            var result = Assert.Throws<ParserException>(() => ast.Evaluate(tokens));
+
+            result.Token.Line.Should().Be(1);
+            result.Message.Should().Be("Expected an 'ID' token but was ';' at index 7 column 8 line 1");
+        }
+
         [Test]
         public void PascalAst_ShouldStartWithProgram()
         {
