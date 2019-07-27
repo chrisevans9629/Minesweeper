@@ -117,7 +117,7 @@ namespace Minesweeper.Test.Tests
             scope.GetValue("Add").Should().BeOfType<FunctionDeclarationNode>();
         }
 
-        private static string GetFile(string fileName)
+        public static string GetFile(string fileName)
         {
             var file = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, $"TestData", fileName));
             return file;

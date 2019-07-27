@@ -29,6 +29,20 @@ namespace Minesweeper.Test.Tests
             tokens[6].Token.Name.Should().Be(Pascal.Comma);
             tokens[17].Token.Name.Should().Be(Pascal.Real);
         }
+
+        [Test]
+        public void BooleanConst()
+        {
+            var input = "true false True";
+
+            var tokens = lexer.Tokenize(input);
+
+            foreach (var tokenItem in tokens)
+            {
+                tokenItem.Token.Name.Should().Be(Pascal.BoolConst);
+            }
+        }
+
         [Test]
         public void RealConstTest()
         {

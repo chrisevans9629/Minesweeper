@@ -90,11 +90,11 @@ namespace Minesweeper.Test
             var token = CreateToken(Pascal.Id, result);
 
 
-            var reserved = Pascal.Reservations.FirstOrDefault(p => result.ToUpper() == p.ToUpper());
-            if (reserved != null)
+            if (Pascal.Reservations.ContainsKey(result.ToUpper()))
             {
-                token.Token.Name = reserved;
+                token.Token = Pascal.Reservations[result.ToUpper()];
             }
+           
             return token;
         }
 

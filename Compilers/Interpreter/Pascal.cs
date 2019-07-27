@@ -17,7 +17,6 @@ namespace Minesweeper.Test
         public const string Begin = "BEGIN";
         public const string End = "END";
         public const string Var = "VAR";
-
         public const string Real = "REAL";
         public const string Int = "INTEGER";
         public const string Boolean = "BOOLEAN";
@@ -67,20 +66,28 @@ namespace Minesweeper.Test
             Equal
         };
 
-        public static IEnumerable<string> Reservations = new List<string>()
+        public static Token CreateToken(string name)
         {
-            IntDiv,
-            Begin,
-            End,
-            Var,
-            Int,
-            Real,
-            Program,
-            Procedure,
-            Function,
-            If,
-            Then,
-            Else
+            return new Token(){Name = name};
+        }
+
+        public static Dictionary<string,Token> Reservations = new Dictionary<string,Token>()
+        {
+            { IntDiv,CreateToken(IntDiv)} ,
+            { Begin, CreateToken(Begin)},
+            {End, CreateToken(End)},
+            {Var, CreateToken(Var)},
+            {Int, CreateToken(Int)},
+            {Real, CreateToken(Real)},
+            {Program, CreateToken(Program)},
+            {Procedure, CreateToken(Procedure)},
+            {Function, CreateToken(Function)},
+            {If, CreateToken(If)},
+            {Then, CreateToken(Then)},
+            {Else, CreateToken(Else)},
+            {"TRUE", CreateToken(BoolConst) },
+            {"FALSE", CreateToken(BoolConst) }
+            
         };
     }
 }
