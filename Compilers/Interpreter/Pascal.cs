@@ -8,6 +8,9 @@ namespace Minesweeper.Test
     }
     public class Pascal
     {
+        public const string If = "IF";
+        public const string Then = "THEN";
+        public const string Else = "ELSE";
         public const string Function = "FUNCTION";
         public const string Procedure = "PROCEDURE";
         public const string Program = "PROGRAM";
@@ -22,6 +25,8 @@ namespace Minesweeper.Test
         public const string Assign = "ASSIGN";
         public const string IntDiv = "DIV";
 
+
+        public const string Equal = "=";
         public const string Dot      = ".";
         public const string Colon    = ":";
 
@@ -47,7 +52,8 @@ namespace Minesweeper.Test
             Multi,
             FloatDiv,
             Add,
-            Sub
+            Sub,
+            Equal
         };
 
         public static IEnumerable<string> Reservations = new List<string>()
@@ -60,7 +66,10 @@ namespace Minesweeper.Test
             Real,
             Program,
             Procedure,
-            Function
+            Function,
+            If,
+            Then,
+            Else
         };
     }
 }

@@ -4,6 +4,15 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
+
+    
+    public class IfStatementNode
+    {
+        public IfStatementNode(Node ifCheck)
+        {
+            
+        }
+    }
     public class PascalAst : AbstractSyntaxTreeBase
     {
         private TokenItem Current => _tokens.Current;
