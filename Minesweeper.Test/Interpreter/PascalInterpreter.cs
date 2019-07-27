@@ -4,9 +4,20 @@ using Minesweeper.Test.Tests;
 namespace Minesweeper.Test
 {
 
-    public class GlobalMemory : Dictionary<string, object>
+    public class GlobalMemory
     {
+        private Dictionary<string, object> dictionary  = new Dictionary<string, object>();
 
+        public bool ContainsKey(string key)
+        {
+            return dictionary.ContainsKey(key.ToUpper());
+        }
+        public void Add(string key, object obj)
+        {
+            dictionary.Add(key.ToUpper(), obj);
+        }
+
+        public object this[string key] { get => dictionary[key.ToUpper()]; set=> dictionary[key.ToUpper()] = value; }
     }
 
     public class PascalInterpreter : SuperBasicMathInterpreter
@@ -82,11 +93,23 @@ namespace Minesweeper.Test
 
         private object VisitProcedureCall(ProcedureCallNode call)
         {
+            var declaration = (ProcedureDeclarationNode)_scope[call.ProcedureName.ToUpper()];
+            for (var i = 0; i < declaration.Parameters.Count; i++)
+            {
+                var parameter = declaration.Parameters[i];
+                VisitVarDeclaration(parameter.Declaration);
+                var value = VisitNode(call.Parameters[i]);
+
+                _scope[parameter.Declaration.VarNode.VariableName] = value;
+            }
+
+            VisitBlock(declaration.Block);
             return null;
         }
 
         private object VisitProcedureDeclaration(ProcedureDeclarationNode procedure)
         {
+            this._scope.Add(procedure.ProcedureId, procedure);
             return null;
         }
 

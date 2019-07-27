@@ -104,8 +104,8 @@ namespace Minesweeper.Test.Tests
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
             var result = table.CheckSyntax(node);
-            var memory = interpreter.Interpret(node);
-            memory.Should().BeOfType<GlobalMemory>().Which.Should().ContainKey("a");
+            var memory = interpreter.Interpret(node).Should().BeOfType<GlobalMemory>().Subject;
+             memory.ContainsKey("a").Should().BeTrue();
         }
 
         [Test]
