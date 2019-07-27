@@ -1,6 +1,6 @@
 ﻿program test;
 var x : integer;
-	function Add(y,x:integer)
+	function Add(y,x:integer);
 	begin
 		Add := y + x;
 	end;

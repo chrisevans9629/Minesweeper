@@ -9,7 +9,7 @@ namespace Minesweeper.Test
         private TokenItem Current => _tokens.Current;
 
         private IList<TokenItem> items;
-       
+
 
         public PascalAst(ILogger logger = null) : base(logger)
         {
@@ -34,6 +34,7 @@ namespace Minesweeper.Test
             return node;
         }
 
+        private string Name => Current.Token.Name;
         private IList<Node> Declarations()
         {
             var dec = new List<Node>();
@@ -51,35 +52,79 @@ namespace Minesweeper.Test
                 }
             }
 
-            while (Current.Token.Name == Pascal.Procedure)
+            while (Current.Token.Name == Pascal.Procedure || Current.Token.Name == Pascal.Function)
             {
-                var parameters = new List<ProcedureParameter>();
-                Eat(Pascal.Procedure);
-                var procedureId = Current.Value;
-                Eat(Pascal.Id);
-                if (Current.Token.Name == Pascal.LParinth)
+                if (Current.Token.Name == Pascal.Procedure)
                 {
-                    Eat(Pascal.LParinth);
-                    while (Current.Token.Name != Pascal.RParinth)
-                    {
-                        parameters.AddRange(VariableDeclaration().Select(p=> new ProcedureParameter(p)));
-                        if (Current.Token.Name == Pascal.Semi)
-                        {
-                            Eat(Pascal.Semi);
-                        }
-                    }
-                    Eat(Pascal.RParinth);
+                    var proc = ProcedureDeclaration();
+                    dec.Add(proc);
                 }
-                Eat(Pascal.Semi);
-                var block = Block();
-                Eat(Pascal.Semi);
-                dec.Add(new ProcedureDeclarationNode(procedureId, block, parameters));
+
+                if (Name == Pascal.Function)
+                {
+                    var fun = FunctionDeclaration();
+                    dec.Add(fun);
+                }
             }
 
             return dec;
         }
+        private FunctionDeclarationNode FunctionDeclaration()
+        {
+            var parameters = new List<ProcedureParameter>();
+            Eat(Pascal.Function);
+            var procedureId = Current.Value;
+            var token = Current;
+            Eat(Pascal.Id);
+            if (Current.Token.Name == Pascal.LParinth)
+            {
+                Eat(Pascal.LParinth);
+                while (Current.Token.Name != Pascal.RParinth)
+                {
+                    parameters.AddRange(VariableDeclaration().Select(p => new ProcedureParameter(p)));
+                    if (Current.Token.Name == Pascal.Semi)
+                    {
+                        Eat(Pascal.Semi);
+                    }
+                }
 
-      
+                Eat(Pascal.RParinth);
+            }
+
+            Eat(Pascal.Semi);
+            var block = Block();
+            Eat(Pascal.Semi);
+            var proc = new FunctionDeclarationNode(procedureId, parameters, block, token);
+            return proc;
+        }
+        private ProcedureDeclarationNode ProcedureDeclaration()
+        {
+            var parameters = new List<ProcedureParameter>();
+            Eat(Pascal.Procedure);
+            var procedureId = Current.Value;
+            Eat(Pascal.Id);
+            if (Current.Token.Name == Pascal.LParinth)
+            {
+                Eat(Pascal.LParinth);
+                while (Current.Token.Name != Pascal.RParinth)
+                {
+                    parameters.AddRange(VariableDeclaration().Select(p => new ProcedureParameter(p)));
+                    if (Current.Token.Name == Pascal.Semi)
+                    {
+                        Eat(Pascal.Semi);
+                    }
+                }
+
+                Eat(Pascal.RParinth);
+            }
+
+            Eat(Pascal.Semi);
+            var block = Block();
+            Eat(Pascal.Semi);
+            var proc = new ProcedureDeclarationNode(procedureId, block, parameters);
+            return proc;
+        }
+
 
         private IList<VarDeclarationNode> VariableDeclaration()
         {
@@ -147,6 +192,10 @@ namespace Minesweeper.Test
                 return new UnaryOperator(ParaAddSub(), current);
             }
 
+            if (Name == Pascal.Id && this._tokens.Peek().Token.Name == Pascal.LParinth)
+            {
+                return FunctionCall();
+            }
             if (current.Token.Name == Pascal.Id)
             {
                 return Variable();
@@ -157,6 +206,27 @@ namespace Minesweeper.Test
             //    return node;
             //}
             return ParseNumber();
+        }
+
+        private FunctionCallNode FunctionCall()
+        {
+            var procedureName = Current.Value;
+            var token = Current;
+            Eat(Pascal.Id);
+            Eat(Pascal.LParinth);
+            var parameters = new List<Node>();
+            while (Current.Token.Name != Pascal.RParinth)
+            {
+                parameters.Add(Expression());
+                if (Current.Token.Name == Pascal.Comma)
+                {
+                    Eat(Pascal.Comma);
+                }
+
+            }
+            Eat(Pascal.RParinth);
+            Eat(Pascal.Semi);
+            return new FunctionCallNode(procedureName, parameters, token);
         }
 
         Node Statement()
@@ -196,7 +266,7 @@ namespace Minesweeper.Test
             }
             Eat(Pascal.RParinth);
             Eat(Pascal.Semi);
-            return new ProcedureCallNode(procedureName, parameters, token );
+            return new ProcedureCallNode(procedureName, parameters, token);
         }
 
         AssignNode AssignmentStatement()

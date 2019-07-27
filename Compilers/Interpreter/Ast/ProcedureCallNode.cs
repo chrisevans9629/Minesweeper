@@ -17,7 +17,7 @@ namespace Minesweeper.Test
 
         public override string Display()
         {
-            return $"{ProcedureName}({Node.Aggregate(Parameters)})";
+            return $"Procedure {ProcedureName}({Node.Aggregate(Parameters)})";
         }
     }
 }
