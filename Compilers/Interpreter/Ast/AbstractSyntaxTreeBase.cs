@@ -73,7 +73,24 @@ namespace Minesweeper.Test
                 Eat(Pascal.Sub);
                 return new UnaryOperator(ParaAddSub(), current);
             }
+
+            if (current.Token.Name == Pascal.Equal)
+            {
+
+            }
+
+            if (current.Token.Name == Pascal.BoolConst)
+            {
+                return ParseBool();
+            }
             return ParseNumber();
+        }
+
+        private Node ParseBool()
+        {
+            var b = new BoolNode(_tokens.Current);
+            _tokens.Advance();
+            return b;
         }
 
         protected virtual Node Parenthese()
@@ -141,6 +158,24 @@ namespace Minesweeper.Test
         }
 
         public abstract Node Evaluate();
+    }
+
+    public class BoolNode : Node
+    {
+        public TokenItem TokensCurrent { get; }
+        public bool Value { get; set; }
+        public TokenItem TokenItem { get; set; }
+        public BoolNode(TokenItem tokensCurrent)
+        {
+            TokensCurrent = tokensCurrent;
+            Value = bool.Parse(tokensCurrent.Value.ToLower());
+        }
+
+
+        public override string Display()
+        {
+            return Value.ToString();
+        }
     }
 
     public class GrammerException : Exception

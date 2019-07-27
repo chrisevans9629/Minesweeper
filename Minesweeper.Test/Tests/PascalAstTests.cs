@@ -31,6 +31,15 @@ namespace Minesweeper.Test.Tests
         }
 
         [Test]
+        public void BooleanParse()
+        {
+            var file = PascalInterpreterTests.GetFile("PascalBoolean.txt");
+
+            var tokens = lexer.Tokenize(file);
+            var node = ast.Evaluate(tokens);
+        }
+
+        [Test]
         public void ThrowParserException()
         {
             var input = "program;";

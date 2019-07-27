@@ -154,7 +154,7 @@ namespace Minesweeper.Test
         {
             var result = new TypeNode(Current);
 
-            if (Pascal.BuiltInTypes.Contains(Name))
+            if (Pascal.BuiltInTypes.Contains(result.TypeValue.ToUpper()))
             {
                 Eat(Name);
             }
@@ -185,19 +185,19 @@ namespace Minesweeper.Test
         protected override Node ParaAddSub()
         {
             var current = _tokens.Current;
-            var par = Parenthese();
-            if (par != null) return par;
+            //var par = Parenthese();
+            //if (par != null) return par;
 
-            if (current.Token.Name == Pascal.Add)
-            {
-                Eat(Pascal.Add);
-                return new UnaryOperator(ParaAddSub(), current);
-            }
-            if (current.Token.Name == Pascal.Sub)
-            {
-                Eat(Pascal.Sub);
-                return new UnaryOperator(ParaAddSub(), current);
-            }
+            //if (current.Token.Name == Pascal.Add)
+            //{
+            //    Eat(Pascal.Add);
+            //    return new UnaryOperator(ParaAddSub(), current);
+            //}
+            //if (current.Token.Name == Pascal.Sub)
+            //{
+            //    Eat(Pascal.Sub);
+            //    return new UnaryOperator(ParaAddSub(), current);
+            //}
 
             if (Name == Pascal.Id && this._tokens.Peek().Token.Name == Pascal.LParinth)
             {
@@ -207,12 +207,13 @@ namespace Minesweeper.Test
             {
                 return Variable();
             }
+
+            return base.ParaAddSub();
             //else
             //{
             //    var node = Variable();
             //    return node;
             //}
-            return ParseNumber();
         }
 
         private FunctionCallNode FunctionCall()
