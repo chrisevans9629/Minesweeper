@@ -8,6 +8,7 @@ namespace Minesweeper.Test
     }
     public class Pascal
     {
+        public const string Function = "FUNCTION";
         public const string Procedure = "PROCEDURE";
         public const string Program = "PROGRAM";
         public const string Real = "REAL";
@@ -58,7 +59,8 @@ namespace Minesweeper.Test
             Int,
             Real,
             Program,
-            Procedure
+            Procedure,
+            Function
         };
     }
 }

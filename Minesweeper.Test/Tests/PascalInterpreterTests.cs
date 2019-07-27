@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -31,6 +32,21 @@ namespace Minesweeper.Test.Tests
             var scope = interpret.Should().BeOfType<GlobalMemory>().Which;
 
             scope["x"].Should().Be(10);
+        }
+
+        [Test]
+        public void PascalFunctionCall()
+        {
+            var file = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData\\PascalFunction.txt"));
+
+            var tokens = lexer.Tokenize(file);
+            var node = ast.Evaluate(tokens);
+
+            var interpret = interpreter.Interpret(node);
+
+            var scope = interpret.Should().BeOfType<GlobalMemory>().Which;
+
+            scope["x"].Should().Be(20);
         }
 
         [Test]
