@@ -44,88 +44,34 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interpreter\Ast\AbstractSyntaxTree.cs" />
-    <Compile Include="Interpreter\Ast\AbstractSyntaxTreeBase.cs" />
-    <Compile Include="Interpreter\Ast\ProcedureCallNode.cs" />
-    <Compile Include="Interpreter\Ast\ProcedureDeclarationNode.cs" />
-    <Compile Include="Interpreter\Ast\ProcedureParameter.cs" />
-    <Compile Include="Interpreter\ErrorCodes.cs" />
-    <Compile Include="Interpreter\Symbols\ProcedureSymbol.cs" />
     <Compile Include="Tests\AbstractSyntaxTreeTests.cs" />
     <Compile Include="Evolution\CandiateSolutionPath.cs" />
     <Compile Include="Evolution\CandidateSolution.cs" />
     <Compile Include="Evolution\CandidateSolutionItem.cs" />
     <Compile Include="Evolution\City.cs" />
     <Compile Include="Evolution\CityCollection.cs" />
-    <Compile Include="Interpreter\Component.cs" />
-    <Compile Include="Interpreter\GoUntil.cs" />
-    <Compile Include="Interpreter\AssignNode.cs" />
-    <Compile Include="Interpreter\BinaryOperator.cs" />
-    <Compile Include="Interpreter\Ast\BlockNode.cs" />
-    <Compile Include="Interpreter\Ast\CompoundStatement.cs" />
-    <Compile Include="Interpreter\Grammer.cs" />
-    <Compile Include="Interpreter\Ast\IAbstractSyntaxTree.cs" />
-    <Compile Include="Interpreter\MathParser\IMathNode.cs" />
-    <Compile Include="Interpreter\MathParser\IMathParser.cs" />
-    <Compile Include="Interpreter\MathParser\IMathValue.cs" />
-    <Compile Include="Interpreter\Ast\Node.cs" />
-    <Compile Include="Interpreter\Ast\NoOp.cs" />
-    <Compile Include="Interpreter\Ast\NumberLeaf.cs" />
-    <Compile Include="Interpreter\Pascal.cs" />
-    <Compile Include="Interpreter\Ast\PascalAst.cs" />
-    <Compile Include="Interpreter\PascalInterpreter.cs" />
-    <Compile Include="Interpreter\PascalLexer.cs" />
-    <Compile Include="Interpreter\PascalProgramNode.cs" />
     <Compile Include="Tests\PascalAstTests.cs" />
     <Compile Include="Tests\PascalInterpreterTests.cs" />
     <Compile Include="Tests\PascalLexerTests.cs" />
     <Compile Include="Tests\MathInterpreterTests.cs" />
     <Compile Include="Tests\MathSimpleTreeTests.cs" />
-    <Compile Include="Interpreter\Ast\SuperBasicMathAst.cs" />
-    <Compile Include="Interpreter\SuperBasicMathInterpreter.cs" />
     <Compile Include="Tests\PascalSourceToSourceCompiler.cs" />
     <Compile Include="Tests\PascalSourceToSourceTests.cs" />
     <Compile Include="Tests\PascalTestInputs.cs" />
     <Compile Include="Tests\SuperBasicMathInterpreter_Tests.cs" />
-    <Compile Include="Interpreter\SuperBasicMathLispInterpreter.cs" />
-    <Compile Include="Interpreter\SuperBasicRpnMathInterpreter.cs" />
-    <Compile Include="Interpreter\Ast\TypeNode.cs" />
-    <Compile Include="Interpreter\Ast\UnaryOperator.cs" />
-    <Compile Include="Interpreter\Ast\VarDeclarationNode.cs" />
-    <Compile Include="Interpreter\Ast\Variable.cs" />
     <Compile Include="Evolution\Item.cs" />
     <Compile Include="Evolution\ItemList.cs" />
     <Compile Include="Evolution\Knapsack.cs" />
     <Compile Include="Tests\KnapsackTests.cs" />
-    <Compile Include="Interpreter\RegexLexer.cs" />
     <Compile Include="Tests\RegexLexerTests.cs" />
-    <Compile Include="Interpreter\Symbols\Symbol.cs" />
-    <Compile Include="Interpreter\Symbols\ScopedSymbolTable.cs" />
-    <Compile Include="Interpreter\Symbols\PascalSemanticAnalyzer.cs" />
     <Compile Include="Minesweeper\MainPageViewModelTests.cs" />
-    <Compile Include="Interpreter\MathOperatorCollection.cs" />
-    <Compile Include="Interpreter\MathParser\MathParser.cs" />
-    <Compile Include="Interpreter\MathParser\MathParserTree.cs" />
-    <Compile Include="Interpreter\MathParser\MathTree.cs" />
     <Compile Include="Minesweeper\MineSweeperTests.cs" />
     <Compile Include="Tests\NeuralNetworkTest.cs" />
-    <Compile Include="Interpreter\Number.cs" />
-    <Compile Include="Interpreter\NumberOperator.cs" />
-    <Compile Include="Interpreter\NumberOperatorInject.cs" />
-    <Compile Include="Interpreter\NumberParser.cs" />
-    <Compile Include="Interpreter\NumberValue.cs" />
-    <Compile Include="Interpreter\Operation.cs" />
-    <Compile Include="Interpreter\Operator.cs" />
-    <Compile Include="Interpreter\OperatorValue.cs" />
     <Compile Include="Tests\MathParserTests.cs" />
     <Compile Include="Evolution\PathChosen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Evolution\Road.cs" />
-    <Compile Include="Interpreter\Ast\SimpleTree.cs" />
     <Compile Include="Evolution\SolutionGenerator.cs" />
-    <Compile Include="Interpreter\Token.cs" />
-    <Compile Include="Interpreter\TokenItem.cs" />
-    <Compile Include="Interpreter\SingleChar.cs" />
     <Compile Include="Tests\PascalSemanticAnalyzerTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +98,10 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Compilers\Compilers.csproj">
+      <Project>{1449d9b1-bf39-45ef-a3cc-5fe8d5dc8180}</Project>
+      <Name>Compilers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Evans.AI\Evans.AI.csproj">
       <Project>{ba0ba220-3da8-4300-b4a6-33f60fda4cc0}</Project>
       <Name>Evans.AI</Name>

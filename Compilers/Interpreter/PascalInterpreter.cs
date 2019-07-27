@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Minesweeper.Test.Tests;
 
 namespace Minesweeper.Test
 {

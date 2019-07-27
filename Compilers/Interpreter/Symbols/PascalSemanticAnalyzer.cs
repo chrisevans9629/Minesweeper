@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Minesweeper.Test.Tests;
 
 namespace Minesweeper.Test.Symbols
 {

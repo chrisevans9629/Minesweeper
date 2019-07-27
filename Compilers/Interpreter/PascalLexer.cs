@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Minesweeper.Test;
-using Minesweeper.Test.Tests;
-using SkiaSharp;
 
 namespace Minesweeper.Test
 {

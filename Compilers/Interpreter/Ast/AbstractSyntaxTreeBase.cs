@@ -1,9 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using Minesweeper.Test.Tests;
 
 namespace Minesweeper.Test
 {
+
+    public class Logger : ILogger
+    {
+        public virtual void Log(object obj)
+        {
+            Console.WriteLine(obj);
+        }
+    }
+
+    public interface ILogger
+    {
+        void Log(object obj);
+    }
     public abstract class AbstractSyntaxTreeBase
     {
         protected readonly ILogger Logger;

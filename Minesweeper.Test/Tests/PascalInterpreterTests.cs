@@ -4,18 +4,7 @@ using NUnit.Framework;
 
 namespace Minesweeper.Test.Tests
 {
-    public class Logger : ILogger
-    {
-        public virtual void Log(object obj)
-        {
-            Console.WriteLine(obj);
-        }
-    }
-
-    public interface ILogger
-    {
-        void Log(object obj);
-    }
+   
     public class PascalInterpreterTests
     {
         private PascalInterpreter interpreter;
