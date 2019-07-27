@@ -90,11 +90,12 @@ namespace Minesweeper.Test
 
                 Eat(Pascal.RParinth);
             }
-
+            Eat(Pascal.Colon);
+            var returnType = TypeSpec();
             Eat(Pascal.Semi);
             var block = Block();
             Eat(Pascal.Semi);
-            var proc = new FunctionDeclarationNode(procedureId, parameters, block, token);
+            var proc = new FunctionDeclarationNode(procedureId, parameters, block, token, returnType);
             return proc;
         }
         private ProcedureDeclarationNode ProcedureDeclaration()

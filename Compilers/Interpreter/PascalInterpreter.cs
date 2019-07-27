@@ -86,7 +86,7 @@
             var declaration = (FunctionDeclarationNode)CurrentScope.GetValue(call.FunctionName, true);
             var previous = CurrentScope;
             CurrentScope = new Memory(call.FunctionName, previous);
-
+            CurrentScope.Add(call.FunctionName,null);
             for (var i = 0; i < declaration.Parameters.Count; i++)
             {
                 var parameter = declaration.Parameters[i];

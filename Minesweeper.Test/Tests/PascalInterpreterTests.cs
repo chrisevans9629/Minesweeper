@@ -47,6 +47,7 @@ namespace Minesweeper.Test.Tests
             var scope = interpret.Should().BeOfType<Memory>().Which;
 
             scope.GetValue("x",true).Should().Be(20);
+            scope.GetValue("Add").Should().BeOfType<FunctionDeclarationNode>();
         }
 
         [Test]
