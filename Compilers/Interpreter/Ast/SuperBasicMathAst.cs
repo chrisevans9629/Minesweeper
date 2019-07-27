@@ -17,7 +17,7 @@ namespace Minesweeper.Test
             lex.Ignore(" ");
             lex.Add(Pascal.LParinth, @"\(");
             lex.Add(Pascal.RParinth, @"\)");
-            lex.Add(Pascal.Num, @"\d+");
+            lex.Add(Pascal.IntegerConst, @"\d+");
             lex.Add(Pascal.Add, @"\+");
             lex.Add(Pascal.Sub, @"-");
             lex.Add(Pascal.Multi, @"\*");

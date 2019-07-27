@@ -14,13 +14,24 @@ namespace Minesweeper.Test
         public const string Function = "FUNCTION";
         public const string Procedure = "PROCEDURE";
         public const string Program = "PROGRAM";
-        public const string Real = "REAL";
         public const string Begin = "BEGIN";
         public const string End = "END";
         public const string Var = "VAR";
+
+        public const string Real = "REAL";
         public const string Int = "INTEGER";
+        public const string Boolean = "BOOLEAN";
+
+        public static IEnumerable<string> BuiltInTypes = new List<string>()
+        {
+            Real,
+            Int,
+            Boolean
+        };
+
+        public const string BoolConst = "Bool_Const";
         public const string RealConst = "Real_Const";
-        public const string Num = "NUM";
+        public const string IntegerConst = "Integer_Const";
         public const string Id = "ID";
         public const string Assign = "ASSIGN";
         public const string IntDiv = "DIV";

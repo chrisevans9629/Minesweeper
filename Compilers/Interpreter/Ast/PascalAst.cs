@@ -154,14 +154,11 @@ namespace Minesweeper.Test
         {
             var result = new TypeNode(Current);
 
-            if (Current.Token.Name == Pascal.Int)
+            if (Pascal.BuiltInTypes.Contains(Name))
             {
-                Eat(Pascal.Int);
+                Eat(Name);
             }
-            else if (Current.Token.Name == Pascal.Real)
-            {
-                Eat(Pascal.Real);
-            }
+            
             return result;
         }
 

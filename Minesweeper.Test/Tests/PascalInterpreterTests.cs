@@ -83,6 +83,23 @@ namespace Minesweeper.Test.Tests
             scope.GetValue("x", true).Should().Be(5);
         }
 
+        [Test]
+        public void PascalBoolean()
+        {
+            var file = GetFile("PascalBoolean.txt");
+
+            var tokens = lexer.Tokenize(file);
+            var node = ast.Evaluate(tokens);
+
+            var interpret = interpreter.Interpret(node);
+
+            var scope = interpret.Should().BeOfType<Memory>().Which;
+
+            scope.GetValue("x", true).Should().Be(10);
+            scope.GetValue("constant", true).Should().Be(true);
+            scope.GetValue("determined", true).Should().Be(true);
+        }
+
 
         [Test]
         public void PascalRecursiveFunctionSelfCall()

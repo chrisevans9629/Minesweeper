@@ -27,7 +27,7 @@ namespace Minesweeper.Test
         protected Node Expression()
         {
             var result = MultiDiv();
-            while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.Num)
+            while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.IntegerConst)
             {
                 if (_tokens.Current.Token.Name == Pascal.Add)
                 {
@@ -94,7 +94,7 @@ namespace Minesweeper.Test
         {
             var result = ParaAddSub();
 
-            while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.Num)
+            while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.IntegerConst)
             {
                 if (_tokens.Current.Token.Name == Pascal.Multi)
                 {

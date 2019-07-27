@@ -165,7 +165,7 @@ namespace Minesweeper.Test
                     }
                     else
                     {
-                        items.Add(CreateToken(Pascal.Num, num));
+                        items.Add(CreateToken(Pascal.IntegerConst, num));
                     }
                 }
                

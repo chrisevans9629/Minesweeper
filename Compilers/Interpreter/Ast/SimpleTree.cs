@@ -9,7 +9,7 @@ namespace Minesweeper.Test
         double Number(IEnumerator<TokenItem> token)
         {
             var result = double.Parse(token.Current.Value);
-            Eat(token, Pascal.Num);
+            Eat(token, Pascal.IntegerConst);
             return result;
         }
         public double Evaluate(IList<TokenItem> tokens)
@@ -44,7 +44,7 @@ namespace Minesweeper.Test
             //numerator.MoveNext();
             var result = Par(numerator);
 
-            while (numerator.Current != null && numerator.Current.Token.Name != Pascal.Num)
+            while (numerator.Current != null && numerator.Current.Token.Name != Pascal.IntegerConst)
             {
                 if (numerator.Current.Token.Name == Pascal.Multi)
                 {
@@ -80,7 +80,7 @@ namespace Minesweeper.Test
 
             var result = Term(numerator);
 
-            while (numerator.Current != null && numerator.Current.Token.Name != Pascal.Num)
+            while (numerator.Current != null && numerator.Current.Token.Name != Pascal.IntegerConst)
             {
                 if (numerator.Current.Token.Name == Pascal.Add)
                 {
