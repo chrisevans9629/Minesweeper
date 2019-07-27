@@ -34,10 +34,12 @@ namespace Minesweeper.Test.Tests
             scope.GetValue("x", true).Should().Be(10);
         }
 
+
+
         [Test]
         public void PascalFunctionCall()
         {
-            var file = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData\\PascalFunction.txt"));
+            var file = GetFile("PascalFunction.txt");
 
             var tokens = lexer.Tokenize(file);
             var node = ast.Evaluate(tokens);
@@ -48,6 +50,28 @@ namespace Minesweeper.Test.Tests
 
             scope.GetValue("x",true).Should().Be(20);
             scope.GetValue("Add").Should().BeOfType<FunctionDeclarationNode>();
+        }
+
+        [Test]
+        public void PascalFunctionSelfCall()
+        {
+            var file = GetFile("PascalFunctionSelfCall.txt");
+
+            var tokens = lexer.Tokenize(file);
+            var node = ast.Evaluate(tokens);
+
+            var interpret = interpreter.Interpret(node);
+
+            var scope = interpret.Should().BeOfType<Memory>().Which;
+
+            scope.GetValue("x", true).Should().Be(20);
+            scope.GetValue("Add").Should().BeOfType<FunctionDeclarationNode>();
+        }
+
+        private static string GetFile(string fileName)
+        {
+            var file = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, $"TestData", fileName));
+            return file;
         }
 
         [Test]

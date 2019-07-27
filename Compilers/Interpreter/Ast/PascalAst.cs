@@ -226,7 +226,6 @@ namespace Minesweeper.Test
 
             }
             Eat(Pascal.RParinth);
-            Eat(Pascal.Semi);
             return new FunctionCallNode(procedureName, parameters, token);
         }
 
