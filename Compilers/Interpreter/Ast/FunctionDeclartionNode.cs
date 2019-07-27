@@ -25,14 +25,14 @@ namespace Minesweeper.Test
     {
         public string FunctionName { get; }
         public IList<ProcedureParameter> Parameters { get; }
-        public BlockNode BlockNode { get; }
+        public BlockNode Block { get; }
         public TokenItem Token { get; }
 
-        public FunctionDeclarationNode(string functionName, IList<ProcedureParameter> parameters, BlockNode blockNode, TokenItem token)
+        public FunctionDeclarationNode(string functionName, IList<ProcedureParameter> parameters, BlockNode block, TokenItem token)
         {
             FunctionName = functionName;
             Parameters = parameters;
-            BlockNode = blockNode;
+            Block = block;
             Token = token;
         }
         public override string Display()

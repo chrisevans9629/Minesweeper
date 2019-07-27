@@ -41,4 +41,11 @@ namespace Minesweeper.Test
         {
         }
     }
+
+    public class RuntimeException : PascalException
+    {
+        public RuntimeException(ErrorCode error, TokenItem token, string message) : base(error, token, message)
+        {
+        }
+    }
 }

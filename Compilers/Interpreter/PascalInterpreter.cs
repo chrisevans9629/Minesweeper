@@ -1,38 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace Minesweeper.Test
+﻿namespace Minesweeper.Test
 {
-
-    public class Memory
-    {
-        public Memory Parent { get; }
-        private Dictionary<string, object> dictionary  = new Dictionary<string, object>();
-
-        public Memory(Memory parent = null)
-        {
-            Parent = parent;
-        }
-        public bool ContainsKey(string key)
-        {
-            return dictionary.ContainsKey(key.ToUpper());
-        }
-        public void Add(string key, object obj)
-        {
-            dictionary.Add(key.ToUpper(), obj);
-        }
-
-        public void SetValue(string key, object value)
-        {
-            dictionary[key.ToUpper()] = value;
-        }
-
-        public object GetValue(string key)
-        {
-            return dictionary[key.ToUpper()];
-        }
-        public object this[string key] { get => dictionary[key.ToUpper()]; set=> dictionary[key.ToUpper()] = value; }
-    }
-
     public class PascalInterpreter : SuperBasicMathInterpreter
     {
         private ILogger logger;
@@ -42,16 +9,16 @@ namespace Minesweeper.Test
         }
         public override object Interpret(Node node)
         {
-            _scope = new Memory();
+            CurrentScope = new Memory("GLOBAL");
             var result = base.Interpret(node);
-            return _scope;
+            return CurrentScope;
         }
 
         public object GetVar(string key)
         {
-            return _scope[key.ToUpper()];
+            return CurrentScope.GetValue(key, true);
         }
-        private Memory _scope = new Memory();
+        private Memory CurrentScope;
         object VisitCompound(CompoundStatement compound)
         {
             foreach (var compoundNode in compound.Nodes)
@@ -104,7 +71,7 @@ namespace Minesweeper.Test
             }
             if (node is FunctionDeclarationNode funcdec)
             {
-                _scope.Add(funcdec.FunctionName, funcdec);
+                CurrentScope.Add(funcdec.FunctionName, funcdec);
                 return null;
             }
             if (node is VarDeclarationNode declaration)
@@ -116,39 +83,49 @@ namespace Minesweeper.Test
 
         private object VisitFunctionCall(FunctionCallNode call)
         {
-            var declaration = (FunctionDeclarationNode)_scope[call.FunctionName.ToUpper()];
+            var declaration = (FunctionDeclarationNode)CurrentScope.GetValue(call.FunctionName, true);
+            var previous = CurrentScope;
+            CurrentScope = new Memory(call.FunctionName, previous);
+
             for (var i = 0; i < declaration.Parameters.Count; i++)
             {
                 var parameter = declaration.Parameters[i];
                 VisitVarDeclaration(parameter.Declaration);
                 var value = VisitNode(call.Parameters[i]);
 
-                _scope[parameter.Declaration.VarNode.VariableName] = value;
+                CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, value);
             }
 
-            VisitBlock(declaration.BlockNode);
-            return _scope[call.FunctionName];
+            VisitBlock(declaration.Block);
+            var funResult = CurrentScope.GetValue(call.FunctionName);
+            CurrentScope = previous;
+            return funResult;
         }
 
         private object VisitProcedureCall(ProcedureCallNode call)
         {
-            var declaration = (ProcedureDeclarationNode)_scope[call.ProcedureName.ToUpper()];
+            var declaration = (ProcedureDeclarationNode)CurrentScope.GetValue(call.ProcedureName, true);
+            var previous = CurrentScope;
+            CurrentScope = new Memory(call.ProcedureName, previous);
+
             for (var i = 0; i < declaration.Parameters.Count; i++)
             {
                 var parameter = declaration.Parameters[i];
                 VisitVarDeclaration(parameter.Declaration);
                 var value = VisitNode(call.Parameters[i]);
+                CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, value);
 
-                _scope[parameter.Declaration.VarNode.VariableName] = value;
             }
 
             VisitBlock(declaration.Block);
+            CurrentScope = previous;
+
             return null;
         }
 
         private object VisitProcedureDeclaration(ProcedureDeclarationNode procedure)
         {
-            this._scope.Add(procedure.ProcedureId, procedure);
+            this.CurrentScope.Add(procedure.ProcedureId, procedure);
             return null;
         }
 
@@ -159,7 +136,7 @@ namespace Minesweeper.Test
 
         object VisitVarDeclaration(VarDeclarationNode varDeclaration)
         {
-            this._scope.Add(varDeclaration.VarNode.VariableName, null);
+            this.CurrentScope.Add(varDeclaration.VarNode.VariableName, null);
             return null;
         }
         private object VisitBlock(BlockNode block)
@@ -169,20 +146,20 @@ namespace Minesweeper.Test
                 VisitNode(blockDeclaration);
             }
 
-            return VisitNode(block.CompoundStatement);
+            return VisitCompound(block.CompoundStatement);
         }
 
         object VisitAssign(AssignNode node)
         {
             var name = node.Left.VariableName.ToUpper();
             var value = VisitNode(node.Right);
-            if (_scope.ContainsKey(name))
+            if (CurrentScope.ContainsKey(name))
             {
-                _scope[name] = value;
+                CurrentScope.SetValue(name, value);
             }
             else
             {
-                _scope.Add(name, value);
+                CurrentScope.Add(name, value);
             }
 
             return value;
@@ -191,7 +168,7 @@ namespace Minesweeper.Test
         object VisitVariable(Variable var)
         {
             var name = var.VariableName.ToUpper();
-            var value = _scope[name];
+            var value = CurrentScope.GetValue(name, true);
             return value;
         }
 
