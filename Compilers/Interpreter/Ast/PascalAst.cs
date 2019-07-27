@@ -207,7 +207,16 @@ namespace Minesweeper.Test
             {
                 return Variable();
             }
+            if (current.Token.Name == Pascal.Equal)
+            {
+                Eat(Pascal.Equal);
 
+            }
+
+            if (current.Token.Name == Pascal.BoolConst)
+            {
+                return ParseBool();
+            }
             return base.ParaAddSub();
             //else
             //{
@@ -215,7 +224,12 @@ namespace Minesweeper.Test
             //    return node;
             //}
         }
-
+        private Node ParseBool()
+        {
+            var b = new BoolNode(_tokens.Current);
+            _tokens.Advance();
+            return b;
+        }
         private FunctionCallNode FunctionCall()
         {
             var procedureName = Current.Value;

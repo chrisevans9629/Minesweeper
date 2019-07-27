@@ -74,24 +74,11 @@ namespace Minesweeper.Test
                 return new UnaryOperator(ParaAddSub(), current);
             }
 
-            if (current.Token.Name == Pascal.Equal)
-            {
-
-            }
-
-            if (current.Token.Name == Pascal.BoolConst)
-            {
-                return ParseBool();
-            }
+            
             return ParseNumber();
         }
 
-        private Node ParseBool()
-        {
-            var b = new BoolNode(_tokens.Current);
-            _tokens.Advance();
-            return b;
-        }
+       
 
         protected virtual Node Parenthese()
         {
