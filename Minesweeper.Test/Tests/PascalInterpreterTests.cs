@@ -68,6 +68,38 @@ namespace Minesweeper.Test.Tests
             scope.GetValue("Add").Should().BeOfType<FunctionDeclarationNode>();
         }
 
+        [Test]
+        public void PascalIf()
+        {
+            var file = GetFile("PascalIf.txt");
+
+            var tokens = lexer.Tokenize(file);
+            var node = ast.Evaluate(tokens);
+
+            var interpret = interpreter.Interpret(node);
+
+            var scope = interpret.Should().BeOfType<Memory>().Which;
+
+            scope.GetValue("x", true).Should().Be(5);
+        }
+
+
+        [Test]
+        public void PascalRecursiveFunctionSelfCall()
+        {
+            var file = GetFile("PascalRecursiveFunction.txt");
+
+            var tokens = lexer.Tokenize(file);
+            var node = ast.Evaluate(tokens);
+
+            var interpret = interpreter.Interpret(node);
+
+            var scope = interpret.Should().BeOfType<Memory>().Which;
+
+            scope.GetValue("x", true).Should().Be(6);
+            scope.GetValue("Add").Should().BeOfType<FunctionDeclarationNode>();
+        }
+
         private static string GetFile(string fileName)
         {
             var file = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, $"TestData", fileName));
