@@ -29,7 +29,7 @@ namespace Minesweeper.Test.Tests
 
             var interpret = interpreter.Interpret(node);
 
-            var scope = interpret.Should().BeOfType<GlobalMemory>().Which;
+            var scope = interpret.Should().BeOfType<Memory>().Which;
 
             scope["x"].Should().Be(10);
         }
@@ -44,7 +44,7 @@ namespace Minesweeper.Test.Tests
 
             var interpret = interpreter.Interpret(node);
 
-            var scope = interpret.Should().BeOfType<GlobalMemory>().Which;
+            var scope = interpret.Should().BeOfType<Memory>().Which;
 
             scope["x"].Should().Be(20);
         }
@@ -118,7 +118,7 @@ namespace Minesweeper.Test.Tests
             var node = ast.Evaluate(tokens);
             var memory = interpreter.Interpret(node);
 
-            var global = memory.Should().BeOfType<GlobalMemory>().Which;
+            var global = memory.Should().BeOfType<Memory>().Which;
 
             global.ContainsKey("x").Should().BeTrue();
             global.ContainsKey("a").Should().BeFalse();

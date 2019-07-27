@@ -3,10 +3,15 @@
 namespace Minesweeper.Test
 {
 
-    public class GlobalMemory
+    public class Memory
     {
+        public Memory Parent { get; }
         private Dictionary<string, object> dictionary  = new Dictionary<string, object>();
 
+        public Memory(Memory parent = null)
+        {
+            Parent = parent;
+        }
         public bool ContainsKey(string key)
         {
             return dictionary.ContainsKey(key.ToUpper());
@@ -16,6 +21,15 @@ namespace Minesweeper.Test
             dictionary.Add(key.ToUpper(), obj);
         }
 
+        public void SetValue(string key, object value)
+        {
+            dictionary[key.ToUpper()] = value;
+        }
+
+        public object GetValue(string key)
+        {
+            return dictionary[key.ToUpper()];
+        }
         public object this[string key] { get => dictionary[key.ToUpper()]; set=> dictionary[key.ToUpper()] = value; }
     }
 
@@ -28,7 +42,7 @@ namespace Minesweeper.Test
         }
         public override object Interpret(Node node)
         {
-            _scope = new GlobalMemory();
+            _scope = new Memory();
             var result = base.Interpret(node);
             return _scope;
         }
@@ -37,7 +51,7 @@ namespace Minesweeper.Test
         {
             return _scope[key.ToUpper()];
         }
-        private GlobalMemory _scope = new GlobalMemory();
+        private Memory _scope = new Memory();
         object VisitCompound(CompoundStatement compound)
         {
             foreach (var compoundNode in compound.Nodes)
@@ -83,11 +97,37 @@ namespace Minesweeper.Test
             {
                 return VisitProcedureDeclaration(procedure);
             }
+
+            if (node is FunctionCallNode funcCall)
+            {
+                return VisitFunctionCall(funcCall);
+            }
+            if (node is FunctionDeclarationNode funcdec)
+            {
+                _scope.Add(funcdec.FunctionName, funcdec);
+                return null;
+            }
             if (node is VarDeclarationNode declaration)
             {
                 return VisitVarDeclaration(declaration);
             }
             return base.VisitNode(node);
+        }
+
+        private object VisitFunctionCall(FunctionCallNode call)
+        {
+            var declaration = (FunctionDeclarationNode)_scope[call.FunctionName.ToUpper()];
+            for (var i = 0; i < declaration.Parameters.Count; i++)
+            {
+                var parameter = declaration.Parameters[i];
+                VisitVarDeclaration(parameter.Declaration);
+                var value = VisitNode(call.Parameters[i]);
+
+                _scope[parameter.Declaration.VarNode.VariableName] = value;
+            }
+
+            VisitBlock(declaration.BlockNode);
+            return _scope[call.FunctionName];
         }
 
         private object VisitProcedureCall(ProcedureCallNode call)
