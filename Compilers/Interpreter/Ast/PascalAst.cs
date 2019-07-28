@@ -69,7 +69,7 @@ namespace Minesweeper.Test
 
             return dec;
         }
-        private FunctionDeclarationNode FunctionDeclaration()
+        public FunctionDeclarationNode FunctionDeclaration()
         {
             var parameters = new List<ProcedureParameter>();
             Eat(Pascal.Function);

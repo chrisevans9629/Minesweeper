@@ -29,6 +29,20 @@ namespace Minesweeper.Test.Tests
             //var interpreter = new PascalInterpreter();
             //interpreter.Evaluate(ast.Evaluate());
         }
+
+
+        [Test]
+        public void RecursiveFunctionTest()
+        {
+            var input =
+                "function Summation (num : integer) : integer;\r\nbegin\r\n  if num = 1 \r\n  then Summation := 1\r\n  else Summation := Summation(num-1) + num\r\nend;";
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.FunctionDeclaration();
+
+            var fun = node.Should().BeOfType<FunctionDeclarationNode>();
+        }
+
         [Test]
         public void PascalIfTest()
         {
