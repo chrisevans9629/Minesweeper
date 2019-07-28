@@ -70,6 +70,10 @@
                 return b.Value;
             }
 
+            if (node is IfStatementNode ifNode)
+            {
+                return VisitIfNode(ifNode);
+            }
             if (node is EqualOperator eop)
             {
                 return VisitEqualOperator(eop);
@@ -90,9 +94,25 @@
             return base.VisitNode(node);
         }
 
+        private object VisitIfNode(IfStatementNode ifNode)
+        {
+            if ((bool) VisitEqualOperator(ifNode.IfCheck))
+            {
+                VisitNode(ifNode.IfTrue);
+            }
+            else if(ifNode.IfFalse != null)
+            {
+                VisitNode(ifNode.IfFalse);
+            }
+
+            return null;
+        }
+
         private object VisitEqualOperator(EqualOperator eop)
         {
-            return VisitNode(eop.Left) == VisitNode(eop.Right);
+            var left = VisitNode(eop.Left);
+            var right = VisitNode(eop.Right);
+            return left.Equals(right) ;
         }
 
         private object VisitFunctionCall(FunctionCallNode call)

@@ -29,7 +29,21 @@ namespace Minesweeper.Test.Tests
             //var interpreter = new PascalInterpreter();
             //interpreter.Evaluate(ast.Evaluate());
         }
+        [Test]
+        public void PascalIfTest()
+        {
+            var input = "if x = 10 then x := 5 else x := 1";
 
+            var tokens = lexer.Tokenize(input);
+
+            ast.CreateIterator(tokens);
+
+           var result = ast.Statement();
+           var iff = result.Should().BeOfType<IfStatementNode>().Which;
+           iff.IfTrue.Should().BeOfType<AssignNode>();
+           iff.IfFalse.Should().BeOfType<AssignNode>();
+
+        }
         [Test]
         public void BooleanParse()
         {

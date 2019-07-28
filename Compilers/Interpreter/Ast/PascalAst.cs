@@ -240,10 +240,14 @@ namespace Minesweeper.Test
             return new FunctionCallNode(procedureName, parameters, token);
         }
 
-        Node Statement()
+        public Node Statement()
         {
             Node node = null;
-            if (_tokens.Current.Token.Name == Pascal.Begin)
+            if (_tokens.Current.Token.Name == Pascal.If)
+            {
+                node = IfStatement();
+            }
+            else if (_tokens.Current.Token.Name == Pascal.Begin)
             {
                 node = CompoundStatement();
             }
@@ -257,6 +261,21 @@ namespace Minesweeper.Test
             }
             else node = Empty();
             return node;
+        }
+
+        private Node IfStatement()
+        {
+            Eat(Pascal.If);
+            var equal = Expression() as EqualOperator;
+            Eat(Pascal.Then);
+            var tstatement = Statement();
+            Node estate = null;
+            if (Current.Token.Name == Pascal.Else)
+            {
+                Eat(Pascal.Else);
+                estate = Statement();
+            }
+            return new IfStatementNode(equal, tstatement, estate);
         }
 
         private Node ProcedureCall()
