@@ -24,23 +24,27 @@ namespace Minesweeper.Test
         {
             Logger = logger ?? new Logger();
         }
-        protected Node Expression()
+        public Node Expression()
         {
-            var result = MultiDiv();
+            Node Action()
+            {
+                return MultiDiv();
+            }
+            var result = Action();
             while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.IntegerConst)
             {
                 if (_tokens.Current.Token.Name == Pascal.Add)
                 {
                     var token = _tokens.Current;
                     Eat(Pascal.Add);
-                    result = new BinaryOperator(result, MultiDiv(), token);
+                    result = new BinaryOperator(result, Action(), token);
                 }
 
                 else if (_tokens.Current.Token.Name == Pascal.Sub)
                 {
                     var token = _tokens.Current;
                     Eat(Pascal.Sub);
-                    result = new BinaryOperator(result, MultiDiv(), token);
+                    result = new BinaryOperator(result, Action(), token);
                 }
                 else
                 {
@@ -57,24 +61,22 @@ namespace Minesweeper.Test
             return value;
         }
 
-        protected virtual Node ParaAddSub()
+        protected virtual Node ParaUnaryOperators()
         {
             var current = _tokens.Current;
             var par = Parenthese();
             if (par != null) return par;
-
+            
             if (current.Token.Name == Pascal.Add)
             {
                 Eat(Pascal.Add);
-                return new UnaryOperator(ParaAddSub(), current);
+                return new UnaryOperator(ParaUnaryOperators(), current);
             }
             if (current.Token.Name == Pascal.Sub)
             {
                 Eat(Pascal.Sub);
-                return new UnaryOperator(ParaAddSub(), current);
+                return new UnaryOperator(ParaUnaryOperators(), current);
             }
-
-            
             return ParseNumber();
         }
 
@@ -90,34 +92,41 @@ namespace Minesweeper.Test
                 var para = result;
                 return para;
             }
-
             return null;
         }
 
         Node MultiDiv()
         {
-            var result = ParaAddSub();
+            Node Action()
+            {
+               return ParaUnaryOperators();
+            }
+
+            var result = Action();
 
             while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.IntegerConst)
             {
+                var token = _tokens.Current;
+                if (_tokens.Current.Token.Name == Pascal.Equal)
+                {
+                    Eat(Pascal.Equal);
+                    return new EqualOperator(result, Action(), token);
+                }
                 if (_tokens.Current.Token.Name == Pascal.Multi)
                 {
-                    var token = _tokens.Current;
                     Eat(Pascal.Multi);
-                    result = new BinaryOperator(result, ParaAddSub(), token);
+                    result = new BinaryOperator(result, Action(), token);
                 }
 
                 else if (_tokens.Current.Token.Name == Pascal.FloatDiv)
                 {
-                    var token = _tokens.Current;
                     Eat(Pascal.FloatDiv);
-                    result = new BinaryOperator(result, ParaAddSub(), token);
+                    result = new BinaryOperator(result, Action(), token);
                 }
                 else if (_tokens.Current.Token.Name == Pascal.IntDiv)
                 {
-                    var token = _tokens.Current;
                     Eat(Pascal.IntDiv);
-                    result = new BinaryOperator(result, ParaAddSub(), token);
+                    result = new BinaryOperator(result, Action(), token);
                 }
                 else
                 {

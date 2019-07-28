@@ -11,6 +11,11 @@ namespace Minesweeper.Test
 
         }
 
+        public override string ToString()
+        {
+            return Display();
+        }
+
         public static string Aggregate(IEnumerable<Node> nodes)
         {
             return (nodes.Any() ? nodes.Select(p => p.Display()).Aggregate((f, s) => $"{f}, {s}") : "");

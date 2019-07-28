@@ -40,6 +40,31 @@ namespace Minesweeper.Test.Tests
         }
 
         [Test]
+        public void BooleanSimpleParse()
+        {
+            var input = "3 = 3";
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.Expression();
+            var equal = node.Should().BeOfType<EqualOperator>().Which;
+            equal.Left.Should().BeOfType<NumberLeaf>();
+            equal.Right.Should().BeOfType<NumberLeaf>();
+        }
+
+        [TestCase("4 = 5")]
+        [TestCase("(1+1) = (2+1)")]
+        [TestCase("2*1= (2+1)")]
+        [TestCase("(2+1)*2 = (2+1)")]
+        public void BoolTheory(string input)
+        {
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.Expression();
+            node.Should().BeOfType<EqualOperator>();
+        }
+
+
+        [Test]
         public void ThrowParserException()
         {
             var input = "program;";

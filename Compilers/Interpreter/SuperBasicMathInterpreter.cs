@@ -19,7 +19,7 @@ namespace Minesweeper.Test
 
         object Fail(Node node)
         {
-            throw new Exception($"did not recognize node {node}");
+            throw new ParserException(   ErrorCode.UnexpectedToken, null,$"did not recognize node '{node}'");
         }
 
         protected virtual object VisitNode(Node node)

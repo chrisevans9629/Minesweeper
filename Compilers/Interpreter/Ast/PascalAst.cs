@@ -4,15 +4,6 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
-
-    
-    public class IfStatementNode
-    {
-        public IfStatementNode(Node ifCheck)
-        {
-            
-        }
-    }
     public class PascalAst : AbstractSyntaxTreeBase
     {
         private TokenItem Current => _tokens.Current;
@@ -182,22 +173,22 @@ namespace Minesweeper.Test
             return results;
         }
 
-        protected override Node ParaAddSub()
+        protected override Node ParaUnaryOperators()
         {
             var current = _tokens.Current;
-            //var par = Parenthese();
-            //if (par != null) return par;
+            var par = Parenthese();
+            if (par != null) return par;
 
-            //if (current.Token.Name == Pascal.Add)
-            //{
-            //    Eat(Pascal.Add);
-            //    return new UnaryOperator(ParaAddSub(), current);
-            //}
-            //if (current.Token.Name == Pascal.Sub)
-            //{
-            //    Eat(Pascal.Sub);
-            //    return new UnaryOperator(ParaAddSub(), current);
-            //}
+            if (current.Token.Name == Pascal.Add)
+            {
+                Eat(Pascal.Add);
+                return new UnaryOperator(ParaUnaryOperators(), current);
+            }
+            if (current.Token.Name == Pascal.Sub)
+            {
+                Eat(Pascal.Sub);
+                return new UnaryOperator(ParaUnaryOperators(), current);
+            }
 
             if (Name == Pascal.Id && this._tokens.Peek().Token.Name == Pascal.LParinth)
             {
@@ -210,14 +201,13 @@ namespace Minesweeper.Test
             if (current.Token.Name == Pascal.Equal)
             {
                 Eat(Pascal.Equal);
-
             }
 
             if (current.Token.Name == Pascal.BoolConst)
             {
                 return ParseBool();
             }
-            return base.ParaAddSub();
+            return base.ParaUnaryOperators();
             //else
             //{
             //    var node = Variable();
@@ -335,8 +325,13 @@ namespace Minesweeper.Test
 
         public Node Evaluate(IList<TokenItem> tokens)
         {
-            _tokens = new Iterator<TokenItem>(tokens.ToArray());
+            CreateIterator(tokens);
             return Parse();
+        }
+
+        public void CreateIterator(IList<TokenItem> tokens)
+        {
+            _tokens = new Iterator<TokenItem>(tokens.ToArray());
         }
     }
 }

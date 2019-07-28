@@ -65,6 +65,15 @@
                 return VisitProcedureDeclaration(procedure);
             }
 
+            if (node is BoolNode b)
+            {
+                return b.Value;
+            }
+
+            if (node is EqualOperator eop)
+            {
+                return VisitEqualOperator(eop);
+            }
             if (node is FunctionCallNode funcCall)
             {
                 return VisitFunctionCall(funcCall);
@@ -79,6 +88,11 @@
                 return VisitVarDeclaration(declaration);
             }
             return base.VisitNode(node);
+        }
+
+        private object VisitEqualOperator(EqualOperator eop)
+        {
+            return VisitNode(eop.Left) == VisitNode(eop.Right);
         }
 
         private object VisitFunctionCall(FunctionCallNode call)
