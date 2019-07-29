@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -40,7 +41,27 @@ namespace Minesweeper.Test.Tests
             ast.CreateIterator(tokens);
             var node = ast.FunctionDeclaration();
 
-            var fun = node.Should().BeOfType<FunctionDeclarationNode>();
+            var fun = node.Should().BeOfType<FunctionDeclarationNode>().Which;
+            fun.FunctionName.Should().Be("Summation");
+            fun.ReturnType.TypeValue.Should().Be("integer");
+            fun.Parameters.Should().HaveCount(1);
+            fun.Parameters[0].Declaration.TypeNode.TypeValue.Should().Be("integer");
+            fun.Parameters[0].Declaration.VarNode.VariableName.Should().Be("num");
+
+            var block = fun.Block;
+            block.Declarations.Should().BeEmpty();
+            var ifStatement = block.CompoundStatement.Nodes.Should().HaveCount(1).And.Subject.First().Should().BeOfType<IfStatementNode>().Which;
+
+            ifStatement.IfCheck.Left.Should().BeOfType<Variable>();
+            ifStatement.IfCheck.Right.Should().BeOfType<NumberLeaf>();
+           var trueStatement = ifStatement.IfTrue.Should().BeOfType<AssignNode>().Which;
+           trueStatement.Left.VariableName.Should().Be("Summation");
+           trueStatement.Right.Should().BeOfType<NumberLeaf>();
+           var falseStatement =  ifStatement.IfFalse.Should().BeOfType<AssignNode>().Which;
+
+           falseStatement.Left.VariableName.Should().Be("Summation");
+           falseStatement.Right.Should().BeOfType<BinaryOperator>().Which.Left.Should().BeOfType<FunctionCallNode>()
+               .Which.Parameters.Should().HaveCount(1).And.Subject.First().Should().BeOfType<BinaryOperator>();
         }
 
         [Test]

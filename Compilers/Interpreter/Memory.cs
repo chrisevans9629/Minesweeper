@@ -47,6 +47,20 @@ namespace Minesweeper.Test
             }
         }
 
+        public T GetValue<T>(string key, bool checkParent = false)
+        {
+            var uKey = key.ToUpper();
+            if (dictionary.ContainsKey(uKey) && dictionary[key.ToUpper()] is T val)
+            {
+                return val;
+            }
+            else if (checkParent && Parent != null)
+            {
+                return Parent.GetValue<T>(key, true);
+            }
+            throw new RuntimeException(ErrorCode.IdNotFound, null, $"Could not find '{key}'");
+
+        }
         public object GetValue(string key, bool checkParent = false)
         {
             var uKey = key.ToUpper();

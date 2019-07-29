@@ -117,7 +117,7 @@
 
         private object VisitFunctionCall(FunctionCallNode call)
         {
-            var declaration = (FunctionDeclarationNode)CurrentScope.GetValue(call.FunctionName, true);
+            var declaration = CurrentScope.GetValue<FunctionDeclarationNode>(call.FunctionName, true);
             var previous = CurrentScope;
             CurrentScope = new Memory(call.FunctionName, previous);
             CurrentScope.Add(call.FunctionName,null);
