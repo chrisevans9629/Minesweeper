@@ -34,11 +34,22 @@ namespace Minesweeper.Test.Tests
             table = new PascalSemanticAnalyzer(logger);
         }
 
-        [Test]
-        public void UndefinedProcedure_Should_ThrowSemanticException()
-        {
-            var input = PascalTestInputs.Invalid.UndefinedProcedureAdd;
 
+        [Test]
+        public void FunctionDeclaration_Should_CreateFunctionSymbol()
+        {
+            var input = PascalInterpreterTests.GetFile("PascalFunction.txt");
+
+            var table = CheckSyntax(input);
+
+            table.LookupSymbol<FunctionDeclarationSymbol>("Add",true).Should().NotBeNull();
+        }
+        [TestCase(PascalTestInputs.Invalid.FunctionDoesNotHaveReturn)]
+        [TestCase(PascalTestInputs.Invalid.UndefinedProcedureAdd)]
+        [TestCase(PascalTestInputs.Invalid.TooManyParametersProcedureAdd)]
+        [TestCase(PascalTestInputs.Invalid.UndefinedVariableCallInProcedureAdd)]
+        public void UndefinedProcedure_Should_ThrowSemanticException(string input)
+        {
             Assert.Throws<SemanticException>(() => CheckSyntax(input));
         }
       

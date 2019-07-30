@@ -93,19 +93,19 @@ namespace Minesweeper.Test.Symbols
             }
             else if (node is ProcedureDeclarationNode procedureDeclaration)
             {
-                VisitDeclaration(procedureDeclaration);
+                VisitProcedureDeclaration(procedureDeclaration);
             }
             else if (node is FunctionDeclarationNode functionDeclaration)
             {
-                VisitDeclaration(functionDeclaration);
+                VisitFunctionDeclaration(functionDeclaration);
             }
             else if (node is FunctionCallNode funCall)
             {
-
+                VisitCall(funCall);
             }
             else if (node is ProcedureCallNode procCall)
             {
-
+                VisitCall(procCall);
             }
             else
             {
@@ -113,11 +113,30 @@ namespace Minesweeper.Test.Symbols
             }
         }
 
-        private void VisitDeclaration(DeclarationNode procedureDeclaration)
+        private void VisitProcedureDeclaration(ProcedureDeclarationNode procedureDeclaration)
         {
-            var previous = CurrentScope;
+            DeclareParameters(procedureDeclaration);
+            VisitBlock(procedureDeclaration.Block);
+            CurrentScope = CurrentScope.ParentScope;
+            var procedure = new ProcedureDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters);
+            CurrentScope.Define(procedure);
+        }
+
+        private void VisitFunctionDeclaration(FunctionDeclarationNode procedureDeclaration)
+        {
+            DeclareParameters(procedureDeclaration);
+            DefineVariableSymbol(procedureDeclaration.Token, procedureDeclaration.FunctionName, procedureDeclaration.ReturnType.TypeValue);
+            VisitBlock(procedureDeclaration.Block);
+            
+            CurrentScope = CurrentScope.ParentScope;
+            var procedure = new FunctionDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters);
+            CurrentScope.Define(procedure);
+        }
+
+        private void DeclareParameters(DeclarationNode procedureDeclaration)
+        {
             var name = procedureDeclaration.Name;
-            var scope = new ScopedSymbolTable(name, CurrentScope.ScopeLevel + 1, previous, _logger);
+            var scope = new ScopedSymbolTable(name, CurrentScope.ScopeLevel + 1, CurrentScope, _logger);
             CurrentScope = scope;
             var param = procedureDeclaration.Parameters;
             foreach (var varDeclaration in param.Select(p => p.Declaration))
@@ -129,11 +148,35 @@ namespace Minesweeper.Test.Symbols
                 var varSymbol = new VariableSymbol(varName, symbol);
                 CurrentScope.Define(varSymbol);
             }
-            VisitBlock(procedureDeclaration.Block);
-            CurrentScope = previous;
-            var procedure = new ProcedureSymbol(name, param);
-            CurrentScope.Define(procedure);
+
+
         }
+
+        private void VisitCall(CallNode funCall)
+        {
+           var symbol = CurrentScope.LookupSymbol<DeclarationSymbol>(funCall.Name, true);
+           if (symbol == null)
+           {
+                NotFound(funCall.Token, funCall.Type, funCall.Name);
+           }
+
+           foreach (var funCallParameter in funCall.Parameters)
+           {
+               VisitNode(funCallParameter);
+           }
+
+           var callCount = funCall.Parameters.Count;
+
+           var declaredCount = symbol.Parameters.Count;
+
+           if (callCount != declaredCount)
+           {
+                throw new SemanticException(ErrorCode.ParameterMismatch, funCall.Token, $"Function {funCall.Name} has {declaredCount} parameters but {callCount} was used");
+           }
+
+        }
+
+        
 
         private void VisitNoOp(NoOp nope)
         {
@@ -152,11 +195,15 @@ namespace Minesweeper.Test.Symbols
             var symbol = CurrentScope.LookupSymbol(varName, true);
             if (symbol == null)
             {
-                throw new SemanticException(ErrorCode.IdNotFound, assLeft.TokenItem,$"Variable '{varName}' was not declared");
+                NotFound(assLeft.TokenItem, "Variable", varName);
             }
         }
 
-     
+        private static void NotFound(TokenItem assLeft, string type, string varName)
+        {
+            throw new SemanticException(ErrorCode.IdNotFound, assLeft, $"{type} '{varName}' was not declared");
+        }
+
 
         private void VisitBlock(BlockNode programBlock)
         {
@@ -179,16 +226,22 @@ namespace Minesweeper.Test.Symbols
         {
             var typeName = node.TypeNode.TypeValue;
             var varName = node.VarNode.VariableName;
+            DefineVariableSymbol(node.VarNode.TokenItem, varName, typeName);
+        }
+
+        private void DefineVariableSymbol(TokenItem node, string varName, string typeName)
+        {
             var variable = CurrentScope.LookupSymbol(varName, false);
             if (variable != null)
             {
-                throw new SemanticException(ErrorCode.DuplicateId, node.VarNode.TokenItem,$"Variable '{varName}' has already been defined as {variable}");
+                throw new SemanticException(ErrorCode.DuplicateId, node,
+                    $"Variable '{varName}' has already been defined as {variable}");
             }
 
             var symbol = this.CurrentScope.LookupSymbol(typeName, true);
             if (symbol == null)
             {
-                throw new SemanticException(ErrorCode.IdNotFound, node.TypeNode.TokenItem,$"Could not find type {typeName}");
+                throw new SemanticException(ErrorCode.IdNotFound, node, $"Could not find type {typeName}");
             }
 
             var varSymbol = new VariableSymbol(varName, symbol);

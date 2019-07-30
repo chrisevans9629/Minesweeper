@@ -71,7 +71,7 @@ namespace Minesweeper.Test
         }
         public FunctionDeclarationNode FunctionDeclaration()
         {
-            var parameters = new List<ProcedureParameter>();
+            var parameters = new List<Parameter>();
             Eat(Pascal.Function);
             var procedureId = Current.Value;
             var token = Current;
@@ -81,7 +81,7 @@ namespace Minesweeper.Test
                 Eat(Pascal.LParinth);
                 while (Current.Token.Name != Pascal.RParinth)
                 {
-                    parameters.AddRange(VariableDeclaration().Select(p => new ProcedureParameter(p)));
+                    parameters.AddRange(VariableDeclaration().Select(p => new Parameter(p)));
                     if (Current.Token.Name == Pascal.Semi)
                     {
                         Eat(Pascal.Semi);
@@ -100,7 +100,7 @@ namespace Minesweeper.Test
         }
         private ProcedureDeclarationNode ProcedureDeclaration()
         {
-            var parameters = new List<ProcedureParameter>();
+            var parameters = new List<Parameter>();
             Eat(Pascal.Procedure);
             var procedureId = Current.Value;
             Eat(Pascal.Id);
@@ -109,7 +109,7 @@ namespace Minesweeper.Test
                 Eat(Pascal.LParinth);
                 while (Current.Token.Name != Pascal.RParinth)
                 {
-                    parameters.AddRange(VariableDeclaration().Select(p => new ProcedureParameter(p)));
+                    parameters.AddRange(VariableDeclaration().Select(p => new Parameter(p)));
                     if (Current.Token.Name == Pascal.Semi)
                     {
                         Eat(Pascal.Semi);

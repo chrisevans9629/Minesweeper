@@ -7,7 +7,8 @@ namespace Minesweeper.Test
         UnexpectedToken,
         IdNotFound,
         DuplicateId,
-        Runtime
+        Runtime,
+        ParameterMismatch
     }
 
     public class PascalException : Exception

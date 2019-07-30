@@ -5,6 +5,13 @@
         public static class Invalid
         {
             public const string UndefinedProcedureAdd = "program test;begin Add();end.";
+            public const string UndefinedVariableCallInProcedureAdd =
+                "program test;var t : integer;\r\nprocedure add(a : real);\r\nbegin\r\nend;\r\nbegin\r\nadd(x);\r\nend.";
+            public const string TooManyParametersProcedureAdd =
+                "program test;var t : integer;\r\nprocedure add();\r\nbegin\r\nend;\r\nbegin\r\nadd(t);\r\nend.";
+
+            public const string FunctionDoesNotHaveReturn =
+                "program test;\r\nvar t : integer;\r\nfunction Add() : integer;\r\nbegin\r\nend;\r\nbegin\r\nend.";
         }
 
         public const string ProcedureCallXEquals10 =

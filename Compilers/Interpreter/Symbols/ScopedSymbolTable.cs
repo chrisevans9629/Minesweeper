@@ -65,5 +65,20 @@ namespace Minesweeper.Test.Symbols
             }
             return current;
         }
+        public T LookupSymbol<T>(string name, bool searchParent) where T: Symbol
+        {
+            _logger.Log($"Lookup: {name}");
+            var current = symbols.FirstOrDefault(p => p.Name.ToLower() == name.ToLower());
+            if (current == null && ParentScope != null && searchParent)
+            {
+                return ParentScope.LookupSymbol<T>(name, true);
+            }
+            if (current is T c)
+            {
+                return c;
+            }
+
+            return default(T);
+        }
     }
 }

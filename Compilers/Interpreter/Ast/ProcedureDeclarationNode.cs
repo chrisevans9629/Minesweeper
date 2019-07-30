@@ -6,7 +6,7 @@ namespace Minesweeper.Test
     {
         public string ProcedureId => Name;
 
-        public ProcedureDeclarationNode(string procedureId, BlockNode block, IList<ProcedureParameter> parameters)
+        public ProcedureDeclarationNode(string procedureId, BlockNode block, IList<Parameter> parameters)
         {
             Name = procedureId;
             Block = block;
