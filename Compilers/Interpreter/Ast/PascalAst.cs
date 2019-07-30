@@ -243,7 +243,11 @@ namespace Minesweeper.Test
         public Node Statement()
         {
             Node node = null;
-            if (_tokens.Current.Token.Name == Pascal.If)
+            if (Name == Pascal.For)
+            {
+                node = ForLoop();
+            }
+           else if (_tokens.Current.Token.Name == Pascal.If)
             {
                 node = IfStatement();
             }
@@ -261,6 +265,17 @@ namespace Minesweeper.Test
             }
             else node = Empty();
             return node;
+        }
+
+        private Node ForLoop()
+        {
+            Eat(Pascal.For);
+            var assign = AssignmentStatement();
+            Eat(Pascal.To);
+            var ex = Expression();
+            Eat(Pascal.Do);
+            var statements = StatementList();
+            return new ForLoopNode(assign, ex, statements);
         }
 
         private Node IfStatement()

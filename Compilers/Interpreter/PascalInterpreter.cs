@@ -77,6 +77,11 @@ namespace Minesweeper.Test
             {
                 return VisitIfNode(ifNode);
             }
+
+            if (node is ForLoopNode forLoop)
+            {
+                return VisitForLoop(forLoop);
+            }
             if (node is EqualOperator eop)
             {
                 return VisitEqualOperator(eop);
@@ -95,6 +100,24 @@ namespace Minesweeper.Test
                 return VisitVarDeclaration(declaration);
             }
             return base.VisitNode(node);
+        }
+
+        private object VisitForLoop(ForLoopNode forLoop)
+        {
+            var fromName = forLoop.AssignFromNode.Left.VariableName;
+            VisitAssign(forLoop.AssignFromNode);
+            var toInt = VisitNode(forLoop.ToNode);
+            var fromValue = CurrentScope.GetValue(fromName, true);
+            CurrentScope = new Memory("_ForLoop_", CurrentScope);
+            for (var i =(double)fromValue ; i <= (double)toInt; i++)
+            {
+                foreach (var forLoopDoStatement in forLoop.DoStatements)
+                {
+                    VisitNode(forLoopDoStatement);
+                }
+            }
+            CurrentScope = CurrentScope.Parent;
+            return null;
         }
 
         private object VisitIfNode(IfStatementNode ifNode)
