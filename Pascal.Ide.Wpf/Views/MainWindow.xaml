@@ -5,6 +5,12 @@
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}" Height="350" Width="525">
     <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="191*"/>
+            <ColumnDefinition Width="69*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox Margin="10" AcceptsReturn="True" AcceptsTab="True" Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Grid.Column="1" Margin="10" Text="{Binding Error}" TextWrapping="Wrap"></TextBlock>
+        <!--<ContentControl prism:RegionManager.RegionName="ContentRegion" />-->
     </Grid>
 </Window>

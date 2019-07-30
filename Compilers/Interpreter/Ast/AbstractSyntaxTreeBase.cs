@@ -154,7 +154,8 @@ namespace Minesweeper.Test
 
         protected void Error(string name)
         {
-            var current = _tokens.Current;
+            var current = _tokens.CurrentOrPrevious();
+            
             var location = PascalException.Location(current);
             throw new ParserException(ErrorCode.UnexpectedToken,
                 _tokens.Current,

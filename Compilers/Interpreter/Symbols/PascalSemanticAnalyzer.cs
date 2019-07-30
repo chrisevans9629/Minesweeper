@@ -89,7 +89,11 @@ namespace Minesweeper.Test.Symbols
             }
             else if (node is ProcedureDeclarationNode procedureDeclaration)
             {
-                VisitProcedureDec(procedureDeclaration);
+                VisitDeclaration(procedureDeclaration);
+            }
+            else if (node is FunctionDeclarationNode functionDeclaration)
+            {
+                VisitDeclaration(functionDeclaration);
             }
             else
             {
@@ -97,10 +101,10 @@ namespace Minesweeper.Test.Symbols
             }
         }
 
-        private void VisitProcedureDec(ProcedureDeclarationNode procedureDeclaration)
+        private void VisitDeclaration(DeclarationNode procedureDeclaration)
         {
             var previous = CurrentScope;
-            var name = procedureDeclaration.ProcedureId;
+            var name = procedureDeclaration.Name;
             var scope = new ScopedSymbolTable(name, CurrentScope.ScopeLevel + 1, previous, _logger);
             CurrentScope = scope;
             var param = procedureDeclaration.Parameters;

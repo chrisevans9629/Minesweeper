@@ -109,6 +109,30 @@ namespace Minesweeper.Test.Tests
         }
 
         [Test]
+        public void PascalNoNonPascalExceptionsWhenAddingTokens()
+        {
+            var file = PascalInterpreterTests.GetFile("PascalFunctionSelfCall.txt");
+            var tokens = lexer.Tokenize(file);
+            var list = new List<TokenItem>();
+            int i = 0;
+            while (list.Count < tokens.Count)
+            {
+                try
+                {
+                    list.Add(tokens[i]);
+                    i++;
+                    var node = ast.Evaluate(tokens);
+                    var result = table.CheckSyntax(node);
+                }
+                catch (PascalException e)
+                {
+                }
+               
+            }
+           
+        }
+
+        [Test]
         public void LimitedScopes_GlobalMemory_ShouldNotContainVariablesInProcedure()
         {
             var input =

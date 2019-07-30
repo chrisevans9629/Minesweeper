@@ -34,14 +34,14 @@ namespace Minesweeper.Test
             return node;
         }
 
-        private string Name => Current.Token.Name;
+        private string Name => Current?.Token?.Name;
         private IList<Node> Declarations()
         {
             var dec = new List<Node>();
-            while (this._tokens.Current.Token.Name == Pascal.Var)
+            while (Name == Pascal.Var)
             {
                 Eat(Pascal.Var);
-                while (_tokens.Current.Token.Name == Pascal.Id)
+                while (Name == Pascal.Id)
                 {
                     var vardec = VariableDeclaration();
                     foreach (var varDeclaration in vardec)
@@ -52,9 +52,9 @@ namespace Minesweeper.Test
                 }
             }
 
-            while (Current.Token.Name == Pascal.Procedure || Current.Token.Name == Pascal.Function)
+            while (Name == Pascal.Procedure || Name == Pascal.Function)
             {
-                if (Current.Token.Name == Pascal.Procedure)
+                if (Name == Pascal.Procedure)
                 {
                     var proc = ProcedureDeclaration();
                     dec.Add(proc);
@@ -130,7 +130,7 @@ namespace Minesweeper.Test
         private IList<VarDeclarationNode> VariableDeclaration()
         {
             var nodes = new List<Variable> { Variable() };
-            while (_tokens.Current.Token.Name == Pascal.Comma)
+            while (Name == Pascal.Comma)
             {
                 Eat(Pascal.Comma);
                 nodes.Add(Variable());
@@ -143,6 +143,8 @@ namespace Minesweeper.Test
 
         private TypeNode TypeSpec()
         {
+            if(Current == null)
+                Error("Type");
             var result = new TypeNode(Current);
 
             if (Pascal.BuiltInTypes.Contains(result.TypeValue.ToUpper()))
@@ -247,19 +249,19 @@ namespace Minesweeper.Test
             {
                 node = ForLoop();
             }
-           else if (_tokens.Current.Token.Name == Pascal.If)
+           else if (Name == Pascal.If)
             {
                 node = IfStatement();
             }
-            else if (_tokens.Current.Token.Name == Pascal.Begin)
+            else if (Name == Pascal.Begin)
             {
                 node = CompoundStatement();
             }
-            else if (_tokens.Current.Token.Name == Pascal.Id && _tokens.Peek().Token.Name == Pascal.Assign)
+            else if (Name == Pascal.Id && _tokens.Peek()?.Token?.Name == Pascal.Assign)
             {
                 node = AssignmentStatement();
             }
-            else if (Current.Token.Name == Pascal.Id && _tokens.Peek().Token.Name == Pascal.LParinth)
+            else if (Name == Pascal.Id && _tokens.Peek()?.Token?.Name == Pascal.LParinth)
             {
                 node = ProcedureCall();
             }
@@ -344,7 +346,7 @@ namespace Minesweeper.Test
         Node Program()
         {
             Eat(Pascal.Program);
-            var name = _tokens.Current;
+            var name = _tokens?.Current;
             Eat(Pascal.Id);
             Eat(Pascal.Semi);
             var node = Block();

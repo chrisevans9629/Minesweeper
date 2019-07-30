@@ -22,6 +22,7 @@ namespace Minesweeper.Test
 
         public static string Location(TokenItem current)
         {
+            if (current == null) return "";
             return $" at index {current.Index} column {current.Column} line {current.Line}";
         }
     }

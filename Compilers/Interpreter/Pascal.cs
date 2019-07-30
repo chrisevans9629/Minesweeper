@@ -8,6 +8,7 @@ namespace Minesweeper.Test
     }
     public class Pascal
     {
+        public const string EndOfFile = "EndOfFile";
         public const string For = "FOR";
         public const string Do = "DO";
         public const string To = "TO";

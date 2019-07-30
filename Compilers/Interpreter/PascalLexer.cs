@@ -27,6 +27,20 @@ namespace Minesweeper.Test
         {
             index++;
         }
+
+        public T CurrentOrPrevious()
+        {
+            if (Current != null)
+            {
+                return Current;
+            }
+            else if(index > 0)
+            {
+                return _str[index - 1];
+            }
+
+            return default(T);
+        }
     }
 
     public class LexerIterator : Iterator<char>
