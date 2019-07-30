@@ -12,9 +12,14 @@ namespace Minesweeper.Test
         }
         public override object Interpret(Node node)
         {
-            CurrentScope = new Memory("GLOBAL");
+            CreateGlobalMemory();
             var result = base.Interpret(node);
             return CurrentScope;
+        }
+
+        public void CreateGlobalMemory()
+        {
+            CurrentScope = new Memory("GLOBAL");
         }
 
         public object GetVar(string key)
@@ -140,7 +145,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        private object VisitEqualOperator(EqualOperator eop)
+        public object VisitEqualOperator(EqualOperator eop)
         {
             var left = VisitNode(eop.Left);
             var right = VisitNode(eop.Right);

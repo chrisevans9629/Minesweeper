@@ -116,8 +116,42 @@ namespace Minesweeper.Test.Tests
         }
 
 
-        
+        [TestCase("1 = 1", true)]
+        [TestCase("1 + 1 = 2", true)]
+        [TestCase("1 = 2", false)]
+        [TestCase("1.0 = 1", false)]
+        public void EqualOperatorTests(string input, bool result)
+        {
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.Expression().Should().BeOfType<EqualOperator>().Which;
 
+            interpreter.CreateGlobalMemory();
+            var interpret = interpreter.VisitEqualOperator(node);
+            interpret.Should().BeOfType<bool>().Which.Should().Be(result);
+        }
+
+        [Test]
+        public void AddIntegers_Should_BeIntegers()
+        {
+            var input = "1+1";
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.Expression().Should().BeOfType<BinaryOperator>().Which;
+             interpreter.VisitBinaryOperator(node).Should().BeOfType<int>();
+        }
+
+
+        [Test]
+        public void AddDouble_Should_BeDouble()
+        {
+            var input = "1+1.0";
+
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.Expression().Should().BeOfType<BinaryOperator>().Which;
+            interpreter.VisitBinaryOperator(node).Should().BeOfType<double>();
+        }
 
         [Test]
         public void PascalRecursiveFunctionSelfCall()
@@ -167,11 +201,11 @@ namespace Minesweeper.Test.Tests
             interpreter.GetVar("_num").Should().Be(1);
         }
 
-        [TestCase("20 div 7", 2)]
-        [TestCase("20 / 7", 2.95)]
+        [TestCase("20 / 7.0", 2.95)]
         [TestCase("3.5 + 1", 4.5)]
-        public void PascalMath_ShouldReturnResult(string math, double result)
+        public void PascalMath_Should_BeDoubleAndReturnResult(string math, double result)
         {
+            
             var input = $"program test; Begin begin num := {math}; end; End.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
@@ -179,6 +213,20 @@ namespace Minesweeper.Test.Tests
 
             interpreter.GetVar("num").Should().BeOfType<double>().Which.Should().BeInRange(result - 0.5, result);
         }
+
+
+        [TestCase("20 div 7", 2)]
+        public void PascalMath_Should_BeIntAndReturnResult(string math, int result)
+        {
+
+            var input = $"program test; Begin begin num := {math}; end; End.";
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+            interpreter.Interpret(node);
+
+            interpreter.GetVar("num").Should().BeOfType<int>().Which.Should().Be(result);
+        }
+
         [TestCase("PRogram test; BEGIN\r\n\r\n    BEGIN\r\n        number := 2;\r\n        a := NumBer;\r\n        B := 10 * a + 10 * NUMBER / 4;\r\n        c := a - - b\r\n    end;\r\n\r\n    x := 11;\r\nEND.")]
         [TestCase("Program test; BEGIN\r\n    BEGIN\r\n        number := 2;\r\n        a := number;\r\n        b := 10 * a + 10 * number / 4;\r\n        c := a - - b\r\n    END;\r\n    x := 11;\r\nEND.")]
         [TestCase("Program test; BEGIN\r\n    BEGIN\r\n    {THIS IS A COMMENT}number := 2;\r\n        a := number;\r\n        b := 10 * a + 10 * number / 4;\r\n        c := a - - b\r\n    END;\r\n    x := 11;\r\nEND.")]

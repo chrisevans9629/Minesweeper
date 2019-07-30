@@ -13,8 +13,23 @@ namespace Minesweeper.Test
 
         object VisitUnary(UnaryOperator op)
         {
-            if (op.Name == Pascal.Add) return VisitNode(op.Value);
-            if (op.Name == Pascal.Sub) return -((double)VisitNode(op.Value));
+            if (op.Name == Pascal.Add)
+            {
+                return VisitNode(op.Value);
+            }
+
+            if (op.Name == Pascal.Sub)
+            {
+                var value = VisitNode(op.Value);
+                if (value is double d)
+                {
+                    return -d;
+                }
+                if (value is int i)
+                {
+                    return -i;
+                }
+            }
             return Fail(op);
         }
 
@@ -35,28 +50,40 @@ namespace Minesweeper.Test
                 return integer.Value;
             }
 
-            if (node is BinaryOperator op) return VisitBin(op);
+            if (node is BinaryOperator op) return VisitBinaryOperator(op);
             if (node is UnaryOperator un) return VisitUnary(un);
             return Fail(node);
         }
-        object VisitBin(BinaryOperator op)
+        public object VisitBinaryOperator(BinaryOperator op)
         {
-            var actions = new Dictionary<string, Func<double, double, double>>();
-            actions.Add(Pascal.Add, (d, d1) => d + d1);
-            actions.Add(Pascal.Sub, (d, d1) => d - d1);
-            actions.Add(Pascal.Multi, (d, d1) => d * d1);
-            actions.Add(Pascal.FloatDiv, (d, d1) => d / d1);
-            actions.Add(Pascal.IntDiv, (d, d1) => (int)d / (int)d1);
+            var doubleActions = new Dictionary<string, Func<double, double, double>>();
+            doubleActions.Add(Pascal.Add, (d, d1) => d + d1);
+            doubleActions.Add(Pascal.Sub, (d, d1) => d - d1);
+            doubleActions.Add(Pascal.Multi, (d, d1) => d * d1);
+            doubleActions.Add(Pascal.FloatDiv, (d, d1) => d / d1);
+            doubleActions.Add(Pascal.IntDiv, (d, d1) => (int)d / (int)d1);
 
-            if (actions.ContainsKey(op.Name) != true)
+            var intActions = new Dictionary<string, Func<int, int, int>>();
+            intActions.Add(Pascal.Add, (d, d1) => d + d1);
+            intActions.Add(Pascal.Sub, (d, d1) => d - d1);
+            intActions.Add(Pascal.Multi, (d, d1) => d * d1);
+            intActions.Add(Pascal.FloatDiv, (d, d1) => d / d1);
+            intActions.Add(Pascal.IntDiv, (d, d1) => d / d1);
+            if (doubleActions.ContainsKey(op.Name) != true)
             {
                 return Fail(op);
             }
 
-            var left = Convert.ToDouble(VisitNode(op.Left));
-            var right = Convert.ToDouble(VisitNode(op.Right));
-
-            return actions[op.Name](left, right);
+            var left = VisitNode(op.Left);
+            var right = VisitNode(op.Right);
+            if (left is int l && right is int r)
+            {
+                return intActions[op.Name](l, r);
+            }
+            else
+            {
+                return doubleActions[op.Name](Convert.ToDouble(left) ,Convert.ToDouble(right) );
+            }
             //if (op.Name == Pascal.Add)
             //{
             //    return ((double)VisitNode(op.Left)) + ((double)VisitNode(op.Right));

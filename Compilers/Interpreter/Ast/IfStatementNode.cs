@@ -17,7 +17,7 @@ namespace Minesweeper.Test
 
         public override string Display()
         {
-            return $"If ({IfCheck}) then {IfTrue} else {IfFalse}";
+            return $"If ({IfCheck}) then {Aggregate(IfTrue)} else {Aggregate(IfFalse)}";
         }
     }
 }

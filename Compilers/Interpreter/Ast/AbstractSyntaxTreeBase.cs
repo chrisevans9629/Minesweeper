@@ -26,10 +26,24 @@ namespace Minesweeper.Test
         }
         public Node Expression()
         {
+            var result = AddSub();
+
+            if (_tokens.Current != null && _tokens.Current.Token.Name == Pascal.Equal)
+            {
+                var current = _tokens.Current;
+                Eat(Pascal.Equal);
+                result = new EqualOperator(result, AddSub(), current);
+            }
+            return result;
+        }
+
+        private Node AddSub()
+        {
             Node Action()
             {
                 return MultiDiv();
             }
+
             var result = Action();
             while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.IntegerConst)
             {
@@ -54,9 +68,25 @@ namespace Minesweeper.Test
 
             return result;
         }
+
+
+        Node Equal()
+        {
+            var result = Expression();
+            var current = _tokens.Current;
+            if (_tokens.Current.Token.Name == Pascal.Equal)
+            {
+                Eat(Pascal.Equal);
+                return new EqualOperator(result, Expression(), current);
+            }
+
+            return ParseNumber();
+        }
         protected virtual Node ParseNumber()
         {
             var current = _tokens.Current;
+
+            
             if (current.Token.Name == Pascal.RealConst)
             {
                 Eat(Pascal.RealConst);
@@ -109,6 +139,9 @@ namespace Minesweeper.Test
             return null;
         }
 
+
+
+        
         Node MultiDiv()
         {
             Node Action()
@@ -121,11 +154,7 @@ namespace Minesweeper.Test
             while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.IntegerConst)
             {
                 var token = _tokens.Current;
-                if (_tokens.Current.Token.Name == Pascal.Equal)
-                {
-                    Eat(Pascal.Equal);
-                    return new EqualOperator(result, Action(), token);
-                }
+                
                 if (_tokens.Current.Token.Name == Pascal.Multi)
                 {
                     Eat(Pascal.Multi);

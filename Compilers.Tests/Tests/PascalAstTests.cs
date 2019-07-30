@@ -32,6 +32,29 @@ namespace Minesweeper.Test.Tests
         }
 
 
+        [TestCase("10*10=100")]
+        [TestCase("10+10=20")]
+        [TestCase("10+10.0=20")]
+        [TestCase("10/10.0=20")]
+        [TestCase("10-10.0=20")]
+        [TestCase("10 Div 10.0=20")]
+        [TestCase("10*2+10=20")]
+        [TestCase("10+2*10=20")]
+        public void EqualTest(string input)
+        {
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.Expression().Should().BeOfType<EqualOperator>();
+        }
+
+        [TestCase("10+10*10")]
+        public void AddMultiExpression_Add_Should_BeTopNode(string input)
+        {
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.Expression().Should().BeOfType<BinaryOperator>().Which.Name.Should().Be(Pascal.Add);
+        }
+
         [Test]
         public void RecursiveFunctionTest()
         {

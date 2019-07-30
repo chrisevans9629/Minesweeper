@@ -3,12 +3,12 @@
 
     public class IntegerNode : Node
     {
-        public TokenItem Token { get; }
+        public TokenItem TokenItem { get; }
         public int Value { get; set; }
-        public IntegerNode(TokenItem token)
+        public IntegerNode(TokenItem tokenItem)
         {
-            Token = token;
-            Value = int.Parse(token.Value);
+            TokenItem = tokenItem;
+            Value = int.Parse(tokenItem.Value);
         }
         public override string Display()
         {

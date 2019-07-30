@@ -55,10 +55,10 @@ namespace Minesweeper.Test.Tests
 
             var node = t.Should().BeOfType<BinaryOperator>().Which;
             node.Name.Should().Be(Pascal.Add);
-            var left = node.Left.Should().BeOfType<RealNode>().Which;
+            var left = node.Left.Should().BeOfType<IntegerNode>().Which;
             left.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
             left.TokenItem.Value.Should().Be("1");
-            var right = node.Right.Should().BeOfType<RealNode>().Which;
+            var right = node.Right.Should().BeOfType<IntegerNode>().Which;
 
             right.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
             right.TokenItem.Value.Should().Be("2");
@@ -88,8 +88,8 @@ namespace Minesweeper.Test.Tests
 
             t.TokenItem.Token.Name.Should().Be(Pascal.Sub);
 
-            var left = t.Left.Should().BeOfType<RealNode>().Which;
-            var right = t.Right.Should().BeOfType<RealNode>().Which;
+            var left = t.Left.Should().BeOfType<IntegerNode>().Which;
+            var right = t.Right.Should().BeOfType<IntegerNode>().Which;
 
             left.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
             left.TokenItem.Value.Should().Be("1");

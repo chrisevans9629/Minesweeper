@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace Minesweeper.Test.Tests
 {
@@ -22,6 +23,9 @@ namespace Minesweeper.Test.Tests
 
             result.Should().Be("5 3 + 12 * 3 /");
         }
+
+
+        
 
         [TestCase("2 + 3", "(+ 2 3)")]
         [TestCase("(2 + 3 * 5)", "(+ 2 (* 3 5))")]
