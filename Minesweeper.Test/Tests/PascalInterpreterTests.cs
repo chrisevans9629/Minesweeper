@@ -34,7 +34,20 @@ namespace Minesweeper.Test.Tests
             scope.GetValue("x", true).Should().Be(10);
         }
 
+        [Test]
+        public void PascalForLoop()
+        {
+            var file = GetFile("PascalForLoop.txt");
 
+            var tokens = lexer.Tokenize(file);
+            var node = ast.Evaluate(tokens);
+
+            var interpret = interpreter.Interpret(node);
+
+            var scope = interpret.Should().BeOfType<Memory>().Which;
+
+            scope.GetValue("x", true).Should().Be(10);
+        }
 
         [Test]
         public void PascalFunctionCall()

@@ -8,6 +8,9 @@ namespace Minesweeper.Test
     }
     public class Pascal
     {
+        public const string For = "FOR";
+        public const string Do = "DO";
+        public const string To = "TO";
         public const string If = "IF";
         public const string Then = "THEN";
         public const string Else = "ELSE";
@@ -86,7 +89,10 @@ namespace Minesweeper.Test
             {Then, CreateToken(Then)},
             {Else, CreateToken(Else)},
             {"TRUE", CreateToken(BoolConst) },
-            {"FALSE", CreateToken(BoolConst) }
+            {"FALSE", CreateToken(BoolConst) },
+            {For, CreateToken(For) },
+            {To, CreateToken(To) },
+            {Do, CreateToken(Do) }
             
         };
     }

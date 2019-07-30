@@ -165,10 +165,10 @@ namespace Minesweeper.Test
                 results.Add(Statement());
             }
 
-            if (_tokens.Current?.Token?.Name == Pascal.Id)
-            {
-                throw new NotImplementedException();
-            }
+            //if (_tokens.Current?.Token?.Name == Pascal.Id)
+            //{
+            //    Error();
+            // }
 
             return results;
         }
