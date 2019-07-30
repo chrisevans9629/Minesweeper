@@ -1,4 +1,7 @@
-﻿namespace Minesweeper.Test
+﻿using System;
+using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
     public class PascalInterpreter : SuperBasicMathInterpreter
     {
@@ -117,23 +120,37 @@
 
         private object VisitFunctionCall(FunctionCallNode call)
         {
-            var declaration = CurrentScope.GetValue<FunctionDeclarationNode>(call.FunctionName, true);
-            var previous = CurrentScope;
-            CurrentScope = new Memory(call.FunctionName, previous);
-            CurrentScope.Add(call.FunctionName,null);
-            for (var i = 0; i < declaration.Parameters.Count; i++)
+            try
             {
-                var parameter = declaration.Parameters[i];
-                VisitVarDeclaration(parameter.Declaration);
-                var value = VisitNode(call.Parameters[i]);
+                var declaration = CurrentScope.GetValue<FunctionDeclarationNode>(call.FunctionName, true);
+                var values = new List<object>();
+                for (var i = 0; i < declaration.Parameters.Count; i++)
+                {
+                    var value = VisitNode(call.Parameters[i]);
+                    values.Add(value);
+                }
+                var previous = CurrentScope;
+                CurrentScope = new Memory(call.FunctionName, previous);
+                CurrentScope.Add(call.FunctionName, null);
+                for (var i = 0; i < declaration.Parameters.Count; i++)
+                {
+                    var parameter = declaration.Parameters[i];
+                    VisitVarDeclaration(parameter.Declaration);
+                    CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, values[i]);
+                }
 
-                CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, value);
+
+                VisitBlock(declaration.Block);
+                var funResult = CurrentScope.GetValue(call.FunctionName);
+                CurrentScope = previous;
+                return funResult;
             }
-
-            VisitBlock(declaration.Block);
-            var funResult = CurrentScope.GetValue(call.FunctionName);
-            CurrentScope = previous;
-            return funResult;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception( "Exception " + PascalException.Location(call.Token), e);
+            }
+           
         }
 
         private object VisitProcedureCall(ProcedureCallNode call)

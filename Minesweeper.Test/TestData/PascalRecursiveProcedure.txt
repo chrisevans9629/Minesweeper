@@ -1,0 +1,12 @@
+﻿program test;
+var x : integer;
+procedure Factorial(y : integer);
+begin
+	if y = 0 then x := x
+	else x := x + Factorial(y-1);
+end;
+begin
+	x := 0;
+	Factorial(3);
+end.
+

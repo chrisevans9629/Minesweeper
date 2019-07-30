@@ -19,6 +19,11 @@ namespace Minesweeper.Test
             Error = error;
             Token = token;
         }
+
+        public static string Location(TokenItem current)
+        {
+            return $" at index {current.Index} column {current.Column} line {current.Line}";
+        }
     }
 
     public class LexerException : PascalException

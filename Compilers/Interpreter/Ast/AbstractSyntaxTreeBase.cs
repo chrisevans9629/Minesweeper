@@ -148,8 +148,12 @@ namespace Minesweeper.Test
             }
             else
             {
+
                 var current = _tokens.Current;
-                throw new ParserException(ErrorCode.UnexpectedToken, _tokens.Current, $"Expected an '{name}' token but was '{_tokens.Current?.Token.Name}' at index {current.Index} column {current.Column} line {current.Line}");
+                var location = PascalException.Location(current);
+                throw new ParserException(ErrorCode.UnexpectedToken,
+                    _tokens.Current,
+                    $"Expected an '{name}' token but was '{_tokens.Current?.Token.Name}'{location}");
             }
         }
 

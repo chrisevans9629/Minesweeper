@@ -122,6 +122,21 @@ namespace Minesweeper.Test.Tests
             scope.GetValue("Add").Should().BeOfType<FunctionDeclarationNode>();
         }
 
+        [Test]
+        public void PascalRecursiveProcedureSelfCall()
+        {
+            var file = GetFile("PascalRecursiveProcedure.txt");
+
+            var tokens = lexer.Tokenize(file);
+            var node = ast.Evaluate(tokens);
+
+            var interpret = interpreter.Interpret(node);
+
+            var scope = interpret.Should().BeOfType<Memory>().Which;
+
+            scope.GetValue("x", true).Should().Be(6);
+        }
+
         public static string GetFile(string fileName)
         {
             var file = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, $"TestData", fileName));

@@ -77,7 +77,7 @@ namespace Minesweeper.Test
         // public object this[string key] { get => dictionary[key.ToUpper()]; set=> dictionary[key.ToUpper()] = value; }
         public override string ToString()
         {
-            return $"{Name}\n{dictionary.Aggregate("", (s, pair) => s + $", ({pair.Key},{pair.Value})")}\n{Parent}";
+            return $"{Name}(\n{dictionary.Aggregate("", (s, pair) => s + $", ({pair.Key},{pair.Value})")})\n {Parent}";
         }
     }
 }
