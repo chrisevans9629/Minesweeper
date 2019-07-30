@@ -67,7 +67,11 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitNoOp(nope);
             }
-            else if (node is NumberLeaf)
+            else if (node is RealNode)
+            {
+
+            }
+            else if (node is IntegerNode)
             {
 
             }

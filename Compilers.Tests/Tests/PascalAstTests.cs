@@ -53,10 +53,10 @@ namespace Minesweeper.Test.Tests
             var ifStatement = block.CompoundStatement.Nodes.Should().HaveCount(1).And.Subject.First().Should().BeOfType<IfStatementNode>().Which;
 
             ifStatement.IfCheck.Left.Should().BeOfType<Variable>();
-            ifStatement.IfCheck.Right.Should().BeOfType<NumberLeaf>();
+            ifStatement.IfCheck.Right.Should().BeOfType<IntegerNode>();
            var trueStatement = ifStatement.IfTrue.First().Should().BeOfType<AssignNode>().Which;
            trueStatement.Left.VariableName.Should().Be("Summation");
-           trueStatement.Right.Should().BeOfType<NumberLeaf>();
+           trueStatement.Right.Should().BeOfType<IntegerNode>();
            var falseStatement =  ifStatement.IfFalse.First().Should().BeOfType<AssignNode>().Which;
 
            falseStatement.Left.VariableName.Should().Be("Summation");
@@ -96,8 +96,8 @@ namespace Minesweeper.Test.Tests
             ast.CreateIterator(tokens);
             var node = ast.Expression();
             var equal = node.Should().BeOfType<EqualOperator>().Which;
-            equal.Left.Should().BeOfType<NumberLeaf>();
-            equal.Right.Should().BeOfType<NumberLeaf>();
+            equal.Left.Should().BeOfType<IntegerNode>();
+            equal.Right.Should().BeOfType<IntegerNode>();
         }
 
         [TestCase("4 = 5")]

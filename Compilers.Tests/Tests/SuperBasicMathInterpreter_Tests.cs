@@ -55,10 +55,10 @@ namespace Minesweeper.Test.Tests
 
             var node = t.Should().BeOfType<BinaryOperator>().Which;
             node.Name.Should().Be(Pascal.Add);
-            var left = node.Left.Should().BeOfType<NumberLeaf>().Which;
+            var left = node.Left.Should().BeOfType<RealNode>().Which;
             left.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
             left.TokenItem.Value.Should().Be("1");
-            var right = node.Right.Should().BeOfType<NumberLeaf>().Which;
+            var right = node.Right.Should().BeOfType<RealNode>().Which;
 
             right.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
             right.TokenItem.Value.Should().Be("2");
@@ -88,8 +88,8 @@ namespace Minesweeper.Test.Tests
 
             t.TokenItem.Token.Name.Should().Be(Pascal.Sub);
 
-            var left = t.Left.Should().BeOfType<NumberLeaf>().Which;
-            var right = t.Right.Should().BeOfType<NumberLeaf>().Which;
+            var left = t.Left.Should().BeOfType<RealNode>().Which;
+            var right = t.Right.Should().BeOfType<RealNode>().Which;
 
             left.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
             left.TokenItem.Value.Should().Be("1");
@@ -103,12 +103,12 @@ namespace Minesweeper.Test.Tests
             var mulToken = new TokenItem() { Value = "*", Token = new Token() { Name = Pascal.Multi } };
             var addToken = new TokenItem() { Value = "+", Token = new Token() { Name = Pascal.Add } };
             var mulop = new BinaryOperator(
-                new NumberLeaf(new TokenItem() { Value = "2", Token = new Token() { Name = Pascal.IntegerConst } }),
-                new NumberLeaf(new TokenItem() { Value = "7", Token = new Token() { Name = Pascal.IntegerConst } }),
+                new RealNode(new TokenItem() { Value = "2", Token = new Token() { Name = Pascal.IntegerConst } }),
+                new RealNode(new TokenItem() { Value = "7", Token = new Token() { Name = Pascal.IntegerConst } }),
                 mulToken);
             var addop = new BinaryOperator(
                 mulop,
-                new NumberLeaf(new TokenItem() { Value = "3", Token = new Token() { Name = Pascal.IntegerConst } }),
+                new RealNode(new TokenItem() { Value = "3", Token = new Token() { Name = Pascal.IntegerConst } }),
                 addToken);
 
             addop.TokenItem.Token.Name.Should().Be(Pascal.Add);

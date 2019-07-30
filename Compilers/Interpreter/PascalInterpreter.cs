@@ -109,7 +109,7 @@ namespace Minesweeper.Test
             var toInt = VisitNode(forLoop.ToNode);
             var fromValue = CurrentScope.GetValue(fromName, true);
             CurrentScope = new Memory("_ForLoop_", CurrentScope);
-            for (var i =(double)fromValue ; i <= (double)toInt; i++)
+            for (var i =(int)fromValue ; i <= (int)toInt; i++)
             {
                 foreach (var forLoopDoStatement in forLoop.DoStatements)
                 {

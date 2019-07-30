@@ -4,19 +4,27 @@ namespace Minesweeper.Test
 {
     public class SuperBasicRpnMathInterpreter
     {
-        string VisitNum(NumberLeaf num)
+        string VisitNum(RealNode num)
         {
             return num.Value.ToString();
         }
 
         string VisitNode(Node node)
         {
-            if (node is NumberLeaf leaf)
+            if (node is RealNode leaf)
             {
                 return VisitNum(leaf);
             }
 
-            if (node is BinaryOperator op) return VisitBin(op);
+            if (node is IntegerNode integer)
+            {
+                return integer.Value.ToString();
+            }
+
+            if (node is BinaryOperator op)
+            {
+                return VisitBin(op);
+            }
 
             throw new Exception($"did not recognize node {node}");
         }

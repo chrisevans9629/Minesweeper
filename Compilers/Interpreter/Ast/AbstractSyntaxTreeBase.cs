@@ -54,11 +54,25 @@ namespace Minesweeper.Test
 
             return result;
         }
-        protected virtual NumberLeaf ParseNumber()
+        protected virtual Node ParseNumber()
         {
-            var value = new NumberLeaf(_tokens.Current);
-            _tokens.Advance();
-            return value;
+            var current = _tokens.Current;
+            if (current.Token.Name == Pascal.RealConst)
+            {
+                Eat(Pascal.RealConst);
+                var value = new RealNode(current);
+                return value;
+            }
+
+            if (current.Token.Name == Pascal.IntegerConst)
+            {
+                Eat(Pascal.IntegerConst);
+                var value = new IntegerNode(current);
+                return value;
+            }
+           
+            Error("Number");
+            return null;
         }
 
         protected virtual Node ParaUnaryOperators()
