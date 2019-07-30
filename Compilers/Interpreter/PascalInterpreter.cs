@@ -118,11 +118,11 @@ namespace Minesweeper.Test
             return left.Equals(right) ;
         }
 
-        private object VisitFunctionCall(FunctionCallNode call)
+        private void VisitCall<T>(CallNode call) where T : DeclarationNode
         {
             try
             {
-                var declaration = CurrentScope.GetValue<FunctionDeclarationNode>(call.FunctionName, true);
+                var declaration = CurrentScope.GetValue<T>(call.Name, true);
                 var values = new List<object>();
                 for (var i = 0; i < declaration.Parameters.Count; i++)
                 {
@@ -130,19 +130,50 @@ namespace Minesweeper.Test
                     values.Add(value);
                 }
                 var previous = CurrentScope;
-                CurrentScope = new Memory(call.FunctionName, previous);
-                CurrentScope.Add(call.FunctionName, null);
+                CurrentScope = new Memory(call.Name, previous);
+                CurrentScope.Add(call.Name, null);
                 for (var i = 0; i < declaration.Parameters.Count; i++)
                 {
                     var parameter = declaration.Parameters[i];
                     VisitVarDeclaration(parameter.Declaration);
                     CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, values[i]);
                 }
-
-
                 VisitBlock(declaration.Block);
-                var funResult = CurrentScope.GetValue(call.FunctionName);
-                CurrentScope = previous;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception("Exception " + PascalException.Location(call.Token), e);
+            }
+
+        }
+
+        private object VisitFunctionCall(CallNode call)
+        {
+            try
+            {
+                VisitCall<FunctionDeclarationNode>(call);
+                //var declaration = CurrentScope.GetValue<FunctionDeclarationNode>(call.Name, true);
+                //var values = new List<object>();
+                //for (var i = 0; i < declaration.Parameters.Count; i++)
+                //{
+                //    var value = VisitNode(call.Parameters[i]);
+                //    values.Add(value);
+                //}
+                //var previous = CurrentScope;
+                //CurrentScope = new Memory(call.Name, previous);
+                //CurrentScope.Add(call.Name, null);
+                //for (var i = 0; i < declaration.Parameters.Count; i++)
+                //{
+                //    var parameter = declaration.Parameters[i];
+                //    VisitVarDeclaration(parameter.Declaration);
+                //    CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, values[i]);
+                //}
+
+
+                //VisitBlock(declaration.Block);
+                var funResult = CurrentScope.GetValue(call.Name);
+                CurrentScope = CurrentScope.Parent;
                 return funResult;
             }
             catch (Exception e)
@@ -155,21 +186,22 @@ namespace Minesweeper.Test
 
         private object VisitProcedureCall(ProcedureCallNode call)
         {
-            var declaration = (ProcedureDeclarationNode)CurrentScope.GetValue(call.ProcedureName, true);
-            var previous = CurrentScope;
-            CurrentScope = new Memory(call.ProcedureName, previous);
+            VisitCall<ProcedureDeclarationNode>(call);
+            //var declaration = (ProcedureDeclarationNode)CurrentScope.GetValue(call.ProcedureName, true);
+            //var previous = CurrentScope;
+            //CurrentScope = new Memory(call.ProcedureName, previous);
 
-            for (var i = 0; i < declaration.Parameters.Count; i++)
-            {
-                var parameter = declaration.Parameters[i];
-                VisitVarDeclaration(parameter.Declaration);
-                var value = VisitNode(call.Parameters[i]);
-                CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, value);
+            //for (var i = 0; i < declaration.Parameters.Count; i++)
+            //{
+            //    var parameter = declaration.Parameters[i];
+            //    VisitVarDeclaration(parameter.Declaration);
+            //    var value = VisitNode(call.Parameters[i]);
+            //    CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, value);
 
-            }
+            //}
 
-            VisitBlock(declaration.Block);
-            CurrentScope = previous;
+            //VisitBlock(declaration.Block);
+            CurrentScope = CurrentScope.Parent;
 
             return null;
         }

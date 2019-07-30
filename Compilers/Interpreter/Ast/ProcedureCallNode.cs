@@ -2,22 +2,12 @@
 
 namespace Minesweeper.Test
 {
-    public class ProcedureCallNode : Node
+    public class ProcedureCallNode : CallNode
     {
-        public string ProcedureName { get; }
-        public IList<Node> Parameters { get; }
-        public TokenItem Token { get; }
+        public string ProcedureName => Name;
 
-        public ProcedureCallNode(string procedureName, IList<Node> parameters, TokenItem token)
+        public ProcedureCallNode(string name, IList<Node> parameters, TokenItem token) : base(name, parameters, token, "Procedure")
         {
-            ProcedureName = procedureName;
-            Parameters = parameters;
-            Token = token;
-        }
-
-        public override string Display()
-        {
-            return $"Procedure {ProcedureName}({Node.Aggregate(Parameters)})";
         }
     }
 }

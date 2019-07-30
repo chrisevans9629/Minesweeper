@@ -2,22 +2,18 @@
 
 namespace Minesweeper.Test
 {
-    public class ProcedureDeclarationNode : Node
+    public class ProcedureDeclarationNode : DeclarationNode
     {
-        public string ProcedureId { get; }
-        public BlockNode Block { get; }
-        public IList<ProcedureParameter> Parameters { get; }
+        public string ProcedureId => Name;
 
         public ProcedureDeclarationNode(string procedureId, BlockNode block, IList<ProcedureParameter> parameters)
         {
-            ProcedureId = procedureId;
+            Name = procedureId;
             Block = block;
             Parameters = parameters;
+            Type = "Procedure";
         }
 
-        public override string Display()
-        {
-            return $"Procedure({ProcedureId},{Block.Display()}";
-        }
+       
     }
 }

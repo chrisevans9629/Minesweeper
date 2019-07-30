@@ -2,44 +2,61 @@
 
 namespace Minesweeper.Test
 {
-
-    public class FunctionCallNode : Node
+    public class CallNode : Node
     {
-        public string FunctionName { get; }
+        public string Type { get; }
+        public string Name { get; }
         public IList<Node> Parameters { get; }
         public TokenItem Token { get; }
 
-        public FunctionCallNode(string functionName, IList<Node> parameters, TokenItem token)
+        public CallNode(string name, IList<Node> parameters, TokenItem token, string type)
         {
-            FunctionName = functionName;
+            Name = name;
             Parameters = parameters;
             Token = token;
+            Type = type;
         }
 
         public override string Display()
         {
-            return $"Function {FunctionName}({Node.Aggregate(Parameters)})";
+            return $"{Type} {Name}({Node.Aggregate(Parameters)})";
         }
     }
-    public class FunctionDeclarationNode : Node
+    public class FunctionCallNode : CallNode
     {
-        public string FunctionName { get; }
-        public IList<ProcedureParameter> Parameters { get; }
-        public BlockNode Block { get; }
-        public TokenItem Token { get; }
+        public string FunctionName => Name;
+        public FunctionCallNode(string name, IList<Node> parameters, TokenItem token) : base(name, parameters, token, "Function")
+        {
+        }
+    }
+    public abstract class DeclarationNode : Node
+    {
+        public string Type { get; set; }
+        public string Name { get; protected set; }
+        public IList<ProcedureParameter> Parameters { get; protected set; }
+        public BlockNode Block { get; protected set; }
+        public TokenItem Token { get; protected set; }
+        public override string Display()
+        {
+            return $"{Type}({Name}, {Node.Aggregate(Parameters)}, {Block})";
+        }
+    }
+
+    public class FunctionDeclarationNode : DeclarationNode
+    {
+        public string FunctionName => Name;
+       
         public TypeNode ReturnType { get; }
 
         public FunctionDeclarationNode(string functionName, IList<ProcedureParameter> parameters, BlockNode block, TokenItem token, TypeNode returnType)
         {
-            FunctionName = functionName;
+            Name = functionName;
             Parameters = parameters;
             Block = block;
             Token = token;
             ReturnType = returnType;
+            Type = "Function";
         }
-        public override string Display()
-        {
-            return $"Function({FunctionName}, {Node.Aggregate(Parameters)})";
-        }
+       
     }
 }
