@@ -32,6 +32,7 @@ namespace Pascal.Ide.Wpf.ViewModels
                 var tokens = lexer.Tokenize(Code);
                 var node = ast.Evaluate(tokens);
                 var analize = analyzer.CheckSyntax(node);
+                Error = "";
             }
             catch (PascalException e)
             {

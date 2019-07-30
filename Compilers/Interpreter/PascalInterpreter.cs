@@ -177,7 +177,7 @@ namespace Minesweeper.Test
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw new Exception("Exception " + PascalException.Location(call.Token), e);
+                throw new RuntimeException(ErrorCode.Runtime, call.Token, "Unexpected Error", e);
             }
 
         }
@@ -213,7 +213,7 @@ namespace Minesweeper.Test
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw new Exception("Exception " + PascalException.Location(call.Token), e);
+                throw new RuntimeException(ErrorCode.Runtime,call.Token,"Unexpected error", e);
             }
 
         }

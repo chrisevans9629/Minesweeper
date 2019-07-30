@@ -34,7 +34,13 @@ namespace Minesweeper.Test.Tests
             table = new PascalSemanticAnalyzer(logger);
         }
 
+        [Test]
+        public void UndefinedProcedure_Should_ThrowSemanticException()
+        {
+            var input = PascalTestInputs.Invalid.UndefinedProcedureAdd;
 
+            Assert.Throws<SemanticException>(() => CheckSyntax(input));
+        }
       
 
         [Test]
@@ -77,14 +83,18 @@ namespace Minesweeper.Test.Tests
         public void LevelZeroScope_Should_Return2Symbols()
         {
             var input = "program SymTab3; begin end.";
-            var tokens = lexer.Tokenize(input);
-            var node = ast.Evaluate(tokens);
-            var result = table.CheckSyntax(node);
+            var result = CheckSyntax(input);
 
             result.Count.Should().Be(2);
         }
 
-       
+        private ScopedSymbolTable CheckSyntax(string input)
+        {
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+            var result = table.CheckSyntax(node);
+            return result;
+        }
 
 
         [Test]
@@ -108,28 +118,44 @@ namespace Minesweeper.Test.Tests
              memory.ContainsKey("a").Should().BeTrue();
         }
 
+
+        [TestCase(PascalTestInputs.PascalProgramWithProceduresWithMultipleParameters)]
+        [TestCase(PascalTestInputs.PascalProgramWithMultipleVarDeclarations)]
+        [TestCase(PascalTestInputs.PascalProgramWithProcedures)]
+        [TestCase(PascalTestInputs.PascalProgramWithProceduresWithParameters)]
+        [TestCase(PascalTestInputs.PascalSourceToSource)]
+        [TestCase(PascalTestInputs.ProcedureCallXEquals10)]
+        public void Pascal_OnlyPascalExceptions(string input)
+        {
+            DoesNotFail(input);
+        }
+
         [Test]
         public void PascalNoNonPascalExceptionsWhenAddingTokens()
         {
             var file = PascalInterpreterTests.GetFile("PascalFunctionSelfCall.txt");
-            var tokens = lexer.Tokenize(file);
-            var list = new List<TokenItem>();
+            DoesNotFail(file);
+        }
+
+        private void DoesNotFail(string file)
+        {
+            var list = new List<char>();
             int i = 0;
-            while (list.Count < tokens.Count)
+            while (list.Count < file.Length)
             {
                 try
                 {
-                    list.Add(tokens[i]);
+                    list.Add(file[i]);
                     i++;
+                    var tokens = lexer.Tokenize(file);
+
                     var node = ast.Evaluate(tokens);
                     var result = table.CheckSyntax(node);
                 }
                 catch (PascalException e)
                 {
                 }
-               
             }
-           
         }
 
         [Test]

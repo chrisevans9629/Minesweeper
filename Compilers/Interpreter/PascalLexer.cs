@@ -206,7 +206,7 @@ namespace Minesweeper.Test
                     Advance();
                     var token = CreateToken("Error", current.ToString());
                     throw new LexerException(ErrorCode.UnexpectedToken, token, 
-                        $"Unexpected token '{current}' at index {token.Index} line {token.Line} column {token.Column}");
+                        $"Unexpected token '{current}'");
                 }
             }
 

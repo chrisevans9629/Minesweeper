@@ -131,7 +131,7 @@ namespace Minesweeper.Test.Tests
             ex.Token.Index.Should().Be(16);
             ex.Token.Value.Should().Be("~");
             ex.Error.Should().Be(ErrorCode.UnexpectedToken);
-            ex.Message.Should().Be("Unexpected token '~' at index 16 line 2 column 6");
+            ex.Message.Should().Be("Unexpected token '~' at line 2 column 6 index 16");
         }
 
         [Test]

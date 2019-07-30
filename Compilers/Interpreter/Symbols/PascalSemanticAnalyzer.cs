@@ -99,6 +99,14 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitDeclaration(functionDeclaration);
             }
+            else if (node is FunctionCallNode funCall)
+            {
+
+            }
+            else if (node is ProcedureCallNode procCall)
+            {
+
+            }
             else
             {
                 throw new InvalidOperationException($"did not recognize node {node}");

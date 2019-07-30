@@ -6,7 +6,8 @@ namespace Minesweeper.Test
     {
         UnexpectedToken,
         IdNotFound,
-        DuplicateId
+        DuplicateId,
+        Runtime
     }
 
     public class PascalException : Exception
@@ -14,16 +15,16 @@ namespace Minesweeper.Test
         public ErrorCode Error { get; }
         public TokenItem Token { get; }
 
-        public PascalException(ErrorCode error, TokenItem token, string message) : base(message)
+        public PascalException(ErrorCode error, TokenItem token, string message, Exception ex = null) : base(message + Location(token), ex)
         {
             Error = error;
             Token = token;
         }
 
-        public static string Location(TokenItem current)
+        private static string Location(TokenItem current)
         {
             if (current == null) return "";
-            return $" at index {current.Index} column {current.Column} line {current.Line}";
+            return $" at line {current.Line} column {current.Column} index {current.Index}";
         }
     }
 
@@ -50,7 +51,7 @@ namespace Minesweeper.Test
 
     public class RuntimeException : PascalException
     {
-        public RuntimeException(ErrorCode error, TokenItem token, string message) : base(error, token, message)
+        public RuntimeException(ErrorCode error, TokenItem token, string message, Exception ex = null) : base(error, token, message, ex)
         {
         }
     }

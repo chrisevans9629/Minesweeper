@@ -195,14 +195,13 @@ namespace Minesweeper.Test
             }
         }
 
-        protected void Error(string name)
+        protected void Error(string expectedName)
         {
             var current = _tokens.CurrentOrPrevious();
             
-            var location = PascalException.Location(current);
             throw new ParserException(ErrorCode.UnexpectedToken,
-                _tokens.Current,
-                $"Expected an '{name}' token but was '{_tokens.Current?.Token.Name}'{location}");
+                current,
+                $"Expected an '{expectedName}' token but was '{current?.Token.Name}'");
         }
 
         public abstract Node Evaluate();

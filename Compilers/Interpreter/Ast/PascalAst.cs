@@ -336,7 +336,9 @@ namespace Minesweeper.Test
         {
             var node = Program();
             if (this._tokens.Current != null)
-                throw new Exception($"did not expect {_tokens.Current.Token.Name}");
+            {
+                Error("null");
+            }
             return node;
         }
         NoOp Empty()

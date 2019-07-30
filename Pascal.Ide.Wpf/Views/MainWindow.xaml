@@ -9,7 +9,7 @@
             <ColumnDefinition Width="191*"/>
             <ColumnDefinition Width="69*"/>
         </Grid.ColumnDefinitions>
-        <TextBox Margin="10" AcceptsReturn="True" AcceptsTab="True" Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Margin="10" AcceptsReturn="True" FontSize="18" AcceptsTab="True" Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Grid.Column="1" Margin="10" Text="{Binding Error}" TextWrapping="Wrap"></TextBlock>
         <!--<ContentControl prism:RegionManager.RegionName="ContentRegion" />-->
     </Grid>

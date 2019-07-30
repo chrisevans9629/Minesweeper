@@ -2,6 +2,10 @@
 {
     public static class PascalTestInputs
     {
+        public static class Invalid
+        {
+            public const string UndefinedProcedureAdd = "program test;begin Add();end.";
+        }
 
         public const string ProcedureCallXEquals10 =
             "program test; \n" +

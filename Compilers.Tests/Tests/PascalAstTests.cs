@@ -145,7 +145,7 @@ namespace Minesweeper.Test.Tests
             var result = Assert.Throws<ParserException>(() => ast.Evaluate(tokens));
 
             result.Token.Line.Should().Be(1);
-            result.Message.Should().Be("Expected an 'ID' token but was ';' at index 7 column 8 line 1");
+            result.Message.Should().Be("Expected an 'ID' token but was ';' at line 1 column 8 index 7");
         }
 
         [Test]
