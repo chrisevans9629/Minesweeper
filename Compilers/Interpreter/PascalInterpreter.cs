@@ -99,13 +99,19 @@ namespace Minesweeper.Test
 
         private object VisitIfNode(IfStatementNode ifNode)
         {
-            if ((bool) VisitEqualOperator(ifNode.IfCheck))
+            if ((bool)VisitEqualOperator(ifNode.IfCheck))
             {
-                VisitNode(ifNode.IfTrue);
+                foreach (var node in ifNode.IfTrue)
+                {
+                    VisitNode(node);
+                }
             }
-            else if(ifNode.IfFalse != null)
+            else if (ifNode.IfFalse != null)
             {
-                VisitNode(ifNode.IfFalse);
+                foreach (var node in ifNode.IfFalse)
+                {
+                    VisitNode(node);
+                }
             }
 
             return null;
@@ -115,7 +121,7 @@ namespace Minesweeper.Test
         {
             var left = VisitNode(eop.Left);
             var right = VisitNode(eop.Right);
-            return left.Equals(right) ;
+            return left.Equals(right);
         }
 
         private void VisitCall<T>(CallNode call) where T : DeclarationNode
@@ -179,9 +185,9 @@ namespace Minesweeper.Test
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw new Exception( "Exception " + PascalException.Location(call.Token), e);
+                throw new Exception("Exception " + PascalException.Location(call.Token), e);
             }
-           
+
         }
 
         private object VisitProcedureCall(ProcedureCallNode call)

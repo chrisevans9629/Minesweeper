@@ -159,13 +159,13 @@ namespace Minesweeper.Test
 
             var results = new List<Node> { node };
 
-            while (this._tokens.Current.Token.Name == Pascal.Semi)
+            while (this._tokens.Current?.Token?.Name == Pascal.Semi)
             {
                 Eat(Pascal.Semi);
                 results.Add(Statement());
             }
 
-            if (_tokens.Current.Token.Name == Pascal.Id)
+            if (_tokens.Current?.Token?.Name == Pascal.Id)
             {
                 throw new NotImplementedException();
             }
@@ -268,12 +268,12 @@ namespace Minesweeper.Test
             Eat(Pascal.If);
             var equal = Expression() as EqualOperator;
             Eat(Pascal.Then);
-            var tstatement = Statement();
-            Node estate = null;
+            var tstatement = StatementList();
+            IList<Node> estate = null;
             if (Current.Token.Name == Pascal.Else)
             {
                 Eat(Pascal.Else);
-                estate = Statement();
+                estate = StatementList();
             }
             return new IfStatementNode(equal, tstatement, estate);
         }

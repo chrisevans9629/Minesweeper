@@ -54,10 +54,10 @@ namespace Minesweeper.Test.Tests
 
             ifStatement.IfCheck.Left.Should().BeOfType<Variable>();
             ifStatement.IfCheck.Right.Should().BeOfType<NumberLeaf>();
-           var trueStatement = ifStatement.IfTrue.Should().BeOfType<AssignNode>().Which;
+           var trueStatement = ifStatement.IfTrue.First().Should().BeOfType<AssignNode>().Which;
            trueStatement.Left.VariableName.Should().Be("Summation");
            trueStatement.Right.Should().BeOfType<NumberLeaf>();
-           var falseStatement =  ifStatement.IfFalse.Should().BeOfType<AssignNode>().Which;
+           var falseStatement =  ifStatement.IfFalse.First().Should().BeOfType<AssignNode>().Which;
 
            falseStatement.Left.VariableName.Should().Be("Summation");
            falseStatement.Right.Should().BeOfType<BinaryOperator>().Which.Left.Should().BeOfType<FunctionCallNode>()
@@ -75,8 +75,8 @@ namespace Minesweeper.Test.Tests
 
            var result = ast.Statement();
            var iff = result.Should().BeOfType<IfStatementNode>().Which;
-           iff.IfTrue.Should().BeOfType<AssignNode>();
-           iff.IfFalse.Should().BeOfType<AssignNode>();
+           iff.IfTrue.First().Should().BeOfType<AssignNode>();
+           iff.IfFalse.First().Should().BeOfType<AssignNode>();
 
         }
         [Test]

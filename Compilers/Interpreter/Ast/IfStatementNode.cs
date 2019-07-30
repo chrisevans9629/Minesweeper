@@ -1,12 +1,14 @@
-﻿namespace Minesweeper.Test
+﻿using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
     public class IfStatementNode : Node
     {
         public EqualOperator IfCheck { get; }
-        public Node IfTrue { get; }
-        public Node IfFalse { get; }
+        public IList<Node> IfTrue { get; }
+        public IList<Node> IfFalse { get; }
 
-        public IfStatementNode(EqualOperator ifCheck, Node IfTrue, Node IfFalse)
+        public IfStatementNode(EqualOperator ifCheck, IList<Node> IfTrue, IList<Node> IfFalse)
         {
             IfCheck = ifCheck;
             this.IfTrue = IfTrue;
