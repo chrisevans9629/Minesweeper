@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Xamarin.Forms.Internals;
 
 namespace Minesweeper.Test.Tests
 {
@@ -78,9 +77,15 @@ namespace Minesweeper.Test.Tests
             var input = "program Test;\nbegin end.";
             var tokens = lexer.Tokenize(input);
 
-            tokens.Take(3).ForEach(p => p.Line.Should().Be(1));
+            foreach (var tokenItem in tokens.Take(3))
+            {
+                tokenItem.Line.Should().Be(1);
+            }
 
-            tokens.Skip(3).Take(3).ForEach(p => p.Line.Should().Be(2));
+            foreach (var tokenItem in tokens.Skip(3).Take(3))
+            {
+                tokenItem.Line.Should().Be(2);
+            }
         }
 
         [TestCase("    .", 5)]
