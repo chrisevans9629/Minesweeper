@@ -12,6 +12,8 @@
 
             public const string FunctionDoesNotHaveReturn =
                 "program test;\r\nvar t : integer;\r\nfunction Add() : integer;\r\nbegin\r\nend;\r\nbegin\r\nend.";
+
+            public const string MismatchingType = "program test;\r\nvar asdf : integer;\r\nbegin\r\nasdf := 10.0;\r\nend.";
         }
 
         public const string ProcedureCallXEquals10 =

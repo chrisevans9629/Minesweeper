@@ -200,6 +200,10 @@ namespace Minesweeper.Test.Symbols
             var variable = VisitVariable(ass.Left);
             VisitNode(ass.Right);
             variable.Initialized = true;
+            if (variable.Type.Name == Pascal.Int && ass.Right is RealNode r)
+            {
+                throw new SemanticException(ErrorCode.TypeMismatch, r.TokenItem, $"Cannot assign Real to integer");
+            }
         }
 
         private VariableSymbol VisitVariable(Variable assLeft)

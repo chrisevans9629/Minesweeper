@@ -3,30 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525">
+        Title="{Binding Title}" Height="500" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="191*"/>
             <ColumnDefinition Width="69*"/>
         </Grid.ColumnDefinitions>
-        <RichTextBox 
+        <TextBox 
             Margin="10" 
             AcceptsReturn="True" 
             FontSize="18" 
             HorizontalScrollBarVisibility="Auto" 
             VerticalScrollBarVisibility="Auto" 
             AcceptsTab="True"  
+            Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"
             >
-            <RichTextBox.Document>
-                <FlowDocument Name="FlowDocument">
-                </FlowDocument>
-            </RichTextBox.Document>
-        </RichTextBox>
+            
+        </TextBox>
         <TextBlock 
             Grid.Column="1" 
             Margin="10" 
             Text="{Binding Error}" 
             TextWrapping="Wrap"
+            FontSize="18"
             />
         <!--<ContentControl prism:RegionManager.RegionName="ContentRegion" />-->
     </Grid>

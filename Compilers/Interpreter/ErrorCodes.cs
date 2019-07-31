@@ -9,7 +9,8 @@ namespace Minesweeper.Test
         DuplicateId,
         Runtime,
         ParameterMismatch,
-        DoesNotReturnValue
+        DoesNotReturnValue,
+        TypeMismatch
     }
 
     public class PascalException : Exception

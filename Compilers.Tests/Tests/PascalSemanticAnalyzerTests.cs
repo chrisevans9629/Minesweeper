@@ -48,6 +48,7 @@ namespace Minesweeper.Test.Tests
         [TestCase(PascalTestInputs.Invalid.UndefinedProcedureAdd)]
         [TestCase(PascalTestInputs.Invalid.TooManyParametersProcedureAdd)]
         [TestCase(PascalTestInputs.Invalid.UndefinedVariableCallInProcedureAdd)]
+        [TestCase(PascalTestInputs.Invalid.MismatchingType)]
         public void UndefinedProcedure_Should_ThrowSemanticException(string input)
         {
             Assert.Throws<SemanticException>(() => CheckSyntax(input));
