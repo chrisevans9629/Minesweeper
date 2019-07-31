@@ -9,8 +9,25 @@
             <ColumnDefinition Width="191*"/>
             <ColumnDefinition Width="69*"/>
         </Grid.ColumnDefinitions>
-        <TextBox Margin="10" AcceptsReturn="True" FontSize="18" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" AcceptsTab="True" Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBlock Grid.Column="1" Margin="10" Text="{Binding Error}" TextWrapping="Wrap"></TextBlock>
+        <RichTextBox 
+            Margin="10" 
+            AcceptsReturn="True" 
+            FontSize="18" 
+            HorizontalScrollBarVisibility="Auto" 
+            VerticalScrollBarVisibility="Auto" 
+            AcceptsTab="True"  
+            >
+            <RichTextBox.Document>
+                <FlowDocument Name="FlowDocument">
+                </FlowDocument>
+            </RichTextBox.Document>
+        </RichTextBox>
+        <TextBlock 
+            Grid.Column="1" 
+            Margin="10" 
+            Text="{Binding Error}" 
+            TextWrapping="Wrap"
+            />
         <!--<ContentControl prism:RegionManager.RegionName="ContentRegion" />-->
     </Grid>
 </Window>

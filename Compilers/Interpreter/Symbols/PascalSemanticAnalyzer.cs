@@ -127,7 +127,19 @@ namespace Minesweeper.Test.Symbols
             DeclareParameters(procedureDeclaration);
             DefineVariableSymbol(procedureDeclaration.Token, procedureDeclaration.FunctionName, procedureDeclaration.ReturnType.TypeValue);
             VisitBlock(procedureDeclaration.Block);
-            
+
+            var returnVariable = CurrentScope.LookupSymbol<VariableSymbol>(procedureDeclaration.FunctionName, false);
+
+            if (returnVariable == null)
+            {
+                NotFound(procedureDeclaration.Token, procedureDeclaration.ReturnType.TypeValue, procedureDeclaration.FunctionName);
+            }
+
+            if (!returnVariable.Initialized)
+            {
+                throw new SemanticException(ErrorCode.DoesNotReturnValue, procedureDeclaration.Token, $"Function {procedureDeclaration.FunctionName} does not return a value");
+            }
+
             CurrentScope = CurrentScope.ParentScope;
             var procedure = new FunctionDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters);
             CurrentScope.Define(procedure);
@@ -185,18 +197,21 @@ namespace Minesweeper.Test.Symbols
 
         private void VisitAssign(AssignNode ass)
         {
-            VisitVariable(ass.Left);
+            var variable = VisitVariable(ass.Left);
             VisitNode(ass.Right);
+            variable.Initialized = true;
         }
 
-        private void VisitVariable(Variable assLeft)
+        private VariableSymbol VisitVariable(Variable assLeft)
         {
             var varName = assLeft.VariableName;
-            var symbol = CurrentScope.LookupSymbol(varName, true);
+            var symbol = CurrentScope.LookupSymbol<VariableSymbol>(varName, true);
             if (symbol == null)
             {
                 NotFound(assLeft.TokenItem, "Variable", varName);
             }
+
+            return symbol;
         }
 
         private static void NotFound(TokenItem assLeft, string type, string varName)

@@ -26,7 +26,7 @@
 
     public class VariableSymbol : Symbol
     {
-
+        public bool Initialized { get; set; }
         public VariableSymbol(string name, Symbol type) : base(name, type)
         {
         }

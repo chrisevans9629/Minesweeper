@@ -1,13 +1,18 @@
 ﻿using System;
 using Minesweeper.Test;
 using Minesweeper.Test.Symbols;
+using Pascal.Ide.Wpf.Models;
 using Prism.Mvvm;
 
 namespace Pascal.Ide.Wpf.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private string _title = "Prism Application";
+        private readonly IMainWindow _paragraph;
+        PascalLexer lexer = new PascalLexer();
+        PascalAst ast = new PascalAst();
+        PascalSemanticAnalyzer analyzer = new PascalSemanticAnalyzer();
+        private string _title = "Pascal Studio";
         private string _code;
         private string _error;
 
@@ -22,13 +27,24 @@ namespace Pascal.Ide.Wpf.ViewModels
             get => _code;
             set => SetProperty(ref _code,value, CodeChanged);
         }
-        PascalLexer lexer = new PascalLexer();
-        PascalAst ast = new PascalAst();
-        PascalSemanticAnalyzer analyzer = new PascalSemanticAnalyzer();
+        public string Error
+        {
+            get => _error;
+            set => SetProperty(ref _error, value);
+        }
+
+
+        public MainWindowViewModel()
+        {
+        }
+
+      
+
         private void CodeChanged()
         {
             try
             {
+                
                 var tokens = lexer.Tokenize(Code);
                 var node = ast.Evaluate(tokens);
                 var analize = analyzer.CheckSyntax(node);
@@ -41,15 +57,7 @@ namespace Pascal.Ide.Wpf.ViewModels
             }
         }
 
-        public string Error
-        {
-            get => _error;
-            set => SetProperty(ref _error,value);
-        }
-
-        public MainWindowViewModel()
-        {
-
-        }
+        
+       
     }
 }
