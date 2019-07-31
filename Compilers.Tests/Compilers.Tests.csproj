@@ -55,6 +55,7 @@
     <Compile Include="Tests\PascalSourceToSourceCompiler.cs" />
     <Compile Include="Tests\PascalSourceToSourceTests.cs" />
     <Compile Include="Tests\PascalTestInputs.cs" />
+    <Compile Include="Tests\PascalToCSharpTests.cs" />
     <Compile Include="Tests\RegexLexerTests.cs" />
     <Compile Include="Tests\SuperBasicMathInterpreter_Tests.cs" />
   </ItemGroup>
