@@ -3,10 +3,12 @@
     public class StringNode : Node
     {
         public string CurrentValue { get; }
+        public TokenItem TokenItem { get; }
 
-        public StringNode(string currentValue)
+        public StringNode(TokenItem tokenItem)
         {
-            CurrentValue = currentValue;
+            CurrentValue = tokenItem.Value;
+            TokenItem = tokenItem;
         }
 
         public override string Display()

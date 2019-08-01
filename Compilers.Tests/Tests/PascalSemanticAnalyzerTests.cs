@@ -97,7 +97,7 @@ namespace Minesweeper.Test.Tests
             var input = "program SymTab3; begin end.";
             var result = CheckSyntax(input);
 
-            result.Count.Should().Be(2);
+            result.Count.Should().Be(8);
         }
 
         private ScopedSymbolTable CheckSyntax(string input)
@@ -117,7 +117,7 @@ namespace Minesweeper.Test.Tests
             var node = ast.Evaluate(tokens);
             var result = table.CheckSyntax(node);
 
-            result.Count.Should().Be(4);
+            result.Count.Should().Be(10);
         }
 
         [TestCase("PROGRAM Part11;\r\nVAR\r\n   number : INTEGER;\r\n   a, b   : INTEGER;\r\n   y      : REAL;\r\n\r\nBEGIN {Part11}\r\n   number := 2;\r\n   a := number ;\r\n   b := 10 * a + 10 * number DIV 4;\r\n   y := 20 / 7 + 3.14\r\nEND.  {Part11}")]

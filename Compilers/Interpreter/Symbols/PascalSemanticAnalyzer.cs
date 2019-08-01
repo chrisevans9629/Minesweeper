@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Minesweeper.Test.Symbols
@@ -12,14 +13,56 @@ namespace Minesweeper.Test.Symbols
             var levelZero = new ScopedSymbolTable(programNode.ProgramName, 0, null, _logger);
             CurrentScope = levelZero;
 
-            levelZero.Define(new BuiltInTypeSymbol(Pascal.Int));
-            levelZero.Define(new BuiltInTypeSymbol(Pascal.Real));
+            DefineBuiltIns(levelZero);
+
 
             var global = new ScopedSymbolTable("Global", 1, levelZero, _logger);
             CurrentScope = global;
             VisitBlock(programNode.Block);
             CurrentScope = global;
         }
+
+        private static void DefineBuiltIns(ScopedSymbolTable levelZero)
+        {
+            levelZero.Define(new BuiltInTypeSymbol(Pascal.Int));
+            levelZero.Define(new BuiltInTypeSymbol(Pascal.Real));
+            levelZero.Define(new BuiltInTypeSymbol(Pascal.Pointer));
+            levelZero.Define(new BuiltInTypeSymbol(Pascal.String));
+            levelZero.Define(new BuiltInTypeSymbol(Pascal.Char));
+            levelZero.Define(new BuiltInTypeSymbol(Pascal.Boolean));
+            levelZero.Define(new ProcedureDeclarationSymbol("READ", new List<ParameterNode>()
+            {
+                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "look"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char})))
+            }));
+
+            levelZero.Define(new FunctionDeclarationSymbol("UpCase", new List<ParameterNode>()
+            {
+                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "look"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char})))
+            }));
+            levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()));
+            levelZero.Define(new ProcedureDeclarationSymbol("Halt", new List<ParameterNode>()));
+            levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()
+            {
+                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x1"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x2"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x3"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x4"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+            }));
+            levelZero.Define(new ProcedureDeclarationSymbol("Write", new List<ParameterNode>()
+            {
+                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x1"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x2"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+            }));
+        }
+
         public ScopedSymbolTable CurrentScope
         {
             get => _currentScope;
@@ -67,11 +110,27 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitNoOp(nope);
             }
+            else if (node is InOperator op)
+            {
+
+            }
+            else if (node is PointerNode pointer)
+            {
+
+            }
+            else if (node is IfStatementNode)
+            {
+
+            }
             else if (node is RealNode)
             {
 
             }
             else if (node is IntegerNode)
+            {
+
+            }
+            else if (node is StringNode str)
             {
 
             }
@@ -107,10 +166,35 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitCall(procCall);
             }
+            else if (node is ConstantDeclarationNode decNode)
+            {
+                VisitConstantDeclaration(decNode);
+            }
             else
             {
                 throw new InvalidOperationException($"did not recognize node {node}");
             }
+        }
+
+        private void VisitConstantDeclaration(ConstantDeclarationNode decNode)
+        {
+            var value = decNode.Value;
+
+            var typeName = $"Constant Error: {value}";
+
+            if (value is PointerNode p)
+            {
+                typeName = p.TokenItem.Token.Name;
+            }
+
+            if (value is StringNode)
+            {
+                typeName = Pascal.String;
+            }
+
+            
+            //VisitNode(decNode.Value);
+            this.DefineVariableSymbol(decNode.TokenItem, decNode.ConstantName, typeName);
         }
 
         private void VisitProcedureDeclaration(ProcedureDeclarationNode procedureDeclaration)
@@ -166,8 +250,8 @@ namespace Minesweeper.Test.Symbols
 
         private void VisitCall(CallNode funCall)
         {
-           var symbol = CurrentScope.LookupSymbol<DeclarationSymbol>(funCall.Name, true);
-           if (symbol == null)
+           var symbol = CurrentScope.LookupSymbols<DeclarationSymbol>(funCall.Name, true);
+           if (symbol.Any() != true)
            {
                 NotFound(funCall.Token, funCall.Type, funCall.Name);
            }
@@ -179,11 +263,10 @@ namespace Minesweeper.Test.Symbols
 
            var callCount = funCall.Parameters.Count;
 
-           var declaredCount = symbol.Parameters.Count;
 
-           if (callCount != declaredCount)
+           if (symbol.All(p => p.Parameters.Count != callCount))
            {
-                throw new SemanticException(ErrorCode.ParameterMismatch, funCall.Token, $"Function {funCall.Name} has {declaredCount} parameters but {callCount} was used");
+                throw new SemanticException(ErrorCode.ParameterMismatch, funCall.Token, $"Function {funCall.Name} has {symbol.First().Parameters.Count} parameters but {callCount} was used");
            }
 
         }

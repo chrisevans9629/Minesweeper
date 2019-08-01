@@ -58,11 +58,11 @@ namespace Minesweeper.Test
         {
             var list = Current;
             Eat(Pascal.LeftBracket);
-            var from = new StringNode(Current.Value);
+            var from = new StringNode(Current);
             Eat(Pascal.StringConst);
             Eat(Pascal.Dot);
             Eat(Pascal.Dot);
-            var to = new StringNode(Current.Value);
+            var to = new StringNode(Current);
             Eat(Pascal.StringConst);
             Eat(Pascal.RightBracket);
             return new ListExpressionNode(from, to, list);
@@ -109,12 +109,12 @@ namespace Minesweeper.Test
             if (Name == Pascal.Pointer)
             {
                 Eat(Pascal.Pointer);
-                return new PointerNode(current.Value[0]);
+                return new PointerNode( current);
             }
 
             if (Name == Pascal.StringConst)
             {
-                var s = new StringNode(Current.Value);
+                var s = new StringNode(Current);
                 Eat(Pascal.StringConst);
                 return s;
             }

@@ -84,7 +84,7 @@ namespace Minesweeper.Test
         }
         public FunctionDeclarationNode FunctionDeclaration()
         {
-            var parameters = new List<Parameter>();
+            var parameters = new List<ParameterNode>();
             Eat(Pascal.Function);
             var procedureId = Current.Value;
             var token = Current;
@@ -94,7 +94,7 @@ namespace Minesweeper.Test
                 Eat(Pascal.LParinth);
                 while (Current.Token.Name != Pascal.RParinth)
                 {
-                    parameters.AddRange(VariableDeclaration().Select(p => new Parameter(p)));
+                    parameters.AddRange(VariableDeclaration().Select(p => new ParameterNode(p)));
                     if (Current.Token.Name == Pascal.Semi)
                     {
                         Eat(Pascal.Semi);
@@ -113,7 +113,7 @@ namespace Minesweeper.Test
         }
         private ProcedureDeclarationNode ProcedureDeclaration()
         {
-            var parameters = new List<Parameter>();
+            var parameters = new List<ParameterNode>();
             Eat(Pascal.Procedure);
             var procedureId = Current.Value;
             Eat(Pascal.Id);
@@ -122,7 +122,7 @@ namespace Minesweeper.Test
                 Eat(Pascal.LParinth);
                 while (Current.Token.Name != Pascal.RParinth)
                 {
-                    parameters.AddRange(VariableDeclaration().Select(p => new Parameter(p)));
+                    parameters.AddRange(VariableDeclaration().Select(p => new ParameterNode(p)));
                     if (Current.Token.Name == Pascal.Semi)
                     {
                         Eat(Pascal.Semi);
@@ -151,12 +151,12 @@ namespace Minesweeper.Test
 
         private ConstantDeclarationNode ConstantDeclaration()
         {
-            var name = Current.Value;
+            var current = Current;
             Eat(Pascal.Id);
             Eat(Pascal.Equal);
             var value = Expression();
             Eat(Pascal.Semi);
-            return new ConstantDeclarationNode(name, value);
+            return new ConstantDeclarationNode(current.Value, value, current);
         }
 
         private IList<VarDeclarationNode> VariableDeclaration()
@@ -327,14 +327,15 @@ namespace Minesweeper.Test
             Eat(Pascal.If);
             var equal = BoolExpression();
             Eat(Pascal.Then);
-            var tstatement = StatementList();
+            
+            var tstatement = Statement();
             IList<Node> estate = null;
             if (Current.Token.Name == Pascal.Else)
             {
                 Eat(Pascal.Else);
-                estate = StatementList();
+                estate = new List<Node>(){ Statement() }; ;
             }
-            return new IfStatementNode(equal, tstatement, estate);
+            return new IfStatementNode(equal, new List<Node>(){tstatement}, estate);
         }
 
         private Node ProcedureCall()
@@ -423,11 +424,13 @@ namespace Minesweeper.Test
     {
         public string ConstantName { get; }
         public Node Value { get; }
+        public TokenItem TokenItem { get; }
 
-        public ConstantDeclarationNode(string constantName, Node value)
+        public ConstantDeclarationNode(string constantName, Node value, TokenItem tokenItem)
         {
             ConstantName = constantName;
             Value = value;
+            TokenItem = tokenItem;
         }
 
         public override string Display()

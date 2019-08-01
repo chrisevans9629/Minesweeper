@@ -29,6 +29,36 @@ namespace Minesweeper.Test.Tests
             node.Should().BeOfType<PointerNode>().Which.Value.Should().Be('I');
         }
 
+
+        [Test]
+        public void FunctionWithIfStatementAndReturn_ShouldBeSeperate()
+        {
+            var input = @"
+function GetName: char;
+begin
+   if not IsAlpha(Look) then Expected('Name');
+   GetName := UpCase(Look);
+   GetChar;
+end;";
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.FunctionDeclaration();
+
+            Console.WriteLine(node);
+            var func = node.Should().BeOfType<FunctionDeclarationNode>().Which;
+
+
+            var nodes = func.Block.CompoundStatement.Nodes;
+            func.Block.CompoundStatement.Nodes.Should().HaveCount(4);
+
+
+            var ifstat = nodes[0].Should().BeOfType<IfStatementNode>().Which;
+            nodes[1].Should().BeOfType<AssignNode>();
+            nodes[2].Should().BeOfType<ProcedureCallNode>();
+            nodes[3].Should().BeOfType<NoOp>();
+
+        }
+
         [Test]
         public void FullProgramTestTreeOutput()
         {

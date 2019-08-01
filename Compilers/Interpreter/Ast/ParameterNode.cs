@@ -1,10 +1,10 @@
 ﻿namespace Minesweeper.Test
 {
-    public class Parameter : Node
+    public class ParameterNode : Node
     {
         public VarDeclarationNode Declaration { get; }
 
-        public Parameter(VarDeclarationNode declaration)
+        public ParameterNode(VarDeclarationNode declaration)
         {
             Declaration = declaration;
         }

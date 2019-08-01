@@ -33,7 +33,7 @@ namespace Minesweeper.Test
     {
         public string Type { get; set; }
         public string Name { get; protected set; }
-        public IList<Parameter> Parameters { get; protected set; }
+        public IList<ParameterNode> Parameters { get; protected set; }
         public BlockNode Block { get; protected set; }
         public TokenItem Token { get; protected set; }
         public override string Display()
@@ -48,7 +48,7 @@ namespace Minesweeper.Test
        
         public TypeNode ReturnType { get; }
 
-        public FunctionDeclarationNode(string functionName, IList<Parameter> parameters, BlockNode block, TokenItem token, TypeNode returnType)
+        public FunctionDeclarationNode(string functionName, IList<ParameterNode> parameters, BlockNode block, TokenItem token, TypeNode returnType)
         {
             Name = functionName;
             Parameters = parameters;

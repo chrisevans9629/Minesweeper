@@ -18,6 +18,7 @@ namespace Minesweeper.Test
 
         public static string Aggregate(IEnumerable<Node> nodes)
         {
+            if (nodes == null) return "";
             return (nodes.Any() ? nodes.Select(p => p.Display()).Aggregate((f, s) => $"{f}, {s}") : "");
         }
 

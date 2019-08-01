@@ -5,9 +5,9 @@ namespace Minesweeper.Test.Symbols
 
     public class DeclarationSymbol : Symbol
     {
-        public IList<Parameter> Parameters { get; }
+        public IList<ParameterNode> Parameters { get; }
 
-        public DeclarationSymbol(string name, IList<Parameter> parameters) : base(name)
+        public DeclarationSymbol(string name, IList<ParameterNode> parameters) : base(name)
         {
             Parameters = parameters;
         }
@@ -24,15 +24,18 @@ namespace Minesweeper.Test.Symbols
 
     public class FunctionDeclarationSymbol : DeclarationSymbol
     {
-        public FunctionDeclarationSymbol(string name, IList<Parameter> parameters) : base(name, parameters)
+        public FunctionDeclarationSymbol(string name, IList<ParameterNode> parameters) : base(name, parameters)
         {
         }
     }
 
     public class ProcedureDeclarationSymbol : DeclarationSymbol
     {
-        public ProcedureDeclarationSymbol(string name, IList<Parameter> parameters) : base(name, parameters)
+        public ProcedureDeclarationSymbol(string name, IList<ParameterNode> parameters) : base(name, parameters)
         {
         }
     }
+
+
+    
 }

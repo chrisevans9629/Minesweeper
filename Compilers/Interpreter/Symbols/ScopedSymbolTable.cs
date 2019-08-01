@@ -80,5 +80,20 @@ namespace Minesweeper.Test.Symbols
 
             return default(T);
         }
+
+        public IList<T> LookupSymbols<T>(string name, bool searchParent) where T : Symbol
+        {
+            var syms = new List<T>();
+            _logger.Log($"Lookup: {name}");
+            var current = symbols.OfType<T>().Where(p => p.Name.ToLower() == name.ToLower());
+            syms.AddRange(current);
+            if ( ParentScope != null && searchParent)
+            {
+                var parentsyms = ParentScope.LookupSymbols<T>(name, true);
+                syms.AddRange(parentsyms);
+            }
+
+            return syms;
+        }
     }
 }

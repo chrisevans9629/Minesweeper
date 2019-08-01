@@ -11,7 +11,7 @@
             Type = type;
         }
     }
-
+    
     public class BuiltInTypeSymbol : Symbol
     {
         public BuiltInTypeSymbol(string name) : base(name)

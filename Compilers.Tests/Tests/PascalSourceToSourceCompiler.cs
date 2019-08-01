@@ -76,7 +76,7 @@ namespace Minesweeper.Test.Tests
             return dec;
         }
 
-        private string VisitProcedureDecParams(IList<Parameter> parameters)
+        private string VisitProcedureDecParams(IList<ParameterNode> parameters)
         {
             var str = "";
             foreach (var procedureParameter in parameters)

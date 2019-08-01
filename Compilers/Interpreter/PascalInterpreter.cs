@@ -104,7 +104,42 @@ namespace Minesweeper.Test
             {
                 return VisitVarDeclaration(declaration);
             }
+
+            if (node is ConstantDeclarationNode constantDeclarationNode)
+            {
+                return VisitConstantDec(constantDeclarationNode);
+            }
+
+            if (node is PointerNode pointer)
+            {
+                return VisitPointer(pointer);
+            }
+
+            if (node is StringNode str)
+            {
+                return str.CurrentValue;
+            }
             return base.VisitNode(node);
+        }
+
+        private object VisitPointer(PointerNode pointer)
+        {
+            if (pointer.Value == 'I')
+            {
+                return "\t";
+            }
+
+            if (pointer.Value == 'G')
+            {
+                return ".";
+            }
+            throw new NotImplementedException($"{pointer}");
+        }
+
+        private object VisitConstantDec(ConstantDeclarationNode constantDeclarationNode)
+        {
+            CurrentScope.Add(constantDeclarationNode.ConstantName, VisitNode(constantDeclarationNode.Value));
+            return null;
         }
 
         private object VisitForLoop(ForLoopNode forLoop)

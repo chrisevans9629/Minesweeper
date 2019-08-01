@@ -3,10 +3,12 @@
     public class PointerNode : Node
     {
         public char Value { get; }
+        public TokenItem TokenItem { get; }
 
-        public PointerNode(char value)
+        public PointerNode(TokenItem tokenItem)
         {
-            Value = value;
+            Value = tokenItem.Value[0];
+            TokenItem = tokenItem;
         }
         public override string Display()
         {
