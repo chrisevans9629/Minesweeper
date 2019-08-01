@@ -1,4 +1,6 @@
-﻿{--------------------------------------------------------------}
+﻿{Source code here: https://compilers.iecc.com/crenshaw/tutor2.txt}
+{You can test the code here: https://www.tutorialspoint.com/compile_pascal_online.php}
+{--------------------------------------------------------------}
 program Cradle;
 
 {--------------------------------------------------------------}
