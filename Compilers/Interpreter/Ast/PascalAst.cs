@@ -6,7 +6,6 @@ namespace Minesweeper.Test
 {
     public class PascalAst : AbstractSyntaxTreeBase
     {
-        private TokenItem Current => _tokens.Current;
 
         private IList<TokenItem> items;
 
@@ -34,10 +33,24 @@ namespace Minesweeper.Test
             return node;
         }
 
-        private string Name => Current?.Token?.Name;
         private IList<Node> Declarations()
         {
             var dec = new List<Node>();
+
+            while (Name == Pascal.Const)
+            {
+                Eat(Pascal.Const);
+                while (Name == Pascal.Id)
+                {
+                    var vardec = ConstantDeclarations();
+                    foreach (var varDeclarationNode in vardec)
+                    {
+                        dec.Add(varDeclarationNode);
+                    }
+                }
+
+            }
+
             while (Name == Pascal.Var)
             {
                 Eat(Pascal.Var);
@@ -126,6 +139,25 @@ namespace Minesweeper.Test
             return proc;
         }
 
+        IList<ConstantDeclarationNode> ConstantDeclarations()
+        {
+            var nodes = new List<ConstantDeclarationNode>() { ConstantDeclaration() };
+            while (Name == Pascal.Id)
+            {
+                nodes.Add(ConstantDeclaration());
+            }
+            return nodes;
+        }
+
+        private ConstantDeclarationNode ConstantDeclaration()
+        {
+            var name = Current.Value;
+            Eat(Pascal.Id);
+            Eat(Pascal.Equal);
+            var value = Expression();
+            Eat(Pascal.Semi);
+            return new ConstantDeclarationNode(name, value);
+        }
 
         private IList<VarDeclarationNode> VariableDeclaration()
         {
@@ -143,7 +175,7 @@ namespace Minesweeper.Test
 
         private TypeNode TypeSpec()
         {
-            if(Current == null)
+            if (Current == null)
                 Error("Type");
             var result = new TypeNode(Current);
 
@@ -151,7 +183,7 @@ namespace Minesweeper.Test
             {
                 Eat(Name);
             }
-            
+
             return result;
         }
 
@@ -249,7 +281,7 @@ namespace Minesweeper.Test
             {
                 node = ForLoop();
             }
-           else if (Name == Pascal.If)
+            else if (Name == Pascal.If)
             {
                 node = IfStatement();
             }
@@ -261,7 +293,7 @@ namespace Minesweeper.Test
             {
                 node = AssignmentStatement();
             }
-            else if (Name == Pascal.Id && _tokens.Peek()?.Token?.Name == Pascal.LParinth)
+            else if (Name == Pascal.Id)
             {
                 node = ProcedureCall();
             }
@@ -300,18 +332,23 @@ namespace Minesweeper.Test
             var procedureName = Current.Value;
             var token = Current;
             Eat(Pascal.Id);
-            Eat(Pascal.LParinth);
             var parameters = new List<Node>();
-            while (Current.Token.Name != Pascal.RParinth)
-            {
-                parameters.Add(Expression());
-                if (Current.Token.Name == Pascal.Comma)
-                {
-                    Eat(Pascal.Comma);
-                }
 
+            if (Name == Pascal.LParinth)
+            {
+                Eat(Pascal.LParinth);
+                while (Current.Token.Name != Pascal.RParinth)
+                {
+                    parameters.Add(Expression());
+                    if (Current.Token.Name == Pascal.Comma)
+                    {
+                        Eat(Pascal.Comma);
+                    }
+
+                }
+                Eat(Pascal.RParinth);
             }
-            Eat(Pascal.RParinth);
+           
             Eat(Pascal.Semi);
             return new ProcedureCallNode(procedureName, parameters, token);
         }
@@ -370,6 +407,23 @@ namespace Minesweeper.Test
         public void CreateIterator(IList<TokenItem> tokens)
         {
             _tokens = new Iterator<TokenItem>(tokens.ToArray());
+        }
+    }
+
+    public class ConstantDeclarationNode : Node
+    {
+        public string ConstantName { get; }
+        public Node Value { get; }
+
+        public ConstantDeclarationNode(string constantName, Node value)
+        {
+            ConstantName = constantName;
+            Value = value;
+        }
+
+        public override string Display()
+        {
+            return $"Constant({ConstantName}, {Value})";
         }
     }
 }

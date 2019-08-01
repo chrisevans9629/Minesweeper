@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using FluentAssertions;
+using Minesweeper.Test.Symbols;
 using NUnit.Framework;
 
 namespace Minesweeper.Test.Tests
@@ -11,6 +12,7 @@ namespace Minesweeper.Test.Tests
         private PascalInterpreter interpreter;
         private PascalLexer lexer;
         private PascalAst ast;
+        private PascalSemanticAnalyzer analyzer;
         [SetUp]
         public void Setup()
         {
@@ -18,6 +20,18 @@ namespace Minesweeper.Test.Tests
             lexer = new PascalLexer();
             ast = new PascalAst();
         }
+
+        [Test]
+        public void PascalCompiler_Should_Pass()
+        {
+            var input = GetFile("PascalCompiler.txt");
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+            analyzer.CheckSyntax(node);
+
+            var result = interpreter.Interpret(node);
+        }
+
 
         [Test]
         public void PascalProcedureCall()

@@ -149,6 +149,12 @@ namespace Minesweeper.Test
                 {
                     items.Add(Id());
                 }
+                else if(Current == '^' && char.IsLetter(Peek()))
+                {
+                    Advance();
+                    items.Add(CreateToken(Pascal.Pointer,Current.ToString()));
+                    Advance();
+                }
                 else if (Current == ':' && Peek() == '=')
                 {
                     Advance();
@@ -182,7 +188,18 @@ namespace Minesweeper.Test
                         items.Add(CreateToken(Pascal.IntegerConst, num));
                     }
                 }
-               
+                else if (Current == '\'')
+                {
+                    Advance();
+                    var quote = "";
+                    while (Current != '\'' && Current != default(char))
+                    {
+                        quote += Current;
+                        Advance();
+                    }
+                    Advance();
+                    items.Add(CreateToken(Pascal.StringConst, quote));
+                }
                 else if (Current == '{')
                 {
                     Advance();

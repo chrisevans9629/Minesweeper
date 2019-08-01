@@ -8,6 +8,8 @@ namespace Minesweeper.Test
     }
     public class Pascal
     {
+        
+        public const string Pointer = "^Pointer";
         public const string EndOfFile = "EndOfFile";
         public const string For = "FOR";
         public const string Do = "DO";
@@ -21,17 +23,21 @@ namespace Minesweeper.Test
         public const string Begin = "BEGIN";
         public const string End = "END";
         public const string Var = "VAR";
+        public const string Const = "CONST";
         public const string Real = "REAL";
         public const string Int = "INTEGER";
         public const string Boolean = "BOOLEAN";
-
+        public const string Char = "CHAR";
+        public const string String = "STRING";
         public static IEnumerable<string> BuiltInTypes = new List<string>()
         {
             Real,
             Int,
-            Boolean
+            Boolean,
+            Char,
+            String
         };
-
+        public const string StringConst = "STRING_Const";
         public const string BoolConst = "Bool_Const";
         public const string RealConst = "Real_Const";
         public const string IntegerConst = "Integer_Const";
@@ -39,11 +45,11 @@ namespace Minesweeper.Test
         public const string Assign = "ASSIGN";
         public const string IntDiv = "DIV";
 
-
         public const string Equal = "=";
         public const string Dot      = ".";
         public const string Colon    = ":";
-
+        public const string LeftBracket = "[";
+        public const string RightBracket = "]";
         public const string Semi     = ";";
         public const string Comma    = ",";
       
@@ -67,7 +73,9 @@ namespace Minesweeper.Test
             FloatDiv,
             Add,
             Sub,
-            Equal
+            Equal,
+            LeftBracket,
+            RightBracket
         };
 
         public static Token CreateToken(string name)
@@ -93,7 +101,8 @@ namespace Minesweeper.Test
             {"FALSE", CreateToken(BoolConst) },
             {For, CreateToken(For) },
             {To, CreateToken(To) },
-            {Do, CreateToken(Do) }
+            {Do, CreateToken(Do) },
+            {Const, CreateToken(Const) }
             
         };
     }

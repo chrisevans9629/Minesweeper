@@ -24,11 +24,27 @@ namespace Minesweeper.Test
         {
             Logger = logger ?? new Logger();
         }
+
+        protected string Name => Current?.Token?.Name;
+        protected TokenItem Current => _tokens.Current;
+
         public Node Expression()
         {
+            if (Name == Pascal.Pointer)
+            {
+                Eat(Pascal.Pointer);
+                return new PointerNode(Current.Value[0]);
+            }
+
+            if (Name == Pascal.StringConst)
+            {
+                var s = new StringNode(Current.Value);
+                Eat(Pascal.StringConst);
+                return s;
+            }
             var result = AddSub();
 
-            if (_tokens.Current != null && _tokens.Current.Token.Name == Pascal.Equal)
+            if (_tokens.Current != null && Name == Pascal.Equal)
             {
                 var current = _tokens.Current;
                 Eat(Pascal.Equal);
@@ -205,6 +221,35 @@ namespace Minesweeper.Test
         }
 
         public abstract Node Evaluate();
+    }
+
+    public class StringNode : Node
+    {
+        public string CurrentValue { get; }
+
+        public StringNode(string currentValue)
+        {
+            CurrentValue = currentValue;
+        }
+
+        public override string Display()
+        {
+            return $"String({CurrentValue})";
+        }
+    }
+
+    public class PointerNode : Node
+    {
+        public char Value { get; }
+
+        public PointerNode(char value)
+        {
+            Value = value;
+        }
+        public override string Display()
+        {
+            return $"Pointer({Value})";
+        }
     }
 
     public class BoolNode : Node
