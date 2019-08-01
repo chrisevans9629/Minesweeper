@@ -16,6 +16,19 @@ namespace Minesweeper.Test.Tests
             lexer = new PascalLexer();
             ast = new PascalAst();
         }
+
+        [Test]
+        public void PointerI_Should_BeI()
+        {
+            var input = @"^I";
+
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.Expression();
+
+            node.Should().BeOfType<PointerNode>().Which.Value.Should().Be('I');
+        }
+
         [Test]
         public void FullProgramTestTreeOutput()
         {
@@ -75,8 +88,8 @@ namespace Minesweeper.Test.Tests
             block.Declarations.Should().BeEmpty();
             var ifStatement = block.CompoundStatement.Nodes.Should().HaveCount(1).And.Subject.First().Should().BeOfType<IfStatementNode>().Which;
 
-            ifStatement.IfCheck.Left.Should().BeOfType<Variable>();
-            ifStatement.IfCheck.Right.Should().BeOfType<IntegerNode>();
+            ifStatement.IfCheck.Should().BeOfType<EqualOperator>().Which.Left.Should().BeOfType<Variable>();
+            ifStatement.IfCheck.Should().BeOfType<EqualOperator>().Which.Right.Should().BeOfType<IntegerNode>();
            var trueStatement = ifStatement.IfTrue.First().Should().BeOfType<AssignNode>().Which;
            trueStatement.Left.VariableName.Should().Be("Summation");
            trueStatement.Right.Should().BeOfType<IntegerNode>();

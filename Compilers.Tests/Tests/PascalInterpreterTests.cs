@@ -19,6 +19,7 @@ namespace Minesweeper.Test.Tests
             interpreter = new PascalInterpreter();
             lexer = new PascalLexer();
             ast = new PascalAst();
+            analyzer = new PascalSemanticAnalyzer();
         }
 
         [Test]

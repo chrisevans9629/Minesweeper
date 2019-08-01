@@ -19,6 +19,24 @@
             return $"{Name}({Left.Display()}, {Right.Display()})";
         }
     }
+
+    public class NegationOperator : Node
+    {
+        public Node Right { get; }
+        public TokenItem TokenItem { get; }
+
+        public NegationOperator( Node right, TokenItem tokenItem)
+        {
+            Right = right;
+            TokenItem = tokenItem;
+        }
+
+        public override string Display()
+        {
+            return $"Negate({Right})";
+        }
+    }
+
     public class NotEqualOperator : EqualExpression
     {
 

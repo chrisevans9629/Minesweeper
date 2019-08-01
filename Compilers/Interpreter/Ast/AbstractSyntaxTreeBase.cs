@@ -45,10 +45,10 @@ namespace Minesweeper.Test
                 Eat(Pascal.Equal);
                 result = new EqualOperator(result, AddSub(), current);
             }
-            if (_tokens.Current != null && Name == Pascal.Not)
+            if (_tokens.Current != null && Name == Pascal.NotEqual)
             {
                 var current = Current;
-                Eat(Pascal.Not);
+                Eat(Pascal.NotEqual);
                 result = new NotEqualOperator(result, AddSub(), current);
             }
             return result;
@@ -109,7 +109,7 @@ namespace Minesweeper.Test
             if (Name == Pascal.Pointer)
             {
                 Eat(Pascal.Pointer);
-                return new PointerNode(Current.Value[0]);
+                return new PointerNode(current.Value[0]);
             }
 
             if (Name == Pascal.StringConst)
@@ -236,42 +236,5 @@ namespace Minesweeper.Test
         }
 
         public abstract Node Evaluate();
-    }
-
-    public class InOperator : Node
-    {
-        public Node CompareNode { get; }
-        public ListExpressionNode ListExpression { get; }
-        public TokenItem TokenItem { get; }
-
-        public InOperator(Node compareNode, ListExpressionNode listExpression, TokenItem tokenItem)
-        {
-            CompareNode = compareNode;
-            ListExpression = listExpression;
-            TokenItem = tokenItem;
-        }
-
-        public override string Display()
-        {
-            return $"In({CompareNode},{ListExpression})";
-        }
-    }
-
-    public class ListExpressionNode : Node
-    {
-        public StringNode FromNode { get; }
-        public StringNode ToNode { get; }
-        public TokenItem TokenItem { get; }
-
-        public ListExpressionNode(StringNode fromNode, StringNode toNode, TokenItem tokenItem)
-        {
-            FromNode = fromNode;
-            ToNode = toNode;
-            TokenItem = tokenItem;
-        }
-        public override string Display()
-        {
-            return $"List({FromNode}..{ToNode})";
-        }
     }
 }

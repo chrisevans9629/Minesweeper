@@ -312,10 +312,20 @@ namespace Minesweeper.Test
             return new ForLoopNode(assign, ex, statements);
         }
 
+        Node BoolExpression()
+        {
+            if (Name == Pascal.Not)
+            {
+                var current = Current;
+                Eat(Pascal.Not);
+                return new NegationOperator(Expression(),current);
+            }
+            return Expression();
+        }
         private Node IfStatement()
         {
             Eat(Pascal.If);
-            var equal = Expression() as EqualExpression;
+            var equal = BoolExpression();
             Eat(Pascal.Then);
             var tstatement = StatementList();
             IList<Node> estate = null;

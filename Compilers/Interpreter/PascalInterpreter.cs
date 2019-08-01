@@ -145,19 +145,34 @@ namespace Minesweeper.Test
             return null;
         }
 
-        public object VisitEqualOperator(EqualExpression eop)
+        public object VisitEqualOperator(Node eop)
         {
-            var left = VisitNode(eop.Left);
-            var right = VisitNode(eop.Right);
-            if (eop is EqualOperator)
+            if (eop is EqualExpression exp)
             {
-                return left.Equals(right);
+                var left = VisitNode(exp.Left);
+                var right = VisitNode(exp.Right);
+                if (eop is EqualOperator)
+                {
+                    return left.Equals(right);
+                }
+                else if (eop is NotEqualOperator)
+                {
+                    return !left.Equals(right);
+                }
+                throw new RuntimeException(ErrorCode.UnexpectedToken, exp.TokenItem, $"Did not find an equality operator called {exp.Name}");
             }
-            else if(eop is NotEqualOperator)
+
+            if (eop is NegationOperator negation)
             {
-                return !left.Equals(right);
+                var right = VisitNode(negation.Right);
+                if (right is bool b)
+                {
+                    return !b;
+                }
+                throw new RuntimeException(ErrorCode.UnexpectedToken, negation.TokenItem, $"Did not find an equality operator called {negation.TokenItem.Token.Name}");
             }
-            throw new RuntimeException(ErrorCode.UnexpectedToken, eop.TokenItem, $"Did not find an equality operator called {eop.Name}");
+
+            throw new RuntimeException(ErrorCode.UnexpectedToken,null, "Unexpected bool value");
         }
 
         private void VisitCall<T>(CallNode call) where T : DeclarationNode

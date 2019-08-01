@@ -5,65 +5,6 @@ using Minesweeper.Test;
 
 namespace Minesweeper.Test
 {
-
-    public class Iterator<T>
-    {
-        private T[] _str;
-        public int index;
-
-        public Iterator(T[] str)
-        {
-            index = 0;
-            _str = str;
-        }
-        public T Peek()
-        {
-            if (index + 1 < _str.Length - 1)
-                return _str[index + 1];
-            return default(T);
-        }
-         public T Current => (index <= _str.Length - 1) ? _str[index] : default(T);
-        public virtual void Advance()
-        {
-            index++;
-        }
-
-        public T CurrentOrPrevious()
-        {
-            if (Current != null)
-            {
-                return Current;
-            }
-            else if(index > 0)
-            {
-                return _str[index - 1];
-            }
-
-            return default(T);
-        }
-    }
-
-    public class LexerIterator : Iterator<char>
-    {
-        public int Line;
-        public int Column;
-        public override void Advance()
-        {
-            if (Current == '\n')
-            {
-                Line++;
-                Column = 0;
-            }
-            Column++;
-            base.Advance();
-        }
-
-        public LexerIterator(char[] str) : base(str)
-        {
-            Line = 1;
-            Column = 1;
-        }
-    }
     public class PascalLexer
     {
         private readonly ILogger _logger;
@@ -154,6 +95,12 @@ namespace Minesweeper.Test
                     Advance();
                     items.Add(CreateToken(Pascal.Pointer,Current.ToString()));
                     Advance();
+                }
+                else if (Current == '<' && Peek() == '>')
+                {
+                    Advance();
+                    Advance();
+                    items.Add(CreateToken(Pascal.NotEqual, "<>"));
                 }
                 else if (Current == ':' && Peek() == '=')
                 {

@@ -8,6 +8,7 @@ namespace Minesweeper.Test
     }
     public class Pascal
     {
+        public const string NotEqual = "<>";
         public const string Not = "NOT";
         public const string In = "IN";
         public const string Pointer = "^Pointer";
