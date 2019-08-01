@@ -145,11 +145,19 @@ namespace Minesweeper.Test
             return null;
         }
 
-        public object VisitEqualOperator(EqualOperator eop)
+        public object VisitEqualOperator(EqualExpression eop)
         {
             var left = VisitNode(eop.Left);
             var right = VisitNode(eop.Right);
-            return left.Equals(right);
+            if (eop is EqualOperator)
+            {
+                return left.Equals(right);
+            }
+            else if(eop is NotEqualOperator)
+            {
+                return !left.Equals(right);
+            }
+            throw new RuntimeException(ErrorCode.UnexpectedToken, eop.TokenItem, $"Did not find an equality operator called {eop.Name}");
         }
 
         private void VisitCall<T>(CallNode call) where T : DeclarationNode

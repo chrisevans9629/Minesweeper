@@ -8,7 +8,8 @@ namespace Minesweeper.Test
     }
     public class Pascal
     {
-        
+        public const string Not = "NOT";
+        public const string In = "IN";
         public const string Pointer = "^Pointer";
         public const string EndOfFile = "EndOfFile";
         public const string For = "FOR";
@@ -102,7 +103,9 @@ namespace Minesweeper.Test
             {For, CreateToken(For) },
             {To, CreateToken(To) },
             {Do, CreateToken(Do) },
-            {Const, CreateToken(Const) }
+            {Const, CreateToken(Const) },
+            {In, CreateToken(In) },
+            {Not, CreateToken(Not) }
             
         };
     }

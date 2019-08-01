@@ -193,7 +193,7 @@ namespace Minesweeper.Test
 
             var results = new List<Node> { node };
 
-            while (this._tokens.Current?.Token?.Name == Pascal.Semi)
+            while (Name == Pascal.Semi)
             {
                 Eat(Pascal.Semi);
                 results.Add(Statement());
@@ -315,7 +315,7 @@ namespace Minesweeper.Test
         private Node IfStatement()
         {
             Eat(Pascal.If);
-            var equal = Expression() as EqualOperator;
+            var equal = Expression() as EqualExpression;
             Eat(Pascal.Then);
             var tstatement = StatementList();
             IList<Node> estate = null;
@@ -349,7 +349,6 @@ namespace Minesweeper.Test
                 Eat(Pascal.RParinth);
             }
            
-            Eat(Pascal.Semi);
             return new ProcedureCallNode(procedureName, parameters, token);
         }
 

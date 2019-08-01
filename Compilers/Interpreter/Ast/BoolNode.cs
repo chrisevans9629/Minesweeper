@@ -1,0 +1,20 @@
+﻿namespace Minesweeper.Test
+{
+    public class BoolNode : Node
+    {
+        public TokenItem TokensCurrent { get; }
+        public bool Value { get; set; }
+        public TokenItem TokenItem { get; set; }
+        public BoolNode(TokenItem tokensCurrent)
+        {
+            TokensCurrent = tokensCurrent;
+            Value = bool.Parse(tokensCurrent.Value.ToLower());
+        }
+
+
+        public override string Display()
+        {
+            return Value.ToString();
+        }
+    }
+}

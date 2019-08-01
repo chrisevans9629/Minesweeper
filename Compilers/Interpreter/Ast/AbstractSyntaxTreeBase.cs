@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Minesweeper.Test
 {
@@ -30,27 +31,41 @@ namespace Minesweeper.Test
 
         public Node Expression()
         {
-            if (Name == Pascal.Pointer)
-            {
-                Eat(Pascal.Pointer);
-                return new PointerNode(Current.Value[0]);
-            }
-
-            if (Name == Pascal.StringConst)
-            {
-                var s = new StringNode(Current.Value);
-                Eat(Pascal.StringConst);
-                return s;
-            }
+            
             var result = AddSub();
-
+            if (Name == Pascal.In)
+            {
+                var current = Current;
+                Eat(Pascal.In);
+                result = new InOperator(result, ListExpression(), current);
+            }
             if (_tokens.Current != null && Name == Pascal.Equal)
             {
-                var current = _tokens.Current;
+                var current = Current;
                 Eat(Pascal.Equal);
                 result = new EqualOperator(result, AddSub(), current);
             }
+            if (_tokens.Current != null && Name == Pascal.Not)
+            {
+                var current = Current;
+                Eat(Pascal.Not);
+                result = new NotEqualOperator(result, AddSub(), current);
+            }
             return result;
+        }
+
+        private ListExpressionNode ListExpression()
+        {
+            var list = Current;
+            Eat(Pascal.LeftBracket);
+            var from = new StringNode(Current.Value);
+            Eat(Pascal.StringConst);
+            Eat(Pascal.Dot);
+            Eat(Pascal.Dot);
+            var to = new StringNode(Current.Value);
+            Eat(Pascal.StringConst);
+            Eat(Pascal.RightBracket);
+            return new ListExpressionNode(from, to, list);
         }
 
         private Node AddSub()
@@ -86,23 +101,23 @@ namespace Minesweeper.Test
         }
 
 
-        Node Equal()
-        {
-            var result = Expression();
-            var current = _tokens.Current;
-            if (_tokens.Current.Token.Name == Pascal.Equal)
-            {
-                Eat(Pascal.Equal);
-                return new EqualOperator(result, Expression(), current);
-            }
-
-            return ParseNumber();
-        }
+       
         protected virtual Node ParseNumber()
         {
             var current = _tokens.Current;
 
-            
+            if (Name == Pascal.Pointer)
+            {
+                Eat(Pascal.Pointer);
+                return new PointerNode(Current.Value[0]);
+            }
+
+            if (Name == Pascal.StringConst)
+            {
+                var s = new StringNode(Current.Value);
+                Eat(Pascal.StringConst);
+                return s;
+            }
             if (current.Token.Name == Pascal.RealConst)
             {
                 Eat(Pascal.RealConst);
@@ -223,58 +238,40 @@ namespace Minesweeper.Test
         public abstract Node Evaluate();
     }
 
-    public class StringNode : Node
+    public class InOperator : Node
     {
-        public string CurrentValue { get; }
+        public Node CompareNode { get; }
+        public ListExpressionNode ListExpression { get; }
+        public TokenItem TokenItem { get; }
 
-        public StringNode(string currentValue)
+        public InOperator(Node compareNode, ListExpressionNode listExpression, TokenItem tokenItem)
         {
-            CurrentValue = currentValue;
+            CompareNode = compareNode;
+            ListExpression = listExpression;
+            TokenItem = tokenItem;
         }
 
         public override string Display()
         {
-            return $"String({CurrentValue})";
+            return $"In({CompareNode},{ListExpression})";
         }
     }
 
-    public class PointerNode : Node
+    public class ListExpressionNode : Node
     {
-        public char Value { get; }
+        public StringNode FromNode { get; }
+        public StringNode ToNode { get; }
+        public TokenItem TokenItem { get; }
 
-        public PointerNode(char value)
+        public ListExpressionNode(StringNode fromNode, StringNode toNode, TokenItem tokenItem)
         {
-            Value = value;
+            FromNode = fromNode;
+            ToNode = toNode;
+            TokenItem = tokenItem;
         }
         public override string Display()
         {
-            return $"Pointer({Value})";
-        }
-    }
-
-    public class BoolNode : Node
-    {
-        public TokenItem TokensCurrent { get; }
-        public bool Value { get; set; }
-        public TokenItem TokenItem { get; set; }
-        public BoolNode(TokenItem tokensCurrent)
-        {
-            TokensCurrent = tokensCurrent;
-            Value = bool.Parse(tokensCurrent.Value.ToLower());
-        }
-
-
-        public override string Display()
-        {
-            return Value.ToString();
-        }
-    }
-
-    public class GrammerException : Exception
-    {
-        public GrammerException(string message) : base(message)
-        {
-            
+            return $"List({FromNode}..{ToNode})";
         }
     }
 }
