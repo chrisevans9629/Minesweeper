@@ -75,6 +75,24 @@ end.";
         }
 
 
+        [TestCase("t","t","test")]
+        [TestCase("t","s", "test2")]
+        public void CharIfStatement(string inputConsole, string value, string output)
+        {
+            console.Input = new Iterator<char>(inputConsole.ToCharArray());
+            var input = $@"
+program test;
+var tval,inp : char;
+begin
+    tval := '{value}';
+    Read(inp);
+    if tval = inp then Write('test') else Write('test2');
+end.";
+            Evaluate(input);
+
+            console.Output.Should().Be(output);
+        }
+
 
         [TestCase("12","2", "\r\n.Error: 2 Expected.\r\n")]
         [TestCase("12","1", "")]
