@@ -61,6 +61,11 @@ namespace Minesweeper.Test.Symbols
                 new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x2"}),
                     new TypeNode(new TokenItem() {Value = Pascal.Char}))),
             }));
+            levelZero.Define(new ProcedureDeclarationSymbol("Write", new List<ParameterNode>()
+            {
+                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x1"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+            }));
         }
 
         public ScopedSymbolTable CurrentScope

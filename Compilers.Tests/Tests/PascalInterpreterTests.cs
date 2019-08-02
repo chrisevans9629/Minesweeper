@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace Minesweeper.Test.Tests
 {
-   
+
     public class PascalInterpreterTests
     {
         private PascalInterpreter interpreter;
@@ -26,16 +26,242 @@ namespace Minesweeper.Test.Tests
             analyzer = new PascalSemanticAnalyzer();
         }
 
-        [Test]
-        public void PascalCompiler_Should_Pass()
+        [TestCase("1", "\tMOVE #1,D0")]
+        [TestCase("", ".Error: Integer Expected.")]
+        public void PascalCompiler_Should_Pass(string test, string output)
         {
-            var input = GetFile("PascalCompiler.txt");
-            var tokens = lexer.Tokenize(input);
-            var node = ast.Evaluate(tokens);
-            analyzer.CheckSyntax(node);
 
-            var result = interpreter.Interpret(node);
+            console.Input = new Iterator<char>(test.ToCharArray());
+            var input = GetFile("PascalCompiler.txt");
+            Evaluate(input);
+            console.Output.Should().Be(output);
         }
+
+        [Test]
+        public void WriteExpectedHault_ShouldWrite()
+        {
+            var input = @"
+program test;
+procedure Error(s: string);
+begin
+   WriteLn;
+   WriteLn(^G, 'Error: ', s, '.');
+end;
+
+
+{--------------------------------------------------------------}
+{ Report Error and Halt }
+
+procedure Abort(s: string);
+begin
+   Error(s);
+   Halt;
+end;
+
+
+{--------------------------------------------------------------}
+{ Report What Was Expected }
+
+procedure Expected(s: string);
+begin
+   Abort(s + ' Expected');
+end;
+begin
+    Expected('test');
+end.";
+            Evaluate(input);
+            console.Output.Should().Be($"{Environment.NewLine}.Error: test Expected.{Environment.NewLine}");
+
+        }
+
+
+
+        [TestCase("12","2", "\r\n.Error: 2 Expected.\r\n")]
+        [TestCase("12","1", "")]
+        public void Match_ShouldReturnResult(string consoleInput, string match, string result)
+        {
+
+            console.Input = new Iterator<char>(consoleInput.ToCharArray());
+            var input = $@"
+program test;
+var Look: char;              
+                              
+procedure GetChar;
+begin
+   Read(Look);
+end;
+
+procedure Error(s: string);
+begin
+   WriteLn;
+   WriteLn(^G, 'Error: ', s, '.');
+end;
+
+procedure Abort(s: string);
+begin
+   Error(s);
+   Halt;
+end;
+
+procedure Expected(s: string);
+begin
+   Abort(s + ' Expected');
+end;
+
+procedure Match(x: char);
+begin
+   if Look = x then GetChar
+   else Expected(x);
+end;
+
+begin
+    GetChar;
+    Match('{match}');
+end.";
+            Evaluate(input);
+
+            console.Output.Should().Be(result);
+
+        }
+
+
+        [Test]
+        public void WriteErrorHault_ShouldHault()
+        {
+            var input = @"
+program test;
+procedure Error(s: string);
+begin
+   WriteLn;
+   WriteLn(^G, 'Error: ', s, '.');
+end;
+
+
+{--------------------------------------------------------------}
+{ Report Error and Halt }
+
+procedure Abort(s: string);
+begin
+   Error(s);
+   Halt;
+end;
+begin
+    Abort('test');
+end.";
+            Evaluate(input);
+            console.Output.Should().Be($"{Environment.NewLine}.Error: test.{Environment.NewLine}");
+        }
+
+
+        [Test]
+        public void WriteError_Should_WriteToConsole()
+        {
+            var input = @"
+program test;
+procedure Error(s: string);
+begin
+   WriteLn;
+   WriteLn(^G, 'Error: ', s, '.');
+end;
+begin
+    Error('test');
+end.";
+            Evaluate(input);
+            console.Output.Should().Be($"{Environment.NewLine}.Error: test.{Environment.NewLine}");
+        }
+
+
+        [Test]
+        public void ToStringOnString_Should_ReturnString()
+        {
+            var test = ".";
+
+            test.ToString().Should().Be(".");
+        }
+
+        [Test]
+        public void PointerG_Should_ReturnDot()
+        {
+            var input = @"^G";
+
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+
+            var node = ast.Expression();
+
+            interpreter.CreateGlobalMemory();
+            var s = interpreter.VisitNode(node);
+
+            s.ToString().Should().Be(".");
+        }
+
+
+
+
+
+        public object test()
+        {
+            return ".";
+        }
+
+        [Test]
+        public void TestString_Should_ReturnDot()
+        {
+            //Passes!
+            Assert.AreEqual(".", test());
+        }
+
+
+        public object VisitPointer3()
+        {
+            return ".";
+        }
+
+        [Test]
+        public void EvaluatePointerG_Should_ReturnDot3()
+        {
+            var s = VisitPointer3();
+            //Fails!
+            Assert.AreEqual(".", s);
+        }
+
+        [Test]
+        public void EvaluatePointerG_Should_ReturnDot()
+        {
+            var s = interpreter.VisitPointer(new PointerNode(new TokenItem() { Value = "G" }));
+
+            s.Should().BeOfType<string>().Subject.Should().Be(".");
+        }
+
+
+
+        [Test]
+        public void EvaluatePointerG_Should_ReturnDot2()
+        {
+            var s = interpreter.VisitPointer2("t");
+
+            s.ToString().Should().Be(".");
+        }
+
+     
+
+      
+
+        [Test]
+        public void AddStrings_Should_CombineStrings()
+        {
+            var input = @"
+program test;
+var item : string;
+begin
+    item := 'test' + 'test2';
+    Write(item);
+end.";
+            Evaluate(input);
+
+            console.Output.Should().Be("testtest2");
+        }
+
 
         [Test]
         public void PascalReadValue_Should_SetValue()
@@ -50,12 +276,18 @@ begin
     Write(item);
 end.";
             console.Input = new Iterator<char>(num.ToCharArray());
+            Evaluate(input);
+            console.Output[0].Should().Be(num[0]);
+        }
+
+        private void Evaluate(string input)
+        {
+            
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
             analyzer.CheckSyntax(node);
 
             var n = interpreter.Interpret(node);
-            console.Output.Should().Be(num);
         }
 
 
@@ -101,7 +333,7 @@ end.";
 
             var scope = interpret.Should().BeOfType<Memory>().Which;
 
-            scope.GetValue("x",true).Should().Be(20);
+            scope.GetValue("x", true).Should().Be(20);
             scope.GetValue("Add").Should().BeOfType<FunctionDeclarationNode>();
         }
 
@@ -121,7 +353,7 @@ end.";
             scope.GetValue("Add").Should().BeOfType<FunctionDeclarationNode>();
         }
 
-        
+
 
         [Test]
         public void PascalIf()
@@ -178,7 +410,7 @@ end.";
             var tokens = lexer.Tokenize(input);
             ast.CreateIterator(tokens);
             var node = ast.Expression().Should().BeOfType<BinaryOperator>().Which;
-             interpreter.VisitBinaryOperator(node).Should().BeOfType<int>();
+            interpreter.VisitBinaryOperator(node).Should().BeOfType<int>();
         }
 
 
@@ -245,7 +477,7 @@ end.";
         [TestCase("3.5 + 1", 4.5)]
         public void PascalMath_Should_BeDoubleAndReturnResult(string math, double result)
         {
-            
+
             var input = $"program test; Begin begin num := {math}; end; End.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);

@@ -3,37 +3,11 @@ using System.Collections.Generic;
 
 namespace Minesweeper.Test
 {
-    public class ConsoleModel : IConsole
+    public class HaltException : RuntimeException
     {
-        public Iterator<char> Input { get; set; }
-
-        public void Write(string str)
+        public HaltException(ErrorCode error, TokenItem token, string message, Exception ex = null) : base(error, token, message, ex)
         {
-            Output += str;
         }
-
-       
-
-        public char Read()
-        {
-            var v = Input.Current;
-            Input.Advance();
-            return v;
-        }
-
-        public void WriteLine(string str)
-        {
-            Output += str + Environment.NewLine;
-        }
-
-        public string Output { get; private set; }
-    }
-    public interface IConsole
-    {
-        void Write(string str);
-        char Read();
-        void WriteLine(string str);
-        string Output { get; }
     }
 
     public class PascalInterpreter : SuperBasicMathInterpreter
@@ -48,8 +22,18 @@ namespace Minesweeper.Test
         public override object Interpret(Node node)
         {
             CreateGlobalMemory();
-            var result = base.Interpret(node);
+
+            try
+            {
+                var result = base.Interpret(node);
+            }
+            catch (HaltException e)
+            {
+                Console.WriteLine(e);
+            }
             return CurrentScope;
+
+
         }
 
         public void CreateGlobalMemory()
@@ -74,7 +58,7 @@ namespace Minesweeper.Test
             return compound;
         }
 
-        protected override object VisitNode(Node node)
+        public override object VisitNode(Node node)
         {
             if (node is CompoundStatement compound)
             {
@@ -159,7 +143,15 @@ namespace Minesweeper.Test
             return base.VisitNode(node);
         }
 
-        private object VisitPointer(PointerNode pointer)
+        public object VisitPointer2(object pointer)
+        {
+            if (pointer != null)
+            {
+                return ".";
+            }
+            return null;
+        }
+        public object VisitPointer(PointerNode pointer)
         {
             if (pointer.Value == 'I')
             {
@@ -168,7 +160,7 @@ namespace Minesweeper.Test
 
             if (pointer.Value == 'G')
             {
-                return ".";
+                return ".";
             }
             throw new NotImplementedException($"{pointer}");
         }
@@ -258,6 +250,7 @@ namespace Minesweeper.Test
                     var value = VisitNode(call.Parameters[i]);
                     values.Add(value);
                 }
+
                 var previous = CurrentScope;
                 CurrentScope = new Memory(call.Name, previous);
                 CurrentScope.Add(call.Name, null);
@@ -267,7 +260,12 @@ namespace Minesweeper.Test
                     VisitVarDeclaration(parameter.Declaration);
                     CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, values[i]);
                 }
+
                 VisitBlock(declaration.Block);
+            }
+            catch (HaltException)
+            {
+                throw;
             }
             catch (Exception e)
             {
@@ -305,6 +303,10 @@ namespace Minesweeper.Test
                 CurrentScope = CurrentScope.Parent;
                 return funResult;
             }
+            catch (HaltException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e);
@@ -315,6 +317,38 @@ namespace Minesweeper.Test
 
         private object VisitProcedureCall(ProcedureCallNode call)
         {
+            if (call.ProcedureName.ToUpper() == "READ")
+            {
+                var result = _console.Read();
+                if (call.Parameters[0] is Variable v)
+                {
+                    CurrentScope.SetValue(v.VariableName, result);
+                }
+
+                return null;
+            }
+
+            if (call.ProcedureName.ToUpper() == "WRITE")
+            {
+                var st = VisitNode(call.Parameters[0]).ToString();
+                _console.Write(st);
+                return null;
+            }
+            if (call.ProcedureName.ToUpper() == "WRITELN")
+            {
+                var str = "";
+                foreach (var callParameter in call.Parameters)
+                {
+                    str += VisitNode(callParameter).ToString();
+                }
+                _console.WriteLine(str);
+                return null;
+            }
+
+            if (call.ProcedureName.ToUpper() == "HALT")
+            {
+                throw new HaltException(ErrorCode.Runtime, call.Token, "Halted");
+            }
             VisitCall<ProcedureDeclarationNode>(call);
             //var declaration = (ProcedureDeclarationNode)CurrentScope.GetValue(call.ProcedureName, true);
             //var previous = CurrentScope;

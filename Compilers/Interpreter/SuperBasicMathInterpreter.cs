@@ -38,7 +38,7 @@ namespace Minesweeper.Test
             throw new ParserException(ErrorCode.UnexpectedToken, null, $"did not recognize node '{node}'");
         }
 
-        protected virtual object VisitNode(Node node)
+        public virtual object VisitNode(Node node)
         {
             if (node is RealNode leaf)
             {
@@ -69,20 +69,43 @@ namespace Minesweeper.Test
             intActions.Add(Pascal.Multi, (d, d1) => d * d1);
             intActions.Add(Pascal.FloatDiv, (d, d1) => d / d1);
             intActions.Add(Pascal.IntDiv, (d, d1) => d / d1);
-            if (doubleActions.ContainsKey(op.Name) != true)
-            {
-                return Fail(op);
-            }
+
+
+            var strActions = new Dictionary<string, Func<string, string, string>>();
+            strActions.Add(Pascal.Add, (d, d1) => d + d1);
+
+          
 
             var left = VisitNode(op.Left);
             var right = VisitNode(op.Right);
             if (left is int l && right is int r)
             {
+                if (intActions.ContainsKey(op.Name) != true)
+                {
+                    return Fail(op);
+                }
                 return intActions[op.Name](l, r);
+            }
+            else if((left is int || left is double) && (right is int || right is double))
+            {
+                if (doubleActions.ContainsKey(op.Name) != true)
+                {
+                    return Fail(op);
+                }
+                return doubleActions[op.Name](Convert.ToDouble(left) ,Convert.ToDouble(right) );
+            }
+            else if (left is string || right is string)
+            {
+                if (strActions.ContainsKey(op.Name) != true)
+                {
+                    return Fail(op);
+                }
+
+                return strActions[op.Name](left.ToString(), right.ToString());
             }
             else
             {
-                return doubleActions[op.Name](Convert.ToDouble(left) ,Convert.ToDouble(right) );
+               return Fail(op);
             }
             //if (op.Name == Pascal.Add)
             //{

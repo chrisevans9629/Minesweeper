@@ -57,7 +57,7 @@ end;
 procedure Match(x: char);
 begin
    if Look = x then GetChar
-   else Expected('''' + x + '''');
+   else Expected(x);
 end;
 
 
@@ -129,6 +129,14 @@ procedure Init;
 begin
    GetChar;
 end;
+{---------------------------------------------------------------}
+{ Parse and Translate a Math Expression }
+
+procedure Expression;
+begin
+   EmitLn('MOVE #' + GetNum + ',D0')
+end;
+{---------------------------------------------------------------}
 
 
 {--------------------------------------------------------------}
@@ -136,5 +144,6 @@ end;
 
 begin
    Init;
+   Expression;
 end.
 {--------------------------------------------------------------}
