@@ -5,8 +5,10 @@ begin
 	if y = 0 then 
 		x := x
 	else 
-		x := x + y;
-		Factorial(y-1);
+		Begin
+			x := x + y;
+			Factorial(y-1);
+		End;
 end;
 begin
 	x := 0;

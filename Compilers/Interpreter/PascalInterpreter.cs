@@ -3,12 +3,47 @@ using System.Collections.Generic;
 
 namespace Minesweeper.Test
 {
+    public class ConsoleModel : IConsole
+    {
+        public Iterator<char> Input { get; set; }
+
+        public void Write(string str)
+        {
+            Output += str;
+        }
+
+       
+
+        public char Read()
+        {
+            var v = Input.Current;
+            Input.Advance();
+            return v;
+        }
+
+        public void WriteLine(string str)
+        {
+            Output += str + Environment.NewLine;
+        }
+
+        public string Output { get; private set; }
+    }
+    public interface IConsole
+    {
+        void Write(string str);
+        char Read();
+        void WriteLine(string str);
+        string Output { get; }
+    }
+
     public class PascalInterpreter : SuperBasicMathInterpreter
     {
-        private ILogger logger;
-        public PascalInterpreter(ILogger logger = null)
+        private readonly IConsole _console;
+        private ILogger _logger;
+        public PascalInterpreter(ILogger logger = null, IConsole console = null)
         {
-            this.logger = logger ?? new Logger();
+            _console = console ?? new ConsoleModel();
+            this._logger = logger ?? new Logger();
         }
         public override object Interpret(Node node)
         {
@@ -20,8 +55,10 @@ namespace Minesweeper.Test
         public void CreateGlobalMemory()
         {
             CurrentScope = new Memory("GLOBAL");
+           // CurrentScope.Add("Read",null);
         }
 
+       
         public object GetVar(string key)
         {
             return CurrentScope.GetValue(key, true);

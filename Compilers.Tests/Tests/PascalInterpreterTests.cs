@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using AutoFixture;
 using FluentAssertions;
 using Minesweeper.Test.Symbols;
+using Moq;
 using NUnit.Framework;
 
 namespace Minesweeper.Test.Tests
@@ -13,10 +15,12 @@ namespace Minesweeper.Test.Tests
         private PascalLexer lexer;
         private PascalAst ast;
         private PascalSemanticAnalyzer analyzer;
+        private ConsoleModel console;
         [SetUp]
         public void Setup()
         {
-            interpreter = new PascalInterpreter();
+            console = new ConsoleModel();
+            interpreter = new PascalInterpreter(null, console);
             lexer = new PascalLexer();
             ast = new PascalAst();
             analyzer = new PascalSemanticAnalyzer();
@@ -31,6 +35,27 @@ namespace Minesweeper.Test.Tests
             analyzer.CheckSyntax(node);
 
             var result = interpreter.Interpret(node);
+        }
+
+        [Test]
+        public void PascalReadValue_Should_SetValue()
+        {
+            var fixture = new Fixture();
+            var num = fixture.Create<string>();
+            var input = @"
+program HelloWorld;
+var item : char;
+begin
+    Read(item);
+    Write(item);
+end.";
+            console.Input = new Iterator<char>(num.ToCharArray());
+            var tokens = lexer.Tokenize(input);
+            var node = ast.Evaluate(tokens);
+            analyzer.CheckSyntax(node);
+
+            var n = interpreter.Interpret(node);
+            console.Output.Should().Be(num);
         }
 
 
