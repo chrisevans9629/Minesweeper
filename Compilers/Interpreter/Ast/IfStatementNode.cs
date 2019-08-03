@@ -2,7 +2,16 @@
 
 namespace Minesweeper.Test
 {
-    public class IfStatementNode : Node
+    public interface INode
+    {
+         string Display();
+
+    }
+    public interface IStatementNode : INode
+    {
+
+    }
+    public class IfStatementNode : Node, IStatementNode
     {
         public Node IfCheck { get; }
         public IList<Node> IfTrue { get; }

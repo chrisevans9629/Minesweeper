@@ -1,6 +1,6 @@
 ﻿namespace Minesweeper.Test
 {
-    public class BoolNode : Node
+    public class BoolNode : ExpressionNode
     {
         public TokenItem TokensCurrent { get; }
         public bool Value { get; set; }

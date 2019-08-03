@@ -1,6 +1,6 @@
 ﻿namespace Minesweeper.Test
 {
-    public class UnaryOperator : Node
+    public class UnaryOperator : ExpressionNode
     {
         public TokenItem TokenItem { get; set; }
         public UnaryOperator(Node value, TokenItem op)

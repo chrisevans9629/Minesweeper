@@ -1,6 +1,6 @@
 ﻿namespace Minesweeper.Test
 {
-    public class StringNode : Node
+    public class StringNode : ExpressionNode
     {
         public string CurrentValue { get; }
         public TokenItem TokenItem { get; }

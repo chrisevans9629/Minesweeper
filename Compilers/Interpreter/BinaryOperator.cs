@@ -1,6 +1,6 @@
 ﻿namespace Minesweeper.Test
 {
-    public class BinaryOperator : Node
+    public class BinaryOperator : ExpressionNode
     {
         public BinaryOperator(Node left, Node right, TokenItem @operator)
         {

@@ -1,6 +1,6 @@
 ﻿namespace Minesweeper.Test
 {
-    public abstract class EqualExpression : Node
+    public abstract class EqualExpression : ExpressionNode
     {
         public Node Left { get; set; }
         public Node Right { get; set; }

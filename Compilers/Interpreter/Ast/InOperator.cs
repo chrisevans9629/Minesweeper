@@ -1,6 +1,6 @@
 ﻿namespace Minesweeper.Test
 {
-    public class InOperator : Node
+    public class InOperator : ExpressionNode
     {
         public Node CompareNode { get; }
         public ListExpressionNode ListExpression { get; }

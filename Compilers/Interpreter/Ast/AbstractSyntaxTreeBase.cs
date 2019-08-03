@@ -4,7 +4,37 @@ using System.Linq.Expressions;
 
 namespace Minesweeper.Test
 {
+    public abstract class ExpressionNode : Node
+    {
 
+    }
+
+   
+    public class CaseItemNode
+    {
+        public CaseItemNode(IList<ExpressionNode> cases, IStatementNode statement)
+        {
+            Cases = cases;
+            Statement = statement;
+        }
+
+        public IList<ExpressionNode> Cases { get; set; }
+        public IStatementNode Statement { get; set; }
+    }
+    public class CaseStatementNode
+    {
+        public CaseStatementNode(ExpressionNode compareExpression, IList<CaseItemNode> caseItemNodes, IStatementNode elseStatement)
+        {
+            CompareExpression = compareExpression;
+            CaseItemNodes = caseItemNodes;
+            ElseStatement = elseStatement;
+        }
+
+        public ExpressionNode CompareExpression { get; set; }
+        public IList<CaseItemNode> CaseItemNodes { get; set; }
+
+        public IStatementNode ElseStatement { get; set; }
+    }
     public class Logger : ILogger
     {
         public virtual void Log(object obj)
@@ -29,7 +59,7 @@ namespace Minesweeper.Test
         protected string Name => Current?.Token?.Name;
         protected TokenItem Current => _tokens.Current;
 
-        public Node Expression()
+        public ExpressionNode Expression()
         {
             
             var result = AddSub();
@@ -68,9 +98,9 @@ namespace Minesweeper.Test
             return new ListExpressionNode(from, to, list);
         }
 
-        private Node AddSub()
+        private ExpressionNode AddSub()
         {
-            Node Action()
+            ExpressionNode Action()
             {
                 return MultiDiv();
             }
@@ -102,7 +132,7 @@ namespace Minesweeper.Test
 
 
        
-        protected virtual Node ParseNumber()
+        protected virtual ExpressionNode ParseNumber()
         {
             var current = _tokens.Current;
 
@@ -136,7 +166,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        protected virtual Node ParaUnaryOperators()
+        protected virtual ExpressionNode ParaUnaryOperators()
         {
             var current = _tokens.Current;
             var par = Parenthese();
@@ -157,7 +187,7 @@ namespace Minesweeper.Test
 
        
 
-        protected virtual Node Parenthese()
+        protected virtual ExpressionNode Parenthese()
         {
             if (_tokens.Current.Token.Name == Pascal.LParinth)
             {
@@ -173,9 +203,9 @@ namespace Minesweeper.Test
 
 
         
-        Node MultiDiv()
+        ExpressionNode MultiDiv()
         {
-            Node Action()
+            ExpressionNode Action()
             {
                return ParaUnaryOperators();
             }

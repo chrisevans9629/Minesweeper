@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
-    public abstract class Node
+    public abstract class Node : INode
     {
 
         public Node()

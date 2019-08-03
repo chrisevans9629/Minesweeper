@@ -2,7 +2,7 @@
 
 namespace Minesweeper.Test
 {
-    public class CallNode : Node
+    public class CallNode : ExpressionNode
     {
         public string Type { get; }
         public string Name { get; }

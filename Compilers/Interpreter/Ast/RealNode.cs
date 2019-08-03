@@ -1,7 +1,7 @@
 ﻿namespace Minesweeper.Test
 {
 
-    public class IntegerNode : Node
+    public class IntegerNode : ExpressionNode
     {
         public TokenItem TokenItem { get; }
         public int Value { get; set; }
@@ -16,7 +16,7 @@
         }
     }
 
-    public class RealNode : Node
+    public class RealNode : ExpressionNode
     {
         public RealNode(TokenItem token)
         {

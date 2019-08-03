@@ -207,7 +207,7 @@ namespace Minesweeper.Test
             return results;
         }
 
-        protected override Node ParaUnaryOperators()
+        protected override ExpressionNode ParaUnaryOperators()
         {
             var current = _tokens.Current;
             var par = Parenthese();
@@ -248,7 +248,7 @@ namespace Minesweeper.Test
             //    return node;
             //}
         }
-        private Node ParseBool()
+        private ExpressionNode ParseBool()
         {
             var b = new BoolNode(_tokens.Current);
             _tokens.Advance();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -32,7 +33,7 @@ namespace Minesweeper.Test.Tests
 
 
         [Test]
-        public void CaseStatementWithElse()
+        public void CaseStatementWithoutElse()
         {
             var input = @"
 program checkCase;
@@ -58,7 +59,14 @@ end.
             var statements = node.Block.CompoundStatement.Nodes;
 
             statements[0].Should().BeOfType<AssignmentNode>();
-            statements[1].Should().BeOfType<CaseStatementNode>();
+            var t = statements[1].Should().BeOfType<CaseStatementNode>().Subject;
+            t.CompareExpression.Should().BeOfType<VariableOrFunctionCall>();
+            var items = t.CaseItemNodes;
+            items.Should().HaveCount(4);
+
+            items[1].Cases.Should().HaveCount(2);
+            items[1].Statement.Should().BeOfType<ProcedureCallNode>();
+
             statements[2].Should().BeOfType<ProcedureCallNode>();
 
         }
@@ -247,8 +255,5 @@ end;";
         }
 
     }
-
-    public class CaseStatementNode
-    {
-    }
+    
 }

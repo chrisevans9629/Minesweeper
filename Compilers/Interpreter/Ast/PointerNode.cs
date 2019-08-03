@@ -1,6 +1,6 @@
 ﻿namespace Minesweeper.Test
 {
-    public class PointerNode : Node
+    public class PointerNode : ExpressionNode
     {
         public char Value { get; }
         public TokenItem TokenItem { get; }
