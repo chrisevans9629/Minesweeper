@@ -66,7 +66,7 @@ namespace Minesweeper.Test
                 return VisitCompound(compound);
             }
 
-            if (node is AssignNode assign)
+            if (node is AssignmentNode assign)
             {
                 return VisitAssign(assign);
             }
@@ -386,7 +386,7 @@ namespace Minesweeper.Test
             return VisitCompound(block.CompoundStatement);
         }
 
-        object VisitAssign(AssignNode node)
+        object VisitAssign(AssignmentNode node)
         {
             var name = node.Left.VariableName.ToUpper();
             var value = VisitNode(node.Right);

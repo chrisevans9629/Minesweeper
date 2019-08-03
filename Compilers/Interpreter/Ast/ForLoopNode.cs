@@ -4,7 +4,7 @@ namespace Minesweeper.Test
 {
     public class ForLoopNode : Node
     {
-        public ForLoopNode(AssignNode assignFromNode, Node toNode, IList<Node> doStatements)
+        public ForLoopNode(AssignmentNode assignFromNode, Node toNode, IList<Node> doStatements)
         {
             AssignFromNode = assignFromNode;
             ToNode = toNode;
@@ -12,7 +12,7 @@ namespace Minesweeper.Test
         }
         //for < variable-name > := < initial_value > to [down to] < final_value > do S;
 
-        public AssignNode AssignFromNode { get;  }
+        public AssignmentNode AssignFromNode { get;  }
         public Node ToNode { get;  }
 
         public IList<Node> DoStatements { get;  }

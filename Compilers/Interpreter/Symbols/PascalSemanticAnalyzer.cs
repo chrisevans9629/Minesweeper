@@ -107,7 +107,7 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitCompoundStatement(compound);
             }
-            else if (node is AssignNode ass)
+            else if (node is AssignmentNode ass)
             {
                 VisitAssign(ass);
             }
@@ -283,7 +283,7 @@ namespace Minesweeper.Test.Symbols
 
         }
 
-        private void VisitAssign(AssignNode ass)
+        private void VisitAssign(AssignmentNode ass)
         {
             var variable = VisitVariable(ass.Left);
             VisitNode(ass.Right);

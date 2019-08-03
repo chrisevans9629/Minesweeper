@@ -30,6 +30,39 @@ namespace Minesweeper.Test.Tests
         }
 
 
+
+        [Test]
+        public void CaseStatementWithElse()
+        {
+            var input = @"
+program checkCase;
+var
+   grade: char;
+begin
+   grade := 'A';
+
+   case (grade) of
+      'A' : writeln('Excellent!' );
+      'B', 'C': writeln('Well done' );
+      'D' : writeln('You passed' );
+      'F' : writeln('Better try again' );
+   end;     
+   
+   writeln('Your grade is  ', grade );
+end.
+";
+            var tokens = lexer.Tokenize(input);
+
+            var node = ast.Evaluate(tokens).Should().BeOfType<PascalProgramNode>().Subject;
+
+            var statements = node.Block.CompoundStatement.Nodes;
+
+            statements[0].Should().BeOfType<AssignmentNode>();
+            statements[1].Should().BeOfType<CaseStatementNode>();
+            statements[2].Should().BeOfType<ProcedureCallNode>();
+
+        }
+
         [Test]
         public void FunctionWithIfStatementAndReturn_ShouldBeSeperate()
         {
@@ -53,7 +86,7 @@ end;";
 
 
             var ifstat = nodes[0].Should().BeOfType<IfStatementNode>().Which;
-            nodes[1].Should().BeOfType<AssignNode>();
+            nodes[1].Should().BeOfType<AssignmentNode>();
             nodes[2].Should().BeOfType<ProcedureCallNode>();
             nodes[3].Should().BeOfType<NoOp>();
 
@@ -120,10 +153,10 @@ end;";
 
             ifStatement.IfCheck.Should().BeOfType<EqualOperator>().Which.Left.Should().BeOfType<VariableOrFunctionCall>();
             ifStatement.IfCheck.Should().BeOfType<EqualOperator>().Which.Right.Should().BeOfType<IntegerNode>();
-           var trueStatement = ifStatement.IfTrue.First().Should().BeOfType<AssignNode>().Which;
+           var trueStatement = ifStatement.IfTrue.First().Should().BeOfType<AssignmentNode>().Which;
            trueStatement.Left.VariableName.Should().Be("Summation");
            trueStatement.Right.Should().BeOfType<IntegerNode>();
-           var falseStatement =  ifStatement.IfFalse.First().Should().BeOfType<AssignNode>().Which;
+           var falseStatement =  ifStatement.IfFalse.First().Should().BeOfType<AssignmentNode>().Which;
 
            falseStatement.Left.VariableName.Should().Be("Summation");
            falseStatement.Right.Should().BeOfType<BinaryOperator>().Which.Left.Should().BeOfType<FunctionCallNode>()
@@ -141,8 +174,8 @@ end;";
 
            var result = ast.Statement();
            var iff = result.Should().BeOfType<IfStatementNode>().Which;
-           iff.IfTrue.First().Should().BeOfType<AssignNode>();
-           iff.IfFalse.First().Should().BeOfType<AssignNode>();
+           iff.IfTrue.First().Should().BeOfType<AssignmentNode>();
+           iff.IfFalse.First().Should().BeOfType<AssignmentNode>();
 
         }
         [Test]
@@ -213,5 +246,9 @@ end;";
 
         }
 
+    }
+
+    public class CaseStatementNode
+    {
     }
 }

@@ -38,7 +38,7 @@ namespace Minesweeper.Test.Tests
                 return VisitProcedureDec(procedureDeclaration);
             }
 
-            if (node is AssignNode assign)
+            if (node is AssignmentNode assign)
             {
                 return $"{AddSpaces()}{VisitVariable(assign.Left)} := {VisitNode(assign.Right)};\r\n";
             }

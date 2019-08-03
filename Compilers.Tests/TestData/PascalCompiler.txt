@@ -132,9 +132,20 @@ end;
 {---------------------------------------------------------------}
 { Parse and Translate a Math Expression }
 
-procedure Expression;
+procedure Term;
 begin
    EmitLn('MOVE #' + GetNum + ',D0')
+end;
+
+procedure Expression;
+begin
+   Term;
+   EmitLn('MOVE D0,D1');
+   case Look of
+    '+': Add;
+    '-': Subtract;
+   else Expected('Addop');
+   end;
 end;
 {---------------------------------------------------------------}
 

@@ -363,13 +363,13 @@ namespace Minesweeper.Test
             return new ProcedureCallNode(procedureName, parameters, token);
         }
 
-        AssignNode AssignmentStatement()
+        AssignmentNode AssignmentStatement()
         {
             var left = Variable();
             var token = _tokens.Current;
             Eat(Pascal.Assign);
             var right = Expression();
-            var node = new AssignNode(left, token, right);
+            var node = new AssignmentNode(left, token, right);
             return node;
         }
 
