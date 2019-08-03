@@ -2,7 +2,7 @@
 
 namespace Minesweeper.Test
 {
-    public class ForLoopNode : Node
+    public class ForLoopNode : Node, IStatementNode
     {
         public ForLoopNode(AssignmentNode assignFromNode, Node toNode, IList<Node> doStatements)
         {

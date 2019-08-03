@@ -1,6 +1,6 @@
 ﻿namespace Minesweeper.Test
 {
-    public class AssignmentNode : Node
+    public class AssignmentNode : Node, IStatementNode
     {
         public VariableOrFunctionCall Left { get; set; }
         public Node Right { get; set; }

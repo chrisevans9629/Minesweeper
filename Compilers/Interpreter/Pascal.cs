@@ -46,7 +46,8 @@ namespace Minesweeper.Test
         public const string Id = "ID";
         public const string Assign = "ASSIGN";
         public const string IntDiv = "DIV";
-
+        public const string Case = "CASE";
+        public const string Of = "OF";
         public const string Equal = "=";
         public const string Dot      = ".";
         public const string Colon    = ":";
@@ -80,6 +81,7 @@ namespace Minesweeper.Test
             RightBracket
         };
 
+
         public static Token CreateToken(string name)
         {
             return new Token(){Name = name};
@@ -106,7 +108,9 @@ namespace Minesweeper.Test
             {Do, CreateToken(Do) },
             {Const, CreateToken(Const) },
             {In, CreateToken(In) },
-            {Not, CreateToken(Not) }
+            {Not, CreateToken(Not) },
+            {Case, CreateToken(Case) },
+            {Of, CreateToken(Of) }
             
         };
     }

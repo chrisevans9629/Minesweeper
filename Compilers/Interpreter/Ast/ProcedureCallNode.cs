@@ -2,7 +2,7 @@
 
 namespace Minesweeper.Test
 {
-    public class ProcedureCallNode : CallNode
+    public class ProcedureCallNode : CallNode, IStatementNode
     {
         public string ProcedureName => Name;
 

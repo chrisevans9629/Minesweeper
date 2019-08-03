@@ -281,6 +281,10 @@ namespace Minesweeper.Test
             {
                 node = ForLoop();
             }
+            else if (Name == Pascal.Case)
+            {
+                node = CaseStatement();
+            }
             else if (Name == Pascal.If)
             {
                 node = IfStatement();
@@ -299,6 +303,50 @@ namespace Minesweeper.Test
             }
             else node = Empty();
             return node;
+        }
+
+        private CaseStatementNode CaseStatement()
+        {
+            Eat(Pascal.Case);
+            var exp = Expression();
+            Eat(Pascal.Of);
+            var items = new List<CaseItemNode>();
+            while (Name != Pascal.End && Name != Pascal.Else)
+            {
+                items.Add(CaseItem());
+            }
+
+            IStatementNode elseExpressionNode = null;
+            if (Name == Pascal.Else)
+            {
+                Eat(Pascal.Else);
+                var st = Statement();
+                if (st is IStatementNode n)
+                {
+                    elseExpressionNode = n;
+                }
+                else
+                {
+                    throw new NotImplementedException(st.Display());
+                }
+            }
+            Eat(Pascal.End);
+            return new CaseStatementNode(exp, items, elseExpressionNode);
+        }
+
+        private CaseItemNode CaseItem()
+        {
+            var items = new List<ExpressionNode>(){Expression()};
+            while (Name == Pascal.Comma)
+            {
+                Eat(Pascal.Comma);
+                items.Add(Expression());
+            }
+            Eat(Pascal.Colon);
+            var statement = Statement();
+            Eat(Pascal.Semi);
+            return new CaseItemNode(items, statement as IStatementNode);
+
         }
 
         private Node ForLoop()
@@ -322,7 +370,7 @@ namespace Minesweeper.Test
             }
             return Expression();
         }
-        private Node IfStatement()
+        private IfStatementNode IfStatement()
         {
             Eat(Pascal.If);
             var equal = BoolExpression();
@@ -338,7 +386,7 @@ namespace Minesweeper.Test
             return new IfStatementNode(equal, new List<Node>(){tstatement}, estate);
         }
 
-        private Node ProcedureCall()
+        private ProcedureCallNode ProcedureCall()
         {
             var procedureName = Current.Value;
             var token = Current;
