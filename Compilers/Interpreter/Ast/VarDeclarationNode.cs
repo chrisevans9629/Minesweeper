@@ -2,10 +2,10 @@
 {
     public class VarDeclarationNode : Node
     {
-        public Variable VarNode { get; set; }
+        public VariableOrFunctionCall VarNode { get; set; }
         public TypeNode TypeNode { get; set; }
 
-        public VarDeclarationNode(Variable varNode, TypeNode typeNode)
+        public VarDeclarationNode(VariableOrFunctionCall varNode, TypeNode typeNode)
         {
             VarNode = varNode;
             TypeNode = typeNode;

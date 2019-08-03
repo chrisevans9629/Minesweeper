@@ -26,8 +26,8 @@ namespace Minesweeper.Test.Tests
             analyzer = new PascalSemanticAnalyzer();
         }
 
-        [TestCase("1", "\tMOVE #1,D0")]
-        [TestCase("", ".Error: Integer Expected.")]
+        [TestCase("1", "\tMOVE #1,D0\r\n")]
+        [TestCase("", "\r\n.Error: Integer Expected.\r\n")]
         public void PascalCompiler_Should_Pass(string test, string output)
         {
 
@@ -48,19 +48,11 @@ begin
    WriteLn(^G, 'Error: ', s, '.');
 end;
 
-
-{--------------------------------------------------------------}
-{ Report Error and Halt }
-
 procedure Abort(s: string);
 begin
    Error(s);
    Halt;
 end;
-
-
-{--------------------------------------------------------------}
-{ Report What Was Expected }
 
 procedure Expected(s: string);
 begin
@@ -86,16 +78,21 @@ var tval,inp : char;
 begin
     tval := '{value}';
     Read(inp);
-    if tval = inp then Write('test') else Write('test2');
+    if tval = inp then 
+        Write('test')
+    else Write('test2');
 end.";
-            Evaluate(input);
+            var mem = Evaluate(input).Should().BeOfType<Memory>().Subject;
+
+            mem.GetValue("tval").Should().Be(value);
+            mem.GetValue("inp").Should().Be(inputConsole);
 
             console.Output.Should().Be(output);
         }
 
 
         [TestCase("12","2", "\r\n.Error: 2 Expected.\r\n")]
-        [TestCase("12","1", "")]
+        [TestCase("12","1", null)]
         public void Match_ShouldReturnResult(string consoleInput, string match, string result)
         {
 
@@ -298,7 +295,7 @@ end.";
             console.Output[0].Should().Be(num[0]);
         }
 
-        private void Evaluate(string input)
+        private object Evaluate(string input)
         {
             
             var tokens = lexer.Tokenize(input);
@@ -306,6 +303,7 @@ end.";
             analyzer.CheckSyntax(node);
 
             var n = interpreter.Interpret(node);
+            return n;
         }
 
 

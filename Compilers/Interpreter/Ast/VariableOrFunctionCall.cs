@@ -1,10 +1,10 @@
 ﻿namespace Minesweeper.Test
 {
-    public class Variable : Node
+    public class VariableOrFunctionCall : Node
     {
         public string VariableName { get; set; }
         public TokenItem TokenItem { get; set; }
-        public Variable(TokenItem token)
+        public VariableOrFunctionCall(TokenItem token)
         {
             TokenItem = token;
             VariableName = token.Value;

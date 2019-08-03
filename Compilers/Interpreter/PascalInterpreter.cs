@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Minesweeper.Test
 {
@@ -39,10 +40,10 @@ namespace Minesweeper.Test
         public void CreateGlobalMemory()
         {
             CurrentScope = new Memory("GLOBAL");
-           // CurrentScope.Add("Read",null);
+            // CurrentScope.Add("Read",null);
         }
 
-       
+
         public object GetVar(string key)
         {
             return CurrentScope.GetValue(key, true);
@@ -70,7 +71,7 @@ namespace Minesweeper.Test
                 return VisitAssign(assign);
             }
 
-            if (node is Variable var)
+            if (node is VariableOrFunctionCall var)
             {
                 return VisitVariable(var);
             }
@@ -140,7 +141,24 @@ namespace Minesweeper.Test
             {
                 return str.CurrentValue;
             }
+
+            if (node is InOperator inOperator)
+            {
+                return VisitInOperator(inOperator);
+            }
             return base.VisitNode(node);
+        }
+
+        private object VisitInOperator(InOperator inOperator)
+        {
+            var valueToContain = VisitNode(inOperator.CompareNode).ToString()[0];
+
+            var from = inOperator.ListExpression.FromNode.CurrentValue[0];
+
+            var to = inOperator.ListExpression.ToNode.CurrentValue[0];
+            var list = Enumerable.Range(from, to);
+
+            return list.Contains(valueToContain);
         }
 
         public object VisitPointer2(object pointer)
@@ -178,7 +196,7 @@ namespace Minesweeper.Test
             var toInt = VisitNode(forLoop.ToNode);
             var fromValue = CurrentScope.GetValue(fromName, true);
             CurrentScope = new Memory("_ForLoop_", CurrentScope);
-            for (var i =(int)fromValue ; i <= (int)toInt; i++)
+            for (var i = (int)fromValue; i <= (int)toInt; i++)
             {
                 foreach (var forLoopDoStatement in forLoop.DoStatements)
                 {
@@ -236,7 +254,7 @@ namespace Minesweeper.Test
                 throw new RuntimeException(ErrorCode.UnexpectedToken, negation.TokenItem, $"Did not find an equality operator called {negation.TokenItem.Token.Name}");
             }
 
-            throw new RuntimeException(ErrorCode.UnexpectedToken,null, "Unexpected bool value");
+            throw new RuntimeException(ErrorCode.UnexpectedToken, null, "Unexpected bool value");
         }
 
         private void VisitCall<T>(CallNode call) where T : DeclarationNode
@@ -280,25 +298,7 @@ namespace Minesweeper.Test
             try
             {
                 VisitCall<FunctionDeclarationNode>(call);
-                //var declaration = CurrentScope.GetValue<FunctionDeclarationNode>(call.Name, true);
-                //var values = new List<object>();
-                //for (var i = 0; i < declaration.Parameters.Count; i++)
-                //{
-                //    var value = VisitNode(call.Parameters[i]);
-                //    values.Add(value);
-                //}
-                //var previous = CurrentScope;
-                //CurrentScope = new Memory(call.Name, previous);
-                //CurrentScope.Add(call.Name, null);
-                //for (var i = 0; i < declaration.Parameters.Count; i++)
-                //{
-                //    var parameter = declaration.Parameters[i];
-                //    VisitVarDeclaration(parameter.Declaration);
-                //    CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, values[i]);
-                //}
 
-
-                //VisitBlock(declaration.Block);
                 var funResult = CurrentScope.GetValue(call.Name);
                 CurrentScope = CurrentScope.Parent;
                 return funResult;
@@ -310,7 +310,7 @@ namespace Minesweeper.Test
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw new RuntimeException(ErrorCode.Runtime,call.Token,"Unexpected error", e);
+                throw new RuntimeException(ErrorCode.Runtime, call.Token, "Unexpected error", e);
             }
 
         }
@@ -320,9 +320,9 @@ namespace Minesweeper.Test
             if (call.ProcedureName.ToUpper() == "READ")
             {
                 var result = _console.Read();
-                if (call.Parameters[0] is Variable v)
+                if (call.Parameters[0] is VariableOrFunctionCall v)
                 {
-                    CurrentScope.SetValue(v.VariableName, result);
+                    CurrentScope.SetValue(v.VariableName, result.ToString());
                 }
 
                 return null;
@@ -330,8 +330,12 @@ namespace Minesweeper.Test
 
             if (call.ProcedureName.ToUpper() == "WRITE")
             {
-                var st = VisitNode(call.Parameters[0]).ToString();
-                _console.Write(st);
+                var str = "";
+                foreach (var callParameter in call.Parameters)
+                {
+                    str += VisitNode(callParameter).ToString();
+                }
+                _console.Write(str);
                 return null;
             }
             if (call.ProcedureName.ToUpper() == "WRITELN")
@@ -350,20 +354,7 @@ namespace Minesweeper.Test
                 throw new HaltException(ErrorCode.Runtime, call.Token, "Halted");
             }
             VisitCall<ProcedureDeclarationNode>(call);
-            //var declaration = (ProcedureDeclarationNode)CurrentScope.GetValue(call.ProcedureName, true);
-            //var previous = CurrentScope;
-            //CurrentScope = new Memory(call.ProcedureName, previous);
 
-            //for (var i = 0; i < declaration.Parameters.Count; i++)
-            //{
-            //    var parameter = declaration.Parameters[i];
-            //    VisitVarDeclaration(parameter.Declaration);
-            //    var value = VisitNode(call.Parameters[i]);
-            //    CurrentScope.SetValue(parameter.Declaration.VarNode.VariableName, value);
-
-            //}
-
-            //VisitBlock(declaration.Block);
             CurrentScope = CurrentScope.Parent;
 
             return null;
@@ -411,10 +402,15 @@ namespace Minesweeper.Test
             return value;
         }
 
-        object VisitVariable(Variable var)
+        object VisitVariable(VariableOrFunctionCall var)
         {
             var name = var.VariableName.ToUpper();
             var value = CurrentScope.GetValue(name, true);
+            if (value is FunctionDeclarationNode node)
+            {
+                var call = new FunctionCallNode(node.FunctionName, new List<Node>(), node.Token);
+                return VisitNode(call);
+            }
             return value;
         }
 

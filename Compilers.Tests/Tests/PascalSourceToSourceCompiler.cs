@@ -43,7 +43,7 @@ namespace Minesweeper.Test.Tests
                 return $"{AddSpaces()}{VisitVariable(assign.Left)} := {VisitNode(assign.Right)};\r\n";
             }
 
-            if (node is Variable varaible)
+            if (node is VariableOrFunctionCall varaible)
             {
                 return VisitVariable(varaible);
             }
@@ -59,7 +59,7 @@ namespace Minesweeper.Test.Tests
             throw new NotImplementedException($"no implementation for node {node}");
         }
 
-        private string VisitVariable(Variable variable)
+        private string VisitVariable(VariableOrFunctionCall variable)
         {
             return $"<{variable.VariableName}{CurrentScope.LookupSymbolScope(variable.VariableName)}:{CurrentScope.LookupSymbol(variable.VariableName, true).Type.Name}>";
         }

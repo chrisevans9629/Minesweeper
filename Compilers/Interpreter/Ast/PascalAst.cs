@@ -161,7 +161,7 @@ namespace Minesweeper.Test
 
         private IList<VarDeclarationNode> VariableDeclaration()
         {
-            var nodes = new List<Variable> { Variable() };
+            var nodes = new List<VariableOrFunctionCall> { Variable() };
             while (Name == Pascal.Comma)
             {
                 Eat(Pascal.Comma);
@@ -373,9 +373,9 @@ namespace Minesweeper.Test
             return node;
         }
 
-        Variable Variable()
+        VariableOrFunctionCall Variable()
         {
-            var node = new Variable(_tokens.Current);
+            var node = new VariableOrFunctionCall(_tokens.Current);
             Eat(Pascal.Id);
             return node;
         }

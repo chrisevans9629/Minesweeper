@@ -118,7 +118,7 @@ end;";
             block.Declarations.Should().BeEmpty();
             var ifStatement = block.CompoundStatement.Nodes.Should().HaveCount(1).And.Subject.First().Should().BeOfType<IfStatementNode>().Which;
 
-            ifStatement.IfCheck.Should().BeOfType<EqualOperator>().Which.Left.Should().BeOfType<Variable>();
+            ifStatement.IfCheck.Should().BeOfType<EqualOperator>().Which.Left.Should().BeOfType<VariableOrFunctionCall>();
             ifStatement.IfCheck.Should().BeOfType<EqualOperator>().Which.Right.Should().BeOfType<IntegerNode>();
            var trueStatement = ifStatement.IfTrue.First().Should().BeOfType<AssignNode>().Which;
            trueStatement.Left.VariableName.Should().Be("Summation");

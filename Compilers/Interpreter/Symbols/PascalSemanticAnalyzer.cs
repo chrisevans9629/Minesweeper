@@ -32,38 +32,38 @@ namespace Minesweeper.Test.Symbols
             levelZero.Define(new BuiltInTypeSymbol(Pascal.Boolean));
             levelZero.Define(new ProcedureDeclarationSymbol("READ", new List<ParameterNode>()
             {
-                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "look"}),
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "look"}),
                     new TypeNode(new TokenItem() {Value = Pascal.Char})))
             }));
 
             levelZero.Define(new FunctionDeclarationSymbol("UpCase", new List<ParameterNode>()
             {
-                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "look"}),
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "look"}),
                     new TypeNode(new TokenItem() {Value = Pascal.Char})))
             }));
             levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()));
             levelZero.Define(new ProcedureDeclarationSymbol("Halt", new List<ParameterNode>()));
             levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()
             {
-                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x1"}),
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
                     new TypeNode(new TokenItem() {Value = Pascal.Char}))),
-                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x2"}),
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x2"}),
                     new TypeNode(new TokenItem() {Value = Pascal.Char}))),
-                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x3"}),
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x3"}),
                     new TypeNode(new TokenItem() {Value = Pascal.Char}))),
-                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x4"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
-            }));
-            levelZero.Define(new ProcedureDeclarationSymbol("Write", new List<ParameterNode>()
-            {
-                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x1"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
-                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x2"}),
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x4"}),
                     new TypeNode(new TokenItem() {Value = Pascal.Char}))),
             }));
             levelZero.Define(new ProcedureDeclarationSymbol("Write", new List<ParameterNode>()
             {
-                new ParameterNode(new VarDeclarationNode(new Variable(new TokenItem() {Value = "x1"}),
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x2"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+            }));
+            levelZero.Define(new ProcedureDeclarationSymbol("Write", new List<ParameterNode>()
+            {
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
                     new TypeNode(new TokenItem() {Value = Pascal.Char}))),
             }));
         }
@@ -139,7 +139,7 @@ namespace Minesweeper.Test.Symbols
             {
 
             }
-            else if (node is Variable variable)
+            else if (node is VariableOrFunctionCall variable)
             {
                 VisitVariable(variable);
             }
@@ -294,7 +294,7 @@ namespace Minesweeper.Test.Symbols
             }
         }
 
-        private VariableSymbol VisitVariable(Variable assLeft)
+        private VariableSymbol VisitVariable(VariableOrFunctionCall assLeft)
         {
             var varName = assLeft.VariableName;
             var symbol = CurrentScope.LookupSymbol<VariableSymbol>(varName, true);

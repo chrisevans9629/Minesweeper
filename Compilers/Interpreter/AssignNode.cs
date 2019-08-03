@@ -2,10 +2,10 @@
 {
     public class AssignNode : Node
     {
-        public Variable Left { get; set; }
+        public VariableOrFunctionCall Left { get; set; }
         public Node Right { get; set; }
         public TokenItem TokenItem { get; set; }
-        public AssignNode(Variable left, TokenItem item, Node right)
+        public AssignNode(VariableOrFunctionCall left, TokenItem item, Node right)
         {
             Left = left;
             Right = right;
