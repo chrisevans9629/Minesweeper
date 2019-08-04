@@ -76,7 +76,7 @@ namespace Minesweeper.Test
             {
                 var current = Current;
                 Eat(Pascal.In);
-                result = new InOperator(result, ListExpression(), current);
+                result = new InOperator(result, ListNode(), current);
             }
             if (_tokens.Current != null && Name == Pascal.Equal)
             {
@@ -93,7 +93,7 @@ namespace Minesweeper.Test
             return result;
         }
 
-        private ListNode ListExpression()
+        public ListNode ListNode()
         {
             var list = Current;
             Eat(Pascal.LeftBracket);
@@ -110,7 +110,7 @@ namespace Minesweeper.Test
             }
             else
             {
-                var items = new List<StringNode>();
+                var items = new List<StringNode>(){from};
                 while (Name == Pascal.Comma)
                 {
                     Eat(Pascal.Comma);

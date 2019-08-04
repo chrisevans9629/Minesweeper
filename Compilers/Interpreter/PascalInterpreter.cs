@@ -161,9 +161,7 @@ namespace Minesweeper.Test
 
         private object VisitWhileLoop(WhileLoopNode whileLoop)
         {
-            var check = VisitNode(whileLoop.BoolExpression);
-
-            while ((bool)check)
+            while ((bool)VisitNode(whileLoop.BoolExpression))
             {
                 VisitNode(whileLoop.DoStatement);
             }

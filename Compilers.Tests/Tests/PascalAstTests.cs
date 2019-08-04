@@ -58,7 +58,12 @@ end;";
         public void ListItems_Should_Have2Items()
         {
             var input = @" ['+', '-']";
-            Assert.Fail();
+
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.ListNode().Should().BeOfType<ListItemsExpressionNode>().Subject;
+
+            node.Items.Should().HaveCount(2);
         }
         [Test]
         public void CaseStatementProcedureWithElse_ShouldPass()
