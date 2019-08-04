@@ -47,9 +47,11 @@ namespace Pascal.Ide.Wpf.ViewModels
         {
             StartCommand = new DelegateCommand(Start);
             OpenCommand = new DelegateCommand(Open);
-            BlobCache.LocalMachine.GetOrCreateObject(Key, () => "").Subscribe(s => Code = s);
+            BlobCache.LocalMachine.GetOrCreateObject(CodeKey, () => "").Subscribe(s => Code = s);
+            BlobCache.LocalMachine.GetOrCreateObject(InputKey, () => "").Subscribe(s => Input = s);
         }
 
+        private const string InputKey = "Input";
         private void Open()
         {
             var dialog = new OpenFileDialog();
@@ -69,7 +71,12 @@ namespace Pascal.Ide.Wpf.ViewModels
         public string Input
         {
             get => _input;
-            set => SetProperty(ref _input,value);
+            set => SetProperty(ref _input,value, InputChanged);
+        }
+
+        private void InputChanged()
+        {
+            BlobCache.LocalMachine.InsertObject(InputKey, Input);
         }
 
         public Node AbstractSyntaxTree
@@ -103,12 +110,12 @@ namespace Pascal.Ide.Wpf.ViewModels
 
         }
 
-        public const string Key = "Code";
+        public const string CodeKey = "Code";
         private void CodeChanged()
         {
             try
             {
-                BlobCache.LocalMachine.InsertObject(Key, Code);
+                BlobCache.LocalMachine.InsertObject(CodeKey, Code);
                 var tokens = lexer.Tokenize(Code);
                 AbstractSyntaxTree = ast.Evaluate(tokens);
                 var analize = analyzer.CheckSyntax(AbstractSyntaxTree);
