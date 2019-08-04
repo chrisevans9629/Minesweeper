@@ -55,6 +55,12 @@ end;";
         }
 
         [Test]
+        public void ListItems_Should_Have2Items()
+        {
+            var input = @" ['+', '-']";
+            Assert.Fail();
+        }
+        [Test]
         public void CaseStatementProcedureWithElse_ShouldPass()
         {
             var input = @"
