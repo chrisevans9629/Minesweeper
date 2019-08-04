@@ -3,10 +3,10 @@
     public class InOperator : ExpressionNode
     {
         public Node CompareNode { get; }
-        public ListExpressionNode ListExpression { get; }
+        public ListNode ListExpression { get; }
         public TokenItem TokenItem { get; }
 
-        public InOperator(Node compareNode, ListExpressionNode listExpression, TokenItem tokenItem)
+        public InOperator(Node compareNode, ListNode listExpression, TokenItem tokenItem)
         {
             CompareNode = compareNode;
             ListExpression = listExpression;

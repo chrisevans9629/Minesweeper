@@ -105,6 +105,11 @@ namespace Minesweeper.Test
                 return VisitIfNode(ifNode);
             }
 
+            if (node is WhileLoopNode whileLoop)
+            {
+                return VisitWhileLoop(whileLoop);
+            }
+
             if (node is ForLoopNode forLoop)
             {
                 return VisitForLoop(forLoop);
@@ -154,6 +159,17 @@ namespace Minesweeper.Test
             return base.VisitNode(node);
         }
 
+        private object VisitWhileLoop(WhileLoopNode whileLoop)
+        {
+            var check = VisitNode(whileLoop.BoolExpression);
+
+            while ((bool)check)
+            {
+                VisitNode(whileLoop.DoStatement);
+            }
+            return null;
+        }
+
         private object VisitCaseStatement(CaseStatementNode caseStatement)
         {
             var comparer = VisitNode(caseStatement.CompareExpression);
@@ -178,12 +194,24 @@ namespace Minesweeper.Test
         {
             var valueToContain = VisitNode(inOperator.CompareNode).ToString()[0];
 
-            var from = inOperator.ListExpression.FromNode.CurrentValue[0];
+            if (inOperator.ListExpression is ListRangeExpressionNode listRange)
+            {
+                var from = listRange.FromNode.CurrentValue[0];
 
-            var to = inOperator.ListExpression.ToNode.CurrentValue[0];
-            var list = Enumerable.Range(from, to);
+                var to = listRange.ToNode.CurrentValue[0];
+                var list = Enumerable.Range(from, to);
 
-            return list.Contains(valueToContain);
+                return list.Contains(valueToContain);
+            }
+
+            if (inOperator.ListExpression is ListItemsExpressionNode listItems)
+            {
+                var items = listItems.Items.Select(p => p.CurrentValue[0]);
+
+                return items.Contains(valueToContain);
+            }
+            throw new NotImplementedException();
+          
         }
 
         public object VisitPointer2(object pointer)
@@ -223,10 +251,7 @@ namespace Minesweeper.Test
             CurrentScope = new Memory("_ForLoop_", CurrentScope);
             for (var i = (int)fromValue; i <= (int)toInt; i++)
             {
-                foreach (var forLoopDoStatement in forLoop.DoStatements)
-                {
-                    VisitNode(forLoopDoStatement);
-                }
+                VisitNode(forLoop.DoStatements);
             }
             CurrentScope = CurrentScope.Parent;
             return null;

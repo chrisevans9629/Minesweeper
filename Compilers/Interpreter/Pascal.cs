@@ -8,6 +8,7 @@ namespace Minesweeper.Test
     }
     public class Pascal
     {
+        public const string While = "WHILE";
         public const string NotEqual = "<>";
         public const string Not = "NOT";
         public const string In = "IN";
@@ -110,7 +111,8 @@ namespace Minesweeper.Test
             {In, CreateToken(In) },
             {Not, CreateToken(Not) },
             {Case, CreateToken(Case) },
-            {Of, CreateToken(Of) }
+            {Of, CreateToken(Of) },
+            {While, CreateToken(While) }
             
         };
     }

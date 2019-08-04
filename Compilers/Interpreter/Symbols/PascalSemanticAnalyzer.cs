@@ -192,10 +192,22 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitCaseStatement(caseStatement);
             }
+            else if (node is WhileLoopNode whileLoop)
+            {
+                VisitWhileLoop(whileLoop);
+            }
             else
             {
                 throw new InvalidOperationException($"did not recognize node {node}");
             }
+        }
+
+        private void VisitWhileLoop(WhileLoopNode whileLoop)
+        {
+            VisitNode(whileLoop.BoolExpression);
+            CurrentScope = new ScopedSymbolTable("_while_", CurrentScope.ScopeLevel + 1, CurrentScope);
+            VisitNode(whileLoop.DoStatement);
+            CurrentScope = CurrentScope.ParentScope;
         }
 
         private void VisitCaseStatement(CaseStatementNode caseStatement)

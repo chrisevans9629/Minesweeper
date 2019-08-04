@@ -93,18 +93,34 @@ namespace Minesweeper.Test
             return result;
         }
 
-        private ListExpressionNode ListExpression()
+        private ListNode ListExpression()
         {
             var list = Current;
             Eat(Pascal.LeftBracket);
             var from = new StringNode(Current);
             Eat(Pascal.StringConst);
-            Eat(Pascal.Dot);
-            Eat(Pascal.Dot);
-            var to = new StringNode(Current);
-            Eat(Pascal.StringConst);
-            Eat(Pascal.RightBracket);
-            return new ListExpressionNode(from, to, list);
+            if (Name == Pascal.Dot)
+            {
+                Eat(Pascal.Dot);
+                Eat(Pascal.Dot);
+                var to = new StringNode(Current);
+                Eat(Pascal.StringConst);
+                Eat(Pascal.RightBracket);
+                return new ListRangeExpressionNode(from, to, list);
+            }
+            else
+            {
+                var items = new List<StringNode>();
+                while (Name == Pascal.Comma)
+                {
+                    Eat(Pascal.Comma);
+                    items.Add(new StringNode(Current));
+                    Eat(Pascal.StringConst);
+                }
+                Eat(Pascal.RightBracket);
+                return new ListItemsExpressionNode(items, list);
+            }
+            
         }
 
         private ExpressionNode AddSub()

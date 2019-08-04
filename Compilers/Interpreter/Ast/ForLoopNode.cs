@@ -2,9 +2,27 @@
 
 namespace Minesweeper.Test
 {
+
+    public class WhileLoopNode : Node
+    {
+        public WhileLoopNode(Node boolExpression, Node doStatement)
+        {
+            BoolExpression = boolExpression;
+            DoStatement = doStatement;
+        }
+
+        public Node BoolExpression { get; set; }
+        public Node DoStatement { get; set; }
+
+        public override string Display()
+        {
+            return $"While({BoolExpression}, do {DoStatement})";
+        }
+    }
+
     public class ForLoopNode : Node, IStatementNode
     {
-        public ForLoopNode(AssignmentNode assignFromNode, Node toNode, IList<Node> doStatements)
+        public ForLoopNode(AssignmentNode assignFromNode, Node toNode, Node doStatements)
         {
             AssignFromNode = assignFromNode;
             ToNode = toNode;
@@ -15,11 +33,11 @@ namespace Minesweeper.Test
         public AssignmentNode AssignFromNode { get;  }
         public Node ToNode { get;  }
 
-        public IList<Node> DoStatements { get;  }
+        public Node DoStatements { get;  }
 
         public override string Display()
         {
-            return $"For({AssignFromNode} To {ToNode} Do({Aggregate(DoStatements)}))";
+            return $"For({AssignFromNode} To {ToNode} Do({DoStatements}))";
         }
     }
 }

@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
+   
+
     public class PascalAst : AbstractSyntaxTreeBase
     {
 
@@ -302,8 +304,26 @@ namespace Minesweeper.Test
             {
                 node = ProcedureCall();
             }
-            else node = Empty();
+            else if (Name == Pascal.While)
+            {
+                node = WhileLoop();
+            }
+            else
+            {
+                node = Empty();
+            }
             return node;
+        }
+
+        private WhileLoopNode WhileLoop()
+        {
+            Eat(Pascal.While);
+
+            var exp = BoolExpression();
+            Eat(Pascal.Do);
+
+            var statement = Statement();
+            return new WhileLoopNode(exp, statement);
         }
 
         private CaseStatementNode CaseStatement()
@@ -350,7 +370,7 @@ namespace Minesweeper.Test
             Eat(Pascal.To);
             var ex = Expression();
             Eat(Pascal.Do);
-            var statements = StatementList();
+            var statements = Statement();
             return new ForLoopNode(assign, ex, statements);
         }
 

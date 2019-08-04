@@ -162,13 +162,12 @@ procedure Expression;
 begin
    Term;
    while Look in ['+', '-'] do
-		begin
-		   EmitLn('MOVE D0,D1');
-		   case Look of
-			'+': Add;
-			'-': Subtract;
-		   else Expected('Addop');
-		   end;
+	begin
+		EmitLn('MOVE D0,D1');
+		case Look of
+		'+': Add;
+		'-': Subtract;
+		else Expected('Addop');
 		end;
 	end;
    
