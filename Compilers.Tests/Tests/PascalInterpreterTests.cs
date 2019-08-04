@@ -26,7 +26,33 @@ namespace Minesweeper.Test.Tests
             analyzer = new PascalSemanticAnalyzer();
         }
 
+        [Test]
+        public void CaseStatementWithoutElse()
+        {
+            var input = @"
+program checkCase;
+var
+   grade: char;
+begin
+   grade := 'A';
+
+   case (grade) of
+      'A' : writeln('Excellent!' );
+      'B', 'C': writeln('Well done' );
+      'D' : writeln('You passed' );
+      'F' : writeln('Better try again' );
+   end;     
+   
+   writeln('Your grade is  ', grade );
+end.
+";
+            Evaluate(input);
+            console.Output.Should().Be("Excellent!\r\nYour grade is  A\r\n");
+        }
+
+
         [TestCase("1", "\tMOVE #1,D0\r\n")]
+        [TestCase("1+2", "\tMOVE #1,D0\r\n\tMOVE D0,D1\r\n\tMOVE #2,D0\r\n\tADD D1,D0\r\n")]
         [TestCase("", "\r\n.Error: Integer Expected.\r\n")]
         public void PascalCompiler_Should_Pass(string test, string output)
         {

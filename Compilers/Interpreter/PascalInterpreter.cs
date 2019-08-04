@@ -146,7 +146,32 @@ namespace Minesweeper.Test
             {
                 return VisitInOperator(inOperator);
             }
+
+            if (node is CaseStatementNode caseStatement)
+            {
+                return VisitCaseStatement(caseStatement);
+            }
             return base.VisitNode(node);
+        }
+
+        private object VisitCaseStatement(CaseStatementNode caseStatement)
+        {
+            var comparer = VisitNode(caseStatement.CompareExpression);
+
+            foreach (var caseItem in caseStatement.CaseItemNodes)
+            {
+                foreach (var caseItemCase in caseItem.Cases)
+                {
+                    var value = VisitNode(caseItemCase);
+                    if (value.Equals(comparer))
+                    {
+                        return VisitNode(caseItem.Statement);
+                    }
+                }
+            }
+            if (caseStatement.ElseStatement != null)
+                return VisitNode(caseStatement.ElseStatement);
+            return null;
         }
 
         private object VisitInOperator(InOperator inOperator)

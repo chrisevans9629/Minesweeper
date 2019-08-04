@@ -12,7 +12,7 @@ namespace Minesweeper.Test
    
     public class CaseItemNode : Node
     {
-        public CaseItemNode(IList<ExpressionNode> cases, IStatementNode statement)
+        public CaseItemNode(IList<ExpressionNode> cases, Node statement)
         {
             
             Cases = cases;
@@ -20,7 +20,7 @@ namespace Minesweeper.Test
         }
 
         public IList<ExpressionNode> Cases { get; set; }
-        public IStatementNode Statement { get; set; }
+        public Node Statement { get; set; }
         public override string Display()
         {
             return $"{Aggregate(Cases)} : {Statement}";
@@ -28,7 +28,7 @@ namespace Minesweeper.Test
     }
     public class CaseStatementNode : Node, IStatementNode
     {
-        public CaseStatementNode(ExpressionNode compareExpression, IList<CaseItemNode> caseItemNodes, IStatementNode elseStatement)
+        public CaseStatementNode(ExpressionNode compareExpression, IList<CaseItemNode> caseItemNodes, Node elseStatement)
         {
             CompareExpression = compareExpression;
             CaseItemNodes = caseItemNodes;
@@ -38,7 +38,7 @@ namespace Minesweeper.Test
         public ExpressionNode CompareExpression { get; set; }
         public IList<CaseItemNode> CaseItemNodes { get; set; }
 
-        public IStatementNode ElseStatement { get; set; }
+        public Node ElseStatement { get; set; }
         public override string Display()
         {
             return $"Case({CompareExpression} of {Aggregate(CaseItemNodes)} else {ElseStatement}";

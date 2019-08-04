@@ -111,7 +111,8 @@ namespace Minesweeper.Test
             var proc = new FunctionDeclarationNode(procedureId, parameters, block, token, returnType);
             return proc;
         }
-        private ProcedureDeclarationNode ProcedureDeclaration()
+
+        public ProcedureDeclarationNode ProcedureDeclaration()
         {
             var parameters = new List<ParameterNode>();
             Eat(Pascal.Procedure);
@@ -316,19 +317,12 @@ namespace Minesweeper.Test
                 items.Add(CaseItem());
             }
 
-            IStatementNode elseExpressionNode = null;
+            Node elseExpressionNode = null;
             if (Name == Pascal.Else)
             {
                 Eat(Pascal.Else);
-                var st = Statement();
-                if (st is IStatementNode n)
-                {
-                    elseExpressionNode = n;
-                }
-                else
-                {
-                    throw new NotImplementedException(st.Display());
-                }
+                elseExpressionNode = Statement();
+                Eat(Pascal.Semi);
             }
             Eat(Pascal.End);
             return new CaseStatementNode(exp, items, elseExpressionNode);
@@ -345,7 +339,7 @@ namespace Minesweeper.Test
             Eat(Pascal.Colon);
             var statement = Statement();
             Eat(Pascal.Semi);
-            return new CaseItemNode(items, statement as IStatementNode);
+            return new CaseItemNode(items, statement);
 
         }
 

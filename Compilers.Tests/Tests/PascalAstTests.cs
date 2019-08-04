@@ -30,7 +30,24 @@ namespace Minesweeper.Test.Tests
             node.Should().BeOfType<PointerNode>().Which.Value.Should().Be('I');
         }
 
-
+        [Test]
+        public void CaseStatementProcedureWithElse_ShouldPass()
+        {
+            var input = @"
+procedure Expression;
+begin
+   Term;
+   EmitLn('MOVE D0,D1');
+   case Look of
+    '+': Add;
+    '-': Subtract;
+   else Expected('Addop');
+   end;
+end;";
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.ProcedureDeclaration();
+        }
 
         [Test]
         public void CaseStatementWithoutElse()

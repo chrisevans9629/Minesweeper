@@ -54,6 +54,19 @@ namespace Minesweeper.Test.Symbols
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x4"}),
                     new TypeNode(new TokenItem() {Value = Pascal.Char}))),
             }));
+            levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()
+            {
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x2"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+            }));
+            levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()
+            {
+                new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
+                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+            }));
+
             levelZero.Define(new ProcedureDeclarationSymbol("Write", new List<ParameterNode>()
             {
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
@@ -175,10 +188,37 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitConstantDeclaration(decNode);
             }
+            else if (node is CaseStatementNode caseStatement)
+            {
+                VisitCaseStatement(caseStatement);
+            }
             else
             {
                 throw new InvalidOperationException($"did not recognize node {node}");
             }
+        }
+
+        private void VisitCaseStatement(CaseStatementNode caseStatement)
+        {
+            VisitNode(caseStatement.CompareExpression);
+            foreach (var caseStatementCaseItemNode in caseStatement.CaseItemNodes)
+            {
+                VisitCaseItem(caseStatementCaseItemNode);
+            }
+
+            if (caseStatement.ElseStatement != null)
+            {
+                VisitNode(caseStatement.ElseStatement);
+            }
+        }
+
+        private void VisitCaseItem(CaseItemNode caseItem)
+        {
+            foreach (var caseItemCase in caseItem.Cases)
+            {
+                VisitNode(caseItemCase);
+            }
+            VisitNode(caseItem.Statement);
         }
 
         private void VisitConstantDeclaration(ConstantDeclarationNode decNode)
