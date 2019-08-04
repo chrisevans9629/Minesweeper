@@ -4,6 +4,7 @@
 	     xmlns:prism="http://prismlibrary.com/"
              xmlns:local="clr-namespace:Pascal.Ide.Wpf">
     <Application.Resources>
-         
+        <SolidColorBrush x:Key="PanelColor">#FF3D3D3D</SolidColorBrush>
+        <SolidColorBrush x:Key="BackgroundColor">#FF5D5C5C</SolidColorBrush>
     </Application.Resources>
 </prism:PrismApplication>

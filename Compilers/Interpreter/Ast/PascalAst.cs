@@ -410,12 +410,16 @@ namespace Minesweeper.Test
             if (Name == Pascal.LParinth)
             {
                 Eat(Pascal.LParinth);
-                while (Current.Token.Name != Pascal.RParinth)
+                while (Name != Pascal.RParinth)
                 {
                     parameters.Add(Expression());
-                    if (Current.Token.Name == Pascal.Comma)
+                    if (Name == Pascal.Comma)
                     {
                         Eat(Pascal.Comma);
+                    }
+                    else
+                    {
+                        break;
                     }
 
                 }

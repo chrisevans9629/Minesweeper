@@ -128,6 +128,10 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitNoOp(nope);
             }
+            else if (node is EqualExpression equal)
+            {
+                VisitEqualExpression(equal);
+            }
             else if (node is InOperator op)
             {
 
@@ -200,6 +204,12 @@ namespace Minesweeper.Test.Symbols
             {
                 throw new InvalidOperationException($"did not recognize node {node}");
             }
+        }
+
+        private void VisitEqualExpression(EqualExpression equal)
+        {
+            VisitNode(equal.Left);
+            VisitNode(equal.Right);
         }
 
         private void VisitWhileLoop(WhileLoopNode whileLoop)
