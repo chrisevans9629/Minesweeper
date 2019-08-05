@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,8 +19,10 @@ namespace Pascal.Ide.Wpf.Views
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IMainWindow
+    public partial class MainWindow : Window, IMainWindow, IDisposable
     {
+
+        CompositeDisposable disposables = new CompositeDisposable();
         private readonly FlowDocument _doc;
         public MainWindow(IUnityContainer container)
         {
@@ -25,38 +31,22 @@ namespace Pascal.Ide.Wpf.Views
             _doc = new FlowDocument();
             RichTextBox.Document = _doc;
 
-        }
+            var obs = Observable
+                .FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(action => RichTextBox.TextChanged += action,
+                    action => RichTextBox.TextChanged -= action);
 
-      
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            string keyword = "theStringToBeReplaced";
-            string newString = "!!!!NewString!!!!";
-            TextRange text = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
-            TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
-            while (current != null)
-            {
-                string textInRun = current.GetTextInRun(LogicalDirection.Forward);
-                if (!string.IsNullOrWhiteSpace(textInRun))
-                {
-                    int index = textInRun.IndexOf(keyword);
-                    if (index != -1)
-                    {
-                        TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
-                        TextPointer selectionEnd = selectionStart.GetPositionAtOffset(keyword.Length, LogicalDirection.Forward);
-                        TextRange selection = new TextRange(selectionStart, selectionEnd);
-                        selection.Text = newString;
-                        selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-                        RichTextBox.Selection.Select(selection.Start, selection.End);
-                        RichTextBox.Focus();
-                    }
-                }
-                current = current.GetNextContextPosition(LogicalDirection.Forward);
-            }
+            var one = obs.Subscribe(unit => App.Current.Dispatcher.Invoke(OnCodeChanged) );
+
+            var two = obs
+                .Throttle(TimeSpan.FromSeconds(5), new DispatcherScheduler(Dispatcher))
+                .SkipWhile(p=> _isBusy)
+                .Subscribe(unit => HighlightSyntax());
+            disposables.Add(one);
+            disposables.Add(two);
         }
 
         private bool _isBusy = false;
-        void HighlightSyntax()
+         void HighlightSyntax()
         {
             if (_isBusy)
             {
@@ -65,7 +55,7 @@ namespace Pascal.Ide.Wpf.Views
 
             _isBusy = true;
             TextRange text = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
-            text.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            text.ClearAllProperties();
 
             TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
             while (current != null)
@@ -97,14 +87,19 @@ namespace Pascal.Ide.Wpf.Views
                     }
 
                     //int index = textInRun.IndexOf(keyword);
-                   
+
                 }
                 current = current.GetNextContextPosition(LogicalDirection.Forward);
             }
 
             _isBusy = false;
         }
-        public string Code { get => GetCode(); set => SetCode(value); }
+
+        public string Code
+        {
+            get => GetCode();
+            set => SetCode(value);
+        }
         public event EventHandler CodeChanged;
         private void SetCode(string value)
         {
@@ -126,16 +121,17 @@ namespace Pascal.Ide.Wpf.Views
             return run.Text;
         }
 
-        private void OnCodeChanged()
+        public Unit OnCodeChanged()
         {
             HighlightSyntax();
             CodeChanged?.Invoke(this, EventArgs.Empty);
+            return Unit.Default;
         }
 
-        private RichTextBox TextInput => RichTextBox;
-        private void RichTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+
+        public void Dispose()
         {
-            OnCodeChanged();
+            disposables?.Dispose();
         }
     }
 }
