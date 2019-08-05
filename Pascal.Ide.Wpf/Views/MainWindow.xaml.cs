@@ -27,9 +27,7 @@ namespace Pascal.Ide.Wpf.Views
 
         }
 
-        private void DocumentOnTextInput(object sender, KeyEventArgs e)
-        {
-        }
+      
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string keyword = "theStringToBeReplaced";
@@ -56,9 +54,19 @@ namespace Pascal.Ide.Wpf.Views
                 current = current.GetNextContextPosition(LogicalDirection.Forward);
             }
         }
+
+        private bool _isBusy = false;
         void HighlightSyntax()
         {
+            if (_isBusy)
+            {
+                return;
+            }
+
+            _isBusy = true;
             TextRange text = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
+            text.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+
             TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
             while (current != null)
             {
@@ -80,7 +88,8 @@ namespace Pascal.Ide.Wpf.Views
                                 TextRange selection = new TextRange(selectionStart, selectionEnd);
                                 if (selection.Text != match.Value)
                                 {
-                                    throw new Exception($"expected '{match.Value}' but was '{selection.Text}'");
+                                    continue;
+                                    // throw new Exception($"expected '{match.Value}' but was '{selection.Text}'");
                                 }
                                 selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
                             }
@@ -92,72 +101,8 @@ namespace Pascal.Ide.Wpf.Views
                 }
                 current = current.GetNextContextPosition(LogicalDirection.Forward);
             }
-            //TextRange text = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
-            //TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
 
-            //foreach (var keyValuePair in Minesweeper.Test.Pascal.Reservations)
-            //{
-            //    var matches = Regex.Matches(text.Text, keyValuePair.Key, RegexOptions.IgnoreCase);
-            //    foreach (Match match in matches)
-            //    {
-            //        var start = current.GetPositionAtOffset(match.Index);
-            //        if (start != null)
-            //        {
-            //            var end = start.GetPositionAtOffset(match.Length);
-            //            if (end != null)
-            //            {
-            //                TextRange selection = new TextRange(start, end);
-            //                if (selection.Text != match.Value)
-            //                {
-            //                    throw new Exception($"expected '{match.Value}' but was '{selection.Text}'");
-            //                }
-            //                selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-            //                selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.LightSkyBlue));
-            //            }
-            //        }
-
-            //    }
-            //}
-
-            //var iterator = new Iterator<char>(code.ToCharArray());
-            //while (iterator.Current != default(char) )
-            //{
-            //    if (char.IsWhiteSpace(iterator.Current) || iterator.Current == '\r' || iterator.Current == '\n')
-            //    {
-            //        iterator.Advance();
-            //    }
-            //    else
-            //    {
-
-            //        if (char.IsLetter(iterator.Current) != true)
-            //        {
-            //            iterator.Advance();
-            //        }
-            //        var str = "";
-            //        while (char.IsLetter(iterator.Current))
-            //        {
-            //            str += iterator.Current;
-            //            iterator.Advance();
-            //        }
-
-
-
-            //        if (Minesweeper.Test.Pascal.Reservations.ContainsKey(str.ToUpper()))
-            //        {
-            //            TextPointer selectionStart = current.GetPositionAtOffset(iterator.index - str.Length, LogicalDirection.Forward);
-            //            TextPointer selectionEnd = selectionStart.GetPositionAtOffset(iterator.index, LogicalDirection.Forward);
-            //            if (selectionEnd != null)
-            //            {
-            //                TextRange selection = new TextRange(selectionStart, selectionEnd);
-            //                selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-            //                selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.LightSkyBlue));
-            //            }
-            //        }
-
-            //    }
-            //}
-
-
+            _isBusy = false;
         }
         public string Code { get => GetCode(); set => SetCode(value); }
         public event EventHandler CodeChanged;
