@@ -81,7 +81,8 @@ namespace Pascal.Ide.Wpf.Views
                                     continue;
                                     // throw new Exception($"expected '{match.Value}' but was '{selection.Text}'");
                                 }
-                                selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+                                //selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+                                selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.RoyalBlue));
                             }
                         }
                     }
