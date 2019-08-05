@@ -12,12 +12,11 @@ namespace Pascal.Ide.Wpf.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private readonly IMainWindow _paragraph;
+        private readonly IMainWindow _mainWindow;
         PascalLexer lexer = new PascalLexer();
         PascalAst ast = new PascalAst();
         PascalSemanticAnalyzer analyzer = new PascalSemanticAnalyzer();
         private string _title = "Pascal Studio";
-        private string _code;
         private string _error;
         private string _output;
         private string _input;
@@ -31,9 +30,14 @@ namespace Pascal.Ide.Wpf.ViewModels
 
         public string Code
         {
-            get => _code;
-            set => SetProperty(ref _code,value, CodeChanged);
+            get => _mainWindow.Code;
+            set
+            {
+                _mainWindow.Code = value;
+                RaisePropertyChanged();
+            }
         }
+
         public string Error
         {
             get => _error;
@@ -43,10 +47,12 @@ namespace Pascal.Ide.Wpf.ViewModels
         public DelegateCommand StartCommand { get; }
 
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(IMainWindow mainWindow)
         {
+            _mainWindow = mainWindow;
             StartCommand = new DelegateCommand(Start);
             OpenCommand = new DelegateCommand(Open);
+            _mainWindow.CodeChanged += (sender, args) => CodeChanged();
             BlobCache.LocalMachine.GetOrCreateObject(CodeKey, () => "").Subscribe(s => Code = s);
             BlobCache.LocalMachine.GetOrCreateObject(InputKey, () => "").Subscribe(s => Input = s);
         }
