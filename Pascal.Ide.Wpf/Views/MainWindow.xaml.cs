@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using Minesweeper.Test;
 using Pascal.Ide.Wpf.Models;
 using Unity;
@@ -21,15 +24,141 @@ namespace Pascal.Ide.Wpf.Views
             InitializeComponent();
             _doc = new FlowDocument();
             RichTextBox.Document = _doc;
-            RichTextBox.KeyDown += DocumentOnTextInput;
 
         }
 
         private void DocumentOnTextInput(object sender, KeyEventArgs e)
         {
-            SetCode(GetCode());
         }
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string keyword = "theStringToBeReplaced";
+            string newString = "!!!!NewString!!!!";
+            TextRange text = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
+            TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
+            while (current != null)
+            {
+                string textInRun = current.GetTextInRun(LogicalDirection.Forward);
+                if (!string.IsNullOrWhiteSpace(textInRun))
+                {
+                    int index = textInRun.IndexOf(keyword);
+                    if (index != -1)
+                    {
+                        TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
+                        TextPointer selectionEnd = selectionStart.GetPositionAtOffset(keyword.Length, LogicalDirection.Forward);
+                        TextRange selection = new TextRange(selectionStart, selectionEnd);
+                        selection.Text = newString;
+                        selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+                        RichTextBox.Selection.Select(selection.Start, selection.End);
+                        RichTextBox.Focus();
+                    }
+                }
+                current = current.GetNextContextPosition(LogicalDirection.Forward);
+            }
+        }
+        void HighlightSyntax()
+        {
+            TextRange text = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
+            TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
+            while (current != null)
+            {
+                string textInRun = current.GetTextInRun(LogicalDirection.Forward);
+                if (!string.IsNullOrWhiteSpace(textInRun))
+                {
+                    foreach (var keyValuePair in Minesweeper.Test.Pascal.Reservations)
+                    {
+                        var matches = Regex.Matches(textInRun, keyValuePair.Key, RegexOptions.IgnoreCase);
+                        foreach (Match match in matches)
+                        {
 
+
+                            var index = match.Index;
+                            if (index != -1)
+                            {
+                                TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
+                                TextPointer selectionEnd = selectionStart.GetPositionAtOffset(match.Value.Length, LogicalDirection.Forward);
+                                TextRange selection = new TextRange(selectionStart, selectionEnd);
+                                if (selection.Text != match.Value)
+                                {
+                                    throw new Exception($"expected '{match.Value}' but was '{selection.Text}'");
+                                }
+                                selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+                            }
+                        }
+                    }
+
+                    //int index = textInRun.IndexOf(keyword);
+                   
+                }
+                current = current.GetNextContextPosition(LogicalDirection.Forward);
+            }
+            //TextRange text = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
+            //TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
+
+            //foreach (var keyValuePair in Minesweeper.Test.Pascal.Reservations)
+            //{
+            //    var matches = Regex.Matches(text.Text, keyValuePair.Key, RegexOptions.IgnoreCase);
+            //    foreach (Match match in matches)
+            //    {
+            //        var start = current.GetPositionAtOffset(match.Index);
+            //        if (start != null)
+            //        {
+            //            var end = start.GetPositionAtOffset(match.Length);
+            //            if (end != null)
+            //            {
+            //                TextRange selection = new TextRange(start, end);
+            //                if (selection.Text != match.Value)
+            //                {
+            //                    throw new Exception($"expected '{match.Value}' but was '{selection.Text}'");
+            //                }
+            //                selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            //                selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.LightSkyBlue));
+            //            }
+            //        }
+
+            //    }
+            //}
+
+            //var iterator = new Iterator<char>(code.ToCharArray());
+            //while (iterator.Current != default(char) )
+            //{
+            //    if (char.IsWhiteSpace(iterator.Current) || iterator.Current == '\r' || iterator.Current == '\n')
+            //    {
+            //        iterator.Advance();
+            //    }
+            //    else
+            //    {
+
+            //        if (char.IsLetter(iterator.Current) != true)
+            //        {
+            //            iterator.Advance();
+            //        }
+            //        var str = "";
+            //        while (char.IsLetter(iterator.Current))
+            //        {
+            //            str += iterator.Current;
+            //            iterator.Advance();
+            //        }
+
+
+
+            //        if (Minesweeper.Test.Pascal.Reservations.ContainsKey(str.ToUpper()))
+            //        {
+            //            TextPointer selectionStart = current.GetPositionAtOffset(iterator.index - str.Length, LogicalDirection.Forward);
+            //            TextPointer selectionEnd = selectionStart.GetPositionAtOffset(iterator.index, LogicalDirection.Forward);
+            //            if (selectionEnd != null)
+            //            {
+            //                TextRange selection = new TextRange(selectionStart, selectionEnd);
+            //                selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            //                selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.LightSkyBlue));
+            //            }
+            //        }
+
+            //    }
+            //}
+
+
+        }
         public string Code { get => GetCode(); set => SetCode(value); }
         public event EventHandler CodeChanged;
         private void SetCode(string value)
@@ -37,51 +166,9 @@ namespace Pascal.Ide.Wpf.Views
             App.Current.Dispatcher.Invoke(() =>
             {
                 _doc.Blocks.Clear();
-
-                var iterator = new Iterator<char>(value.ToCharArray());
-
-
-                var words = new List<string>();
-                while (iterator.Current != default(char))
-                {
-                    if (char.IsWhiteSpace(iterator.Current))
-                    {
-                        words.Add(iterator.Current.ToString());
-                        iterator.Advance();
-                    }
-                    else
-                    {
-                        var str = "";
-                        while (char.IsWhiteSpace(iterator.Current) != true)
-                        {
-                            str += iterator.Current;
-                            iterator.Advance();
-                        }
-                        words.Add(str);
-                    }
-                }
-
-                var inlines = new List<Inline>();
-                foreach (var word in words)
-                {
-                    if (Minesweeper.Test.Pascal.Reservations.ContainsKey(word.ToUpper()))
-                    {
-                        inlines.Add(new Bold(new Run(word)));
-                    }
-                    else
-                    {
-                        inlines.Add(new Run(word));
-                    }
-                }
-
-                var p = new Paragraph();
-                foreach (var inline in inlines)
-                {
-                    p.Inlines.Add(inline);
-                }
+                var p = new Paragraph(new Run(value));
+                p.Margin = new Thickness(0);
                 _doc.Blocks.Add(p);
-
-
                 OnCodeChanged();
             });
 
@@ -96,7 +183,14 @@ namespace Pascal.Ide.Wpf.Views
 
         private void OnCodeChanged()
         {
+            HighlightSyntax();
             CodeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private RichTextBox TextInput => RichTextBox;
+        private void RichTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            OnCodeChanged();
         }
     }
 }
