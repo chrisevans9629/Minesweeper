@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -38,7 +39,10 @@ namespace Pascal.Ide.Wpf.Views
             var one = obs.Subscribe(unit => App.Current.Dispatcher.Invoke(OnCodeChanged) );
 
             var two = obs
+                    //todo: can improve by only looking at the code that has changed
+                //.Where(p=>p.EventArgs.)
                 .Throttle(TimeSpan.FromSeconds(5), new DispatcherScheduler(Dispatcher))
+                
                 .SkipWhile(p=> _isBusy)
                 .Subscribe(unit => HighlightSyntax());
             disposables.Add(one);
