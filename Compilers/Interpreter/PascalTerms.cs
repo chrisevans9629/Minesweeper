@@ -6,7 +6,7 @@ namespace Minesweeper.Test
     {
         Procedure = ' '
     }
-    public class Pascal
+    public class PascalTerms
     {
         public const string While = "WHILE";
         public const string NotEqual = "<>";

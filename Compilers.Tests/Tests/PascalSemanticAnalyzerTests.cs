@@ -65,7 +65,7 @@ namespace Minesweeper.Test.Tests
 
             var symbol = result.LookupSymbol("number", true);
 
-            symbol.Type.Name.Should().Be(Pascal.Int);
+            symbol.Type.Name.Should().Be(PascalTerms.Int);
         }
 
         [TestCase("program test; begin a := 2; end.")]

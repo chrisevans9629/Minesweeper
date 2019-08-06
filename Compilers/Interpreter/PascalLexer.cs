@@ -42,12 +42,12 @@ namespace Minesweeper.Test
             //uwu
 
 
-            var token = CreateToken(Pascal.Id, result);
+            var token = CreateToken(PascalTerms.Id, result);
 
 
-            if (Pascal.Reservations.ContainsKey(result.ToUpper()))
+            if (PascalTerms.Reservations.ContainsKey(result.ToUpper()))
             {
-                token.Token = Pascal.Reservations[result.ToUpper()];
+                token.Token = PascalTerms.Reservations[result.ToUpper()];
             }
            
             return token;
@@ -93,20 +93,20 @@ namespace Minesweeper.Test
                 else if(Current == '^' && char.IsLetter(Peek()))
                 {
                     Advance();
-                    items.Add(CreateToken(Pascal.Pointer,Current.ToString()));
+                    items.Add(CreateToken(PascalTerms.Pointer,Current.ToString()));
                     Advance();
                 }
                 else if (Current == '<' && Peek() == '>')
                 {
                     Advance();
                     Advance();
-                    items.Add(CreateToken(Pascal.NotEqual, "<>"));
+                    items.Add(CreateToken(PascalTerms.NotEqual, "<>"));
                 }
                 else if (Current == ':' && Peek() == '=')
                 {
                     Advance();
                     Advance();
-                    items.Add(CreateToken(Pascal.Assign, ":="));
+                    items.Add(CreateToken(PascalTerms.Assign, ":="));
                 }
                 else if (char.IsNumber(Current) || (Current == '.' && char.IsNumber(Peek())))
                 {
@@ -128,11 +128,11 @@ namespace Minesweeper.Test
 
                     if (hasFloat)
                     {
-                        items.Add(CreateToken(Pascal.RealConst, num));
+                        items.Add(CreateToken(PascalTerms.RealConst, num));
                     }
                     else
                     {
-                        items.Add(CreateToken(Pascal.IntegerConst, num));
+                        items.Add(CreateToken(PascalTerms.IntegerConst, num));
                     }
                 }
                 else if (Current == '\'')
@@ -145,7 +145,7 @@ namespace Minesweeper.Test
                         Advance();
                     }
                     Advance();
-                    items.Add(CreateToken(Pascal.StringConst, quote));
+                    items.Add(CreateToken(PascalTerms.StringConst, quote));
                 }
                 else if (Current == '{')
                 {
@@ -156,9 +156,9 @@ namespace Minesweeper.Test
                     }
                     Advance();
                 }
-                else if (Pascal.SingleTokens.Contains(Current.ToString()))
+                else if (PascalTerms.SingleTokens.Contains(Current.ToString()))
                 {
-                    var item = Pascal.SingleTokens.First(p => p == Current.ToString());
+                    var item = PascalTerms.SingleTokens.First(p => p == Current.ToString());
 
                     Advance();
 

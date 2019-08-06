@@ -9,7 +9,7 @@ namespace Minesweeper.Test
         double Number(IEnumerator<TokenItem> token)
         {
             var result = double.Parse(token.Current.Value);
-            Eat(token, Pascal.IntegerConst);
+            Eat(token, PascalTerms.IntegerConst);
             return result;
         }
         public double Evaluate(IList<TokenItem> tokens)
@@ -28,11 +28,11 @@ namespace Minesweeper.Test
       
         double Par(IEnumerator<TokenItem> numerator)
         {
-            if (numerator.Current.Token.Name == Pascal.LParinth)
+            if (numerator.Current.Token.Name == PascalTerms.LParinth)
             {
-                Eat(numerator, Pascal.LParinth);
+                Eat(numerator, PascalTerms.LParinth);
                 var result = Expr(numerator);
-                Eat(numerator, Pascal.RParinth);
+                Eat(numerator, PascalTerms.RParinth);
                 return result;
             }
             var num = Number(numerator);
@@ -44,17 +44,17 @@ namespace Minesweeper.Test
             //numerator.MoveNext();
             var result = Par(numerator);
 
-            while (numerator.Current != null && numerator.Current.Token.Name != Pascal.IntegerConst)
+            while (numerator.Current != null && numerator.Current.Token.Name != PascalTerms.IntegerConst)
             {
-                if (numerator.Current.Token.Name == Pascal.Multi)
+                if (numerator.Current.Token.Name == PascalTerms.Multi)
                 {
-                    Eat(numerator, Pascal.Multi);
+                    Eat(numerator, PascalTerms.Multi);
                     result *= Par(numerator);
                     //numerator.MoveNext();
                 }
-                else if (numerator.Current.Token.Name == Pascal.FloatDiv)
+                else if (numerator.Current.Token.Name == PascalTerms.FloatDiv)
                 {
-                    Eat(numerator, Pascal.FloatDiv);
+                    Eat(numerator, PascalTerms.FloatDiv);
                     result /= Par(numerator);
                     //numerator.MoveNext();
                 }
@@ -80,17 +80,17 @@ namespace Minesweeper.Test
 
             var result = Term(numerator);
 
-            while (numerator.Current != null && numerator.Current.Token.Name != Pascal.IntegerConst)
+            while (numerator.Current != null && numerator.Current.Token.Name != PascalTerms.IntegerConst)
             {
-                if (numerator.Current.Token.Name == Pascal.Add)
+                if (numerator.Current.Token.Name == PascalTerms.Add)
                 {
-                    Eat(numerator, Pascal.Add);
+                    Eat(numerator, PascalTerms.Add);
                     result += Term(numerator);
                     //numerator.MoveNext();
                 }
-                else if (numerator.Current.Token.Name == Pascal.Sub)
+                else if (numerator.Current.Token.Name == PascalTerms.Sub)
                 {
-                    Eat(numerator, Pascal.Sub);
+                    Eat(numerator, PascalTerms.Sub);
                     result -= Term(numerator);
                     //numerator.MoveNext();
                 }

@@ -19,14 +19,14 @@ namespace Minesweeper.Test.Tests
             var input = "VAR\r\n   number     : INTEGER;\r\n   a, b, c, x : INTEGER;\r\n   y          : REAL;";
             var tokens = lexer.Tokenize(input);
 
-            tokens[0].Token.Name.Should().Be(Pascal.Var);
-            tokens[1].Token.Name.Should().Be(Pascal.Id);
-            tokens[2].Token.Name.Should().Be(Pascal.Colon);
-            tokens[3].Token.Name.Should().Be(Pascal.Int);
-            tokens[4].Token.Name.Should().Be(Pascal.Semi);
-            tokens[5].Token.Name.Should().Be(Pascal.Id);
-            tokens[6].Token.Name.Should().Be(Pascal.Comma);
-            tokens[17].Token.Name.Should().Be(Pascal.Real);
+            tokens[0].Token.Name.Should().Be(PascalTerms.Var);
+            tokens[1].Token.Name.Should().Be(PascalTerms.Id);
+            tokens[2].Token.Name.Should().Be(PascalTerms.Colon);
+            tokens[3].Token.Name.Should().Be(PascalTerms.Int);
+            tokens[4].Token.Name.Should().Be(PascalTerms.Semi);
+            tokens[5].Token.Name.Should().Be(PascalTerms.Id);
+            tokens[6].Token.Name.Should().Be(PascalTerms.Comma);
+            tokens[17].Token.Name.Should().Be(PascalTerms.Real);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace Minesweeper.Test.Tests
 
             foreach (var tokenItem in tokens)
             {
-                tokenItem.Token.Name.Should().Be(Pascal.BoolConst);
+                tokenItem.Token.Name.Should().Be(PascalTerms.BoolConst);
             }
         }
 
@@ -47,7 +47,7 @@ namespace Minesweeper.Test.Tests
         {
             var input = "10.5";
 
-            lexer.Tokenize(input)[0].Token.Name.Should().Be(Pascal.RealConst);
+            lexer.Tokenize(input)[0].Token.Name.Should().Be(PascalTerms.RealConst);
         }
         [Test]
         public void PascalTokensTest()
@@ -58,7 +58,7 @@ namespace Minesweeper.Test.Tests
 
 
             result.Should().HaveCount(7);
-            result[0].Token.Name.Should().Be(Pascal.Begin);
+            result[0].Token.Name.Should().Be(PascalTerms.Begin);
         }
         [Test]
         public void PascalLexer()
@@ -151,7 +151,7 @@ namespace Minesweeper.Test.Tests
         {
             var tokens = lexer.Tokenize(input);
 
-            tokens.Should().Contain(p => p.Token.Name == Pascal.Procedure);
+            tokens.Should().Contain(p => p.Token.Name == PascalTerms.Procedure);
         }
 
     }

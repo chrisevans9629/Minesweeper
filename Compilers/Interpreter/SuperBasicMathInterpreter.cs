@@ -13,12 +13,12 @@ namespace Minesweeper.Test
 
         object VisitUnary(UnaryOperator op)
         {
-            if (op.Name == Pascal.Add)
+            if (op.Name == PascalTerms.Add)
             {
                 return VisitNode(op.Value);
             }
 
-            if (op.Name == Pascal.Sub)
+            if (op.Name == PascalTerms.Sub)
             {
                 var value = VisitNode(op.Value);
                 if (value is double d)
@@ -57,22 +57,22 @@ namespace Minesweeper.Test
         public object VisitBinaryOperator(BinaryOperator op)
         {
             var doubleActions = new Dictionary<string, Func<double, double, double>>();
-            doubleActions.Add(Pascal.Add, (d, d1) => d + d1);
-            doubleActions.Add(Pascal.Sub, (d, d1) => d - d1);
-            doubleActions.Add(Pascal.Multi, (d, d1) => d * d1);
-            doubleActions.Add(Pascal.FloatDiv, (d, d1) => d / d1);
-            doubleActions.Add(Pascal.IntDiv, (d, d1) => (int)d / (int)d1);
+            doubleActions.Add(PascalTerms.Add, (d, d1) => d + d1);
+            doubleActions.Add(PascalTerms.Sub, (d, d1) => d - d1);
+            doubleActions.Add(PascalTerms.Multi, (d, d1) => d * d1);
+            doubleActions.Add(PascalTerms.FloatDiv, (d, d1) => d / d1);
+            doubleActions.Add(PascalTerms.IntDiv, (d, d1) => (int)d / (int)d1);
 
             var intActions = new Dictionary<string, Func<int, int, int>>();
-            intActions.Add(Pascal.Add, (d, d1) => d + d1);
-            intActions.Add(Pascal.Sub, (d, d1) => d - d1);
-            intActions.Add(Pascal.Multi, (d, d1) => d * d1);
-            intActions.Add(Pascal.FloatDiv, (d, d1) => d / d1);
-            intActions.Add(Pascal.IntDiv, (d, d1) => d / d1);
+            intActions.Add(PascalTerms.Add, (d, d1) => d + d1);
+            intActions.Add(PascalTerms.Sub, (d, d1) => d - d1);
+            intActions.Add(PascalTerms.Multi, (d, d1) => d * d1);
+            intActions.Add(PascalTerms.FloatDiv, (d, d1) => d / d1);
+            intActions.Add(PascalTerms.IntDiv, (d, d1) => d / d1);
 
 
             var strActions = new Dictionary<string, Func<string, string, string>>();
-            strActions.Add(Pascal.Add, (d, d1) => d + d1);
+            strActions.Add(PascalTerms.Add, (d, d1) => d + d1);
 
           
 

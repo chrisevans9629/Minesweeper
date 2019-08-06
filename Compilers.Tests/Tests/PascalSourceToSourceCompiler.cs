@@ -142,8 +142,8 @@ namespace Minesweeper.Test.Tests
         private string VisitProgram(PascalProgramNode program)
         {
             var zero = new ScopedSymbolTable(program.ProgramName, 0);
-            zero.Define(new BuiltInTypeSymbol(Pascal.Int));
-            zero.Define(new BuiltInTypeSymbol(Pascal.Real));
+            zero.Define(new BuiltInTypeSymbol(PascalTerms.Int));
+            zero.Define(new BuiltInTypeSymbol(PascalTerms.Real));
             CurrentScope = zero;
             var programStr = VisitProgramBlockNode(program);
             return programStr;

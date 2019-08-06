@@ -188,7 +188,7 @@ end;";
         {
             var tokens = lexer.Tokenize(input);
             ast.CreateIterator(tokens);
-            var node = ast.Expression().Should().BeOfType<BinaryOperator>().Which.Name.Should().Be(Pascal.Add);
+            var node = ast.Expression().Should().BeOfType<BinaryOperator>().Which.Name.Should().Be(PascalTerms.Add);
         }
 
         [Test]

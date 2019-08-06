@@ -19,9 +19,9 @@ namespace Minesweeper.Test
 
         CompoundStatement CompoundStatement()
         {
-            Eat(Pascal.Begin);
+            Eat(PascalTerms.Begin);
             var nodes = StatementList();
-            Eat(Pascal.End);
+            Eat(PascalTerms.End);
             var root = new CompoundStatement();
             root.Nodes = nodes.ToList();
             return root;
@@ -39,10 +39,10 @@ namespace Minesweeper.Test
         {
             var dec = new List<Node>();
 
-            while (Name == Pascal.Const)
+            while (Name == PascalTerms.Const)
             {
-                Eat(Pascal.Const);
-                while (Name == Pascal.Id)
+                Eat(PascalTerms.Const);
+                while (Name == PascalTerms.Id)
                 {
                     var vardec = ConstantDeclarations();
                     foreach (var varDeclarationNode in vardec)
@@ -53,29 +53,29 @@ namespace Minesweeper.Test
 
             }
 
-            while (Name == Pascal.Var)
+            while (Name == PascalTerms.Var)
             {
-                Eat(Pascal.Var);
-                while (Name == Pascal.Id)
+                Eat(PascalTerms.Var);
+                while (Name == PascalTerms.Id)
                 {
                     var vardec = VariableDeclaration();
                     foreach (var varDeclaration in vardec)
                     {
                         dec.Add(varDeclaration);
                     }
-                    Eat(Pascal.Semi);
+                    Eat(PascalTerms.Semi);
                 }
             }
 
-            while (Name == Pascal.Procedure || Name == Pascal.Function)
+            while (Name == PascalTerms.Procedure || Name == PascalTerms.Function)
             {
-                if (Name == Pascal.Procedure)
+                if (Name == PascalTerms.Procedure)
                 {
                     var proc = ProcedureDeclaration();
                     dec.Add(proc);
                 }
 
-                if (Name == Pascal.Function)
+                if (Name == PascalTerms.Function)
                 {
                     var fun = FunctionDeclaration();
                     dec.Add(fun);
@@ -87,30 +87,30 @@ namespace Minesweeper.Test
         public FunctionDeclarationNode FunctionDeclaration()
         {
             var parameters = new List<ParameterNode>();
-            Eat(Pascal.Function);
+            Eat(PascalTerms.Function);
             var token = Current;
-            Eat(Pascal.Id);
+            Eat(PascalTerms.Id);
             var procedureId = token.Value;
 
-            if (Name == Pascal.LParinth)
+            if (Name == PascalTerms.LParinth)
             {
-                Eat(Pascal.LParinth);
-                while (Name != Pascal.RParinth)
+                Eat(PascalTerms.LParinth);
+                while (Name != PascalTerms.RParinth)
                 {
                     parameters.AddRange(VariableDeclaration().Select(p => new ParameterNode(p)));
-                    if (Name == Pascal.Semi)
+                    if (Name == PascalTerms.Semi)
                     {
-                        Eat(Pascal.Semi);
+                        Eat(PascalTerms.Semi);
                     }
                 }
 
-                Eat(Pascal.RParinth);
+                Eat(PascalTerms.RParinth);
             }
-            Eat(Pascal.Colon);
+            Eat(PascalTerms.Colon);
             var returnType = TypeSpec();
-            Eat(Pascal.Semi);
+            Eat(PascalTerms.Semi);
             var block = Block();
-            Eat(Pascal.Semi);
+            Eat(PascalTerms.Semi);
             var proc = new FunctionDeclarationNode(procedureId, parameters, block, token, returnType);
             return proc;
         }
@@ -118,27 +118,27 @@ namespace Minesweeper.Test
         public ProcedureDeclarationNode ProcedureDeclaration()
         {
             var parameters = new List<ParameterNode>();
-            Eat(Pascal.Procedure);
+            Eat(PascalTerms.Procedure);
             var procedureId = Current.Value;
-            Eat(Pascal.Id);
-            if (Name == Pascal.LParinth)
+            Eat(PascalTerms.Id);
+            if (Name == PascalTerms.LParinth)
             {
-                Eat(Pascal.LParinth);
-                while (Name != Pascal.RParinth)
+                Eat(PascalTerms.LParinth);
+                while (Name != PascalTerms.RParinth)
                 {
                     parameters.AddRange(VariableDeclaration().Select(p => new ParameterNode(p)));
-                    if (Name == Pascal.Semi)
+                    if (Name == PascalTerms.Semi)
                     {
-                        Eat(Pascal.Semi);
+                        Eat(PascalTerms.Semi);
                     }
                 }
 
-                Eat(Pascal.RParinth);
+                Eat(PascalTerms.RParinth);
             }
 
-            Eat(Pascal.Semi);
+            Eat(PascalTerms.Semi);
             var block = Block();
-            Eat(Pascal.Semi);
+            Eat(PascalTerms.Semi);
             var proc = new ProcedureDeclarationNode(procedureId, block, parameters);
             return proc;
         }
@@ -146,7 +146,7 @@ namespace Minesweeper.Test
         IList<ConstantDeclarationNode> ConstantDeclarations()
         {
             var nodes = new List<ConstantDeclarationNode>() { ConstantDeclaration() };
-            while (Name == Pascal.Id)
+            while (Name == PascalTerms.Id)
             {
                 nodes.Add(ConstantDeclaration());
             }
@@ -156,22 +156,22 @@ namespace Minesweeper.Test
         private ConstantDeclarationNode ConstantDeclaration()
         {
             var current = Current;
-            Eat(Pascal.Id);
-            Eat(Pascal.Equal);
+            Eat(PascalTerms.Id);
+            Eat(PascalTerms.Equal);
             var value = Expression();
-            Eat(Pascal.Semi);
+            Eat(PascalTerms.Semi);
             return new ConstantDeclarationNode(current.Value, value, current);
         }
 
         private IList<VarDeclarationNode> VariableDeclaration()
         {
             var nodes = new List<VariableOrFunctionCall> { Variable() };
-            while (Name == Pascal.Comma)
+            while (Name == PascalTerms.Comma)
             {
-                Eat(Pascal.Comma);
+                Eat(PascalTerms.Comma);
                 nodes.Add(Variable());
             }
-            Eat(Pascal.Colon);
+            Eat(PascalTerms.Colon);
 
             var type = TypeSpec();
             return nodes.Select(p => new VarDeclarationNode(p, type)).ToList();
@@ -183,7 +183,7 @@ namespace Minesweeper.Test
                 Error("Type");
             var result = new TypeNode(Current);
 
-            if (Pascal.BuiltInTypes.Contains(result.TypeValue.ToUpper()))
+            if (PascalTerms.BuiltInTypes.Contains(result.TypeValue.ToUpper()))
             {
                 Eat(Name);
             }
@@ -197,9 +197,9 @@ namespace Minesweeper.Test
 
             var results = new List<Node> { node };
 
-            while (Name == Pascal.Semi)
+            while (Name == PascalTerms.Semi)
             {
-                Eat(Pascal.Semi);
+                Eat(PascalTerms.Semi);
                 results.Add(Statement());
             }
 
@@ -217,31 +217,31 @@ namespace Minesweeper.Test
             var par = Parenthese();
             if (par != null) return par;
 
-            if (current.Token.Name == Pascal.Add)
+            if (current.Token.Name == PascalTerms.Add)
             {
-                Eat(Pascal.Add);
+                Eat(PascalTerms.Add);
                 return new UnaryOperator(ParaUnaryOperators(), current);
             }
-            if (current.Token.Name == Pascal.Sub)
+            if (current.Token.Name == PascalTerms.Sub)
             {
-                Eat(Pascal.Sub);
+                Eat(PascalTerms.Sub);
                 return new UnaryOperator(ParaUnaryOperators(), current);
             }
 
-            if (Name == Pascal.Id && this._tokens.Peek().Token.Name == Pascal.LParinth)
+            if (Name == PascalTerms.Id && this._tokens.Peek().Token.Name == PascalTerms.LParinth)
             {
                 return FunctionCall();
             }
-            if (current.Token.Name == Pascal.Id)
+            if (current.Token.Name == PascalTerms.Id)
             {
                 return Variable();
             }
-            if (current.Token.Name == Pascal.Equal)
+            if (current.Token.Name == PascalTerms.Equal)
             {
-                Eat(Pascal.Equal);
+                Eat(PascalTerms.Equal);
             }
 
-            if (current.Token.Name == Pascal.BoolConst)
+            if (current.Token.Name == PascalTerms.BoolConst)
             {
                 return ParseBool();
             }
@@ -262,50 +262,50 @@ namespace Minesweeper.Test
         {
             var procedureName = Current.Value;
             var token = Current;
-            Eat(Pascal.Id);
-            Eat(Pascal.LParinth);
+            Eat(PascalTerms.Id);
+            Eat(PascalTerms.LParinth);
             var parameters = new List<Node>();
-            while (Current.Token.Name != Pascal.RParinth)
+            while (Current.Token.Name != PascalTerms.RParinth)
             {
                 parameters.Add(Expression());
-                if (Current.Token.Name == Pascal.Comma)
+                if (Current.Token.Name == PascalTerms.Comma)
                 {
-                    Eat(Pascal.Comma);
+                    Eat(PascalTerms.Comma);
                 }
 
             }
-            Eat(Pascal.RParinth);
+            Eat(PascalTerms.RParinth);
             return new FunctionCallNode(procedureName, parameters, token);
         }
 
         public Node Statement()
         {
             Node node = null;
-            if (Name == Pascal.For)
+            if (Name == PascalTerms.For)
             {
                 node = ForLoop();
             }
-            else if (Name == Pascal.Case)
+            else if (Name == PascalTerms.Case)
             {
                 node = CaseStatement();
             }
-            else if (Name == Pascal.If)
+            else if (Name == PascalTerms.If)
             {
                 node = IfStatement();
             }
-            else if (Name == Pascal.Begin)
+            else if (Name == PascalTerms.Begin)
             {
                 node = CompoundStatement();
             }
-            else if (Name == Pascal.Id && _tokens.Peek()?.Token?.Name == Pascal.Assign)
+            else if (Name == PascalTerms.Id && _tokens.Peek()?.Token?.Name == PascalTerms.Assign)
             {
                 node = AssignmentStatement();
             }
-            else if (Name == Pascal.Id)
+            else if (Name == PascalTerms.Id)
             {
                 node = ProcedureCall();
             }
-            else if (Name == Pascal.While)
+            else if (Name == PascalTerms.While)
             {
                 node = WhileLoop();
             }
@@ -318,10 +318,10 @@ namespace Minesweeper.Test
 
         private WhileLoopNode WhileLoop()
         {
-            Eat(Pascal.While);
+            Eat(PascalTerms.While);
 
             var exp = BoolExpression();
-            Eat(Pascal.Do);
+            Eat(PascalTerms.Do);
 
             var statement = Statement();
             return new WhileLoopNode(exp, statement);
@@ -329,73 +329,73 @@ namespace Minesweeper.Test
 
         private CaseStatementNode CaseStatement()
         {
-            Eat(Pascal.Case);
+            Eat(PascalTerms.Case);
             var exp = Expression();
-            Eat(Pascal.Of);
+            Eat(PascalTerms.Of);
             var items = new List<CaseItemNode>();
-            while (Name != Pascal.End && Name != Pascal.Else)
+            while (Name != PascalTerms.End && Name != PascalTerms.Else)
             {
                 items.Add(CaseItem());
             }
 
             Node elseExpressionNode = null;
-            if (Name == Pascal.Else)
+            if (Name == PascalTerms.Else)
             {
-                Eat(Pascal.Else);
+                Eat(PascalTerms.Else);
                 elseExpressionNode = Statement();
-                Eat(Pascal.Semi);
+                Eat(PascalTerms.Semi);
             }
-            Eat(Pascal.End);
+            Eat(PascalTerms.End);
             return new CaseStatementNode(exp, items, elseExpressionNode);
         }
 
         private CaseItemNode CaseItem()
         {
             var items = new List<ExpressionNode>(){Expression()};
-            while (Name == Pascal.Comma)
+            while (Name == PascalTerms.Comma)
             {
-                Eat(Pascal.Comma);
+                Eat(PascalTerms.Comma);
                 items.Add(Expression());
             }
-            Eat(Pascal.Colon);
+            Eat(PascalTerms.Colon);
             var statement = Statement();
-            Eat(Pascal.Semi);
+            Eat(PascalTerms.Semi);
             return new CaseItemNode(items, statement);
 
         }
 
         private Node ForLoop()
         {
-            Eat(Pascal.For);
+            Eat(PascalTerms.For);
             var assign = AssignmentStatement();
-            Eat(Pascal.To);
+            Eat(PascalTerms.To);
             var ex = Expression();
-            Eat(Pascal.Do);
+            Eat(PascalTerms.Do);
             var statements = Statement();
             return new ForLoopNode(assign, ex, statements);
         }
 
         Node BoolExpression()
         {
-            if (Name == Pascal.Not)
+            if (Name == PascalTerms.Not)
             {
                 var current = Current;
-                Eat(Pascal.Not);
+                Eat(PascalTerms.Not);
                 return new NegationOperator(Expression(),current);
             }
             return Expression();
         }
         private IfStatementNode IfStatement()
         {
-            Eat(Pascal.If);
+            Eat(PascalTerms.If);
             var equal = BoolExpression();
-            Eat(Pascal.Then);
+            Eat(PascalTerms.Then);
             
             var tstatement = Statement();
             IList<Node> estate = null;
-            if (Current.Token.Name == Pascal.Else)
+            if (Current.Token.Name == PascalTerms.Else)
             {
-                Eat(Pascal.Else);
+                Eat(PascalTerms.Else);
                 estate = new List<Node>(){ Statement() }; ;
             }
             return new IfStatementNode(equal, new List<Node>(){tstatement}, estate);
@@ -405,18 +405,18 @@ namespace Minesweeper.Test
         {
             var procedureName = Current.Value;
             var token = Current;
-            Eat(Pascal.Id);
+            Eat(PascalTerms.Id);
             var parameters = new List<Node>();
 
-            if (Name == Pascal.LParinth)
+            if (Name == PascalTerms.LParinth)
             {
-                Eat(Pascal.LParinth);
-                while (Name != Pascal.RParinth)
+                Eat(PascalTerms.LParinth);
+                while (Name != PascalTerms.RParinth)
                 {
                     parameters.Add(Expression());
-                    if (Name == Pascal.Comma)
+                    if (Name == PascalTerms.Comma)
                     {
-                        Eat(Pascal.Comma);
+                        Eat(PascalTerms.Comma);
                     }
                     else
                     {
@@ -424,7 +424,7 @@ namespace Minesweeper.Test
                     }
 
                 }
-                Eat(Pascal.RParinth);
+                Eat(PascalTerms.RParinth);
             }
            
             return new ProcedureCallNode(procedureName, parameters, token);
@@ -434,7 +434,7 @@ namespace Minesweeper.Test
         {
             var left = Variable();
             var token = _tokens.Current;
-            Eat(Pascal.Assign);
+            Eat(PascalTerms.Assign);
             var right = Expression();
             var node = new AssignmentNode(left, token, right);
             return node;
@@ -443,7 +443,7 @@ namespace Minesweeper.Test
         VariableOrFunctionCall Variable()
         {
             var token = _tokens.Current;
-            Eat(Pascal.Id);
+            Eat(PascalTerms.Id);
 
             var node = new VariableOrFunctionCall(token);
             return node;
@@ -463,12 +463,12 @@ namespace Minesweeper.Test
         }
         Node Program()
         {
-            Eat(Pascal.Program);
+            Eat(PascalTerms.Program);
             var name = _tokens?.Current;
-            Eat(Pascal.Id);
-            Eat(Pascal.Semi);
+            Eat(PascalTerms.Id);
+            Eat(PascalTerms.Semi);
             var node = Block();
-            Eat(Pascal.Dot);
+            Eat(PascalTerms.Dot);
             var programNode = new PascalProgramNode(name, node);
             return programNode;
         }

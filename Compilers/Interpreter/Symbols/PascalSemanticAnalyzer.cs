@@ -24,60 +24,60 @@ namespace Minesweeper.Test.Symbols
 
         private static void DefineBuiltIns(ScopedSymbolTable levelZero)
         {
-            levelZero.Define(new BuiltInTypeSymbol(Pascal.Int));
-            levelZero.Define(new BuiltInTypeSymbol(Pascal.Real));
-            levelZero.Define(new BuiltInTypeSymbol(Pascal.Pointer));
-            levelZero.Define(new BuiltInTypeSymbol(Pascal.String));
-            levelZero.Define(new BuiltInTypeSymbol(Pascal.Char));
-            levelZero.Define(new BuiltInTypeSymbol(Pascal.Boolean));
+            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Int));
+            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Real));
+            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Pointer));
+            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.String));
+            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Char));
+            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Boolean));
             levelZero.Define(new ProcedureDeclarationSymbol("READ", new List<ParameterNode>()
             {
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "look"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char})))
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char})))
             }));
 
             levelZero.Define(new FunctionDeclarationSymbol("UpCase", new List<ParameterNode>()
             {
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "look"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char})))
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char})))
             }));
             levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()));
             levelZero.Define(new ProcedureDeclarationSymbol("Halt", new List<ParameterNode>()));
             levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()
             {
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x2"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x3"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x4"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
             }));
             levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()
             {
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x2"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
             }));
             levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()
             {
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
             }));
 
             levelZero.Define(new ProcedureDeclarationSymbol("Write", new List<ParameterNode>()
             {
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x2"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
             }));
             levelZero.Define(new ProcedureDeclarationSymbol("Write", new List<ParameterNode>()
             {
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "x1"}),
-                    new TypeNode(new TokenItem() {Value = Pascal.Char}))),
+                    new TypeNode(new TokenItem() {Value = PascalTerms.Char}))),
             }));
         }
 
@@ -256,7 +256,7 @@ namespace Minesweeper.Test.Symbols
 
             if (value is StringNode)
             {
-                typeName = Pascal.String;
+                typeName = PascalTerms.String;
             }
 
             
@@ -350,7 +350,7 @@ namespace Minesweeper.Test.Symbols
             var variable = VisitVariable(ass.Left);
             VisitNode(ass.Right);
             variable.Initialized = true;
-            if (variable.Type.Name == Pascal.Int && ass.Right is RealNode r)
+            if (variable.Type.Name == PascalTerms.Int && ass.Right is RealNode r)
             {
                 throw new SemanticException(ErrorCode.TypeMismatch, r.TokenItem, $"Cannot assign Real to integer");
             }

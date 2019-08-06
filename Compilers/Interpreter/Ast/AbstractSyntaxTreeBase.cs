@@ -72,22 +72,22 @@ namespace Minesweeper.Test
         {
             
             var result = AddSub();
-            if (Name == Pascal.In)
+            if (Name == PascalTerms.In)
             {
                 var current = Current;
-                Eat(Pascal.In);
+                Eat(PascalTerms.In);
                 result = new InOperator(result, ListNode(), current);
             }
-            if (_tokens.Current != null && Name == Pascal.Equal)
+            if (_tokens.Current != null && Name == PascalTerms.Equal)
             {
                 var current = Current;
-                Eat(Pascal.Equal);
+                Eat(PascalTerms.Equal);
                 result = new EqualOperator(result, AddSub(), current);
             }
-            if (_tokens.Current != null && Name == Pascal.NotEqual)
+            if (_tokens.Current != null && Name == PascalTerms.NotEqual)
             {
                 var current = Current;
-                Eat(Pascal.NotEqual);
+                Eat(PascalTerms.NotEqual);
                 result = new NotEqualOperator(result, AddSub(), current);
             }
             return result;
@@ -96,28 +96,28 @@ namespace Minesweeper.Test
         public ListNode ListNode()
         {
             var list = Current;
-            Eat(Pascal.LeftBracket);
+            Eat(PascalTerms.LeftBracket);
             var from = new StringNode(Current);
-            Eat(Pascal.StringConst);
-            if (Name == Pascal.Dot)
+            Eat(PascalTerms.StringConst);
+            if (Name == PascalTerms.Dot)
             {
-                Eat(Pascal.Dot);
-                Eat(Pascal.Dot);
+                Eat(PascalTerms.Dot);
+                Eat(PascalTerms.Dot);
                 var to = new StringNode(Current);
-                Eat(Pascal.StringConst);
-                Eat(Pascal.RightBracket);
+                Eat(PascalTerms.StringConst);
+                Eat(PascalTerms.RightBracket);
                 return new ListRangeExpressionNode(from, to, list);
             }
             else
             {
                 var items = new List<StringNode>(){from};
-                while (Name == Pascal.Comma)
+                while (Name == PascalTerms.Comma)
                 {
-                    Eat(Pascal.Comma);
+                    Eat(PascalTerms.Comma);
                     items.Add(new StringNode(Current));
-                    Eat(Pascal.StringConst);
+                    Eat(PascalTerms.StringConst);
                 }
-                Eat(Pascal.RightBracket);
+                Eat(PascalTerms.RightBracket);
                 return new ListItemsExpressionNode(items, list);
             }
             
@@ -131,19 +131,19 @@ namespace Minesweeper.Test
             }
 
             var result = Action();
-            while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.IntegerConst)
+            while (_tokens.Current != null && _tokens.Current.Token.Name != PascalTerms.IntegerConst)
             {
-                if (_tokens.Current.Token.Name == Pascal.Add)
+                if (_tokens.Current.Token.Name == PascalTerms.Add)
                 {
                     var token = _tokens.Current;
-                    Eat(Pascal.Add);
+                    Eat(PascalTerms.Add);
                     result = new BinaryOperator(result, Action(), token);
                 }
 
-                else if (_tokens.Current.Token.Name == Pascal.Sub)
+                else if (_tokens.Current.Token.Name == PascalTerms.Sub)
                 {
                     var token = _tokens.Current;
-                    Eat(Pascal.Sub);
+                    Eat(PascalTerms.Sub);
                     result = new BinaryOperator(result, Action(), token);
                 }
                 else
@@ -161,28 +161,28 @@ namespace Minesweeper.Test
         {
             var current = _tokens.Current;
 
-            if (Name == Pascal.Pointer)
+            if (Name == PascalTerms.Pointer)
             {
-                Eat(Pascal.Pointer);
+                Eat(PascalTerms.Pointer);
                 return new PointerNode( current);
             }
 
-            if (Name == Pascal.StringConst)
+            if (Name == PascalTerms.StringConst)
             {
                 var s = new StringNode(Current);
-                Eat(Pascal.StringConst);
+                Eat(PascalTerms.StringConst);
                 return s;
             }
-            if (current.Token.Name == Pascal.RealConst)
+            if (current.Token.Name == PascalTerms.RealConst)
             {
-                Eat(Pascal.RealConst);
+                Eat(PascalTerms.RealConst);
                 var value = new RealNode(current);
                 return value;
             }
 
-            if (current.Token.Name == Pascal.IntegerConst)
+            if (current.Token.Name == PascalTerms.IntegerConst)
             {
-                Eat(Pascal.IntegerConst);
+                Eat(PascalTerms.IntegerConst);
                 var value = new IntegerNode(current);
                 return value;
             }
@@ -197,14 +197,14 @@ namespace Minesweeper.Test
             var par = Parenthese();
             if (par != null) return par;
             
-            if (current.Token.Name == Pascal.Add)
+            if (current.Token.Name == PascalTerms.Add)
             {
-                Eat(Pascal.Add);
+                Eat(PascalTerms.Add);
                 return new UnaryOperator(ParaUnaryOperators(), current);
             }
-            if (current.Token.Name == Pascal.Sub)
+            if (current.Token.Name == PascalTerms.Sub)
             {
-                Eat(Pascal.Sub);
+                Eat(PascalTerms.Sub);
                 return new UnaryOperator(ParaUnaryOperators(), current);
             }
             return ParseNumber();
@@ -214,11 +214,11 @@ namespace Minesweeper.Test
 
         protected virtual ExpressionNode Parenthese()
         {
-            if (_tokens.Current.Token.Name == Pascal.LParinth)
+            if (_tokens.Current.Token.Name == PascalTerms.LParinth)
             {
-                Eat(Pascal.LParinth);
+                Eat(PascalTerms.LParinth);
                 var result = Expression();
-                Eat(Pascal.RParinth);
+                Eat(PascalTerms.RParinth);
                 var para = result;
                 return para;
             }
@@ -237,24 +237,24 @@ namespace Minesweeper.Test
 
             var result = Action();
 
-            while (_tokens.Current != null && _tokens.Current.Token.Name != Pascal.IntegerConst)
+            while (_tokens.Current != null && _tokens.Current.Token.Name != PascalTerms.IntegerConst)
             {
                 var token = _tokens.Current;
                 
-                if (_tokens.Current.Token.Name == Pascal.Multi)
+                if (_tokens.Current.Token.Name == PascalTerms.Multi)
                 {
-                    Eat(Pascal.Multi);
+                    Eat(PascalTerms.Multi);
                     result = new BinaryOperator(result, Action(), token);
                 }
 
-                else if (_tokens.Current.Token.Name == Pascal.FloatDiv)
+                else if (_tokens.Current.Token.Name == PascalTerms.FloatDiv)
                 {
-                    Eat(Pascal.FloatDiv);
+                    Eat(PascalTerms.FloatDiv);
                     result = new BinaryOperator(result, Action(), token);
                 }
-                else if (_tokens.Current.Token.Name == Pascal.IntDiv)
+                else if (_tokens.Current.Token.Name == PascalTerms.IntDiv)
                 {
-                    Eat(Pascal.IntDiv);
+                    Eat(PascalTerms.IntDiv);
                     result = new BinaryOperator(result, Action(), token);
                 }
                 else

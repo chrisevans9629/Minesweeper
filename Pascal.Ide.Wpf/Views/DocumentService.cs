@@ -35,28 +35,35 @@ namespace Pascal.Ide.Wpf.Views
                 string textInRun = current.GetTextInRun(LogicalDirection.Forward);
                 if (!string.IsNullOrWhiteSpace(textInRun))
                 {
-
-                    var tokens = lexer.Tokenize(textInRun);
-                    foreach (var match in tokens)
+                    try
                     {
-                        var param = parameters.FirstOrDefault(p => p.Filter(match));
-                        if (param == null)
+                        var tokens = lexer.Tokenize(textInRun);
+                        foreach (var match in tokens)
                         {
-                            continue;
-                        }
-                        var index = match.Index;
-                        if (index != -1)
-                        {
-                            TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
-                            TextPointer selectionEnd = selectionStart.GetPositionAtOffset(match.Value.Length, LogicalDirection.Forward);
-                            TextRange selection = new TextRange(selectionStart, selectionEnd);
-                            if (selection.Text != match.Value)
+                            var param = parameters.FirstOrDefault(p => p.Filter(match));
+                            if (param == null)
                             {
                                 continue;
                             }
-                            selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(param.Color));
+                            var index = match.Index;
+                            if (index != -1)
+                            {
+                                TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
+                                TextPointer selectionEnd = selectionStart.GetPositionAtOffset(match.Value.Length, LogicalDirection.Forward);
+                                TextRange selection = new TextRange(selectionStart, selectionEnd);
+                                if (selection.Text != match.Value)
+                                {
+                                    continue;
+                                }
+                                selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(param.Color));
+                            }
                         }
                     }
+                    catch (PascalException e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                   
                 }
                 current = current.GetNextContextPosition(LogicalDirection.Forward);
             }

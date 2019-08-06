@@ -54,12 +54,24 @@ namespace Pascal.Ide.Wpf.ViewModels
         public MainWindowViewModel(IDocumentService mainWindow)
         {
             _mainWindow = mainWindow;
-            parameters = new List<HighlightParameters>();
-            parameters.Add(new HighlightParameters()
+            parameters = new List<HighlightParameters>
             {
-                Color = Colors.RoyalBlue,
-                Filter = item => Minesweeper.Test.Pascal.Reservations.ContainsKey(item.Token.Name)
-            });
+                new HighlightParameters()
+                {
+                    Color = Colors.RoyalBlue,
+                    Filter = item => Minesweeper.Test.PascalTerms.Reservations.ContainsKey(item.Token.Name)
+                },
+                new HighlightParameters()
+                {
+                    Color = Colors.Yellow,
+                    Filter = item => item.Token.Name == PascalTerms.IntegerConst || item.Token.Name == PascalTerms.RealConst
+                },
+                new HighlightParameters()
+                {
+                    Color = Colors.SaddleBrown,
+                    Filter = item => item.Token.Name == PascalTerms.StringConst
+                }
+            };
 
             StartCommand = new DelegateCommand(Start);
             OpenCommand = new DelegateCommand(Open);
@@ -69,6 +81,7 @@ namespace Pascal.Ide.Wpf.ViewModels
         }
 
         private const string InputKey = "Input";
+
         private void Open()
         {
             var dialog = new OpenFileDialog();
@@ -82,13 +95,13 @@ namespace Pascal.Ide.Wpf.ViewModels
         public string Output
         {
             get => _output;
-            set => SetProperty(ref _output,value);
+            set => SetProperty(ref _output, value);
         }
 
         public string Input
         {
             get => _input;
-            set => SetProperty(ref _input,value, InputChanged);
+            set => SetProperty(ref _input, value, InputChanged);
         }
 
         private void InputChanged()
@@ -99,7 +112,7 @@ namespace Pascal.Ide.Wpf.ViewModels
         public Node AbstractSyntaxTree
         {
             get => _abstractSyntaxTree;
-            set => SetProperty(ref _abstractSyntaxTree,value);
+            set => SetProperty(ref _abstractSyntaxTree, value);
         }
 
         public DelegateCommand OpenCommand { get; }
@@ -124,11 +137,11 @@ namespace Pascal.Ide.Wpf.ViewModels
                 Console.WriteLine(e);
                 Error = $"{e.Message}\n{e.StackTrace}";
             }
-
         }
 
         private IList<TokenItem> Tokens;
         public const string CodeKey = "Code";
+
         private void CodeChanged()
         {
             try
@@ -152,8 +165,5 @@ namespace Pascal.Ide.Wpf.ViewModels
                 }
             }
         }
-
-        
-       
     }
 }

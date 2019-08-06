@@ -41,7 +41,7 @@ namespace Minesweeper.Test.Tests
             var tree = new SuperBasicMathAst(lex.Tokenize(input));
 
             var node = tree.Evaluate();
-            node.Should().BeOfType<UnaryOperator>().Which.Name.Should().Be(Pascal.Sub);
+            node.Should().BeOfType<UnaryOperator>().Which.Name.Should().Be(PascalTerms.Sub);
         }
 
         [Test]
@@ -54,13 +54,13 @@ namespace Minesweeper.Test.Tests
             var t = tree.Evaluate();
 
             var node = t.Should().BeOfType<BinaryOperator>().Which;
-            node.Name.Should().Be(Pascal.Add);
+            node.Name.Should().Be(PascalTerms.Add);
             var left = node.Left.Should().BeOfType<IntegerNode>().Which;
-            left.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
+            left.TokenItem.Token.Name.Should().Be(PascalTerms.IntegerConst);
             left.TokenItem.Value.Should().Be("1");
             var right = node.Right.Should().BeOfType<IntegerNode>().Which;
 
-            right.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
+            right.TokenItem.Token.Name.Should().Be(PascalTerms.IntegerConst);
             right.TokenItem.Value.Should().Be("2");
         }
 
@@ -74,7 +74,7 @@ namespace Minesweeper.Test.Tests
             var tree = new SuperBasicMathAst(lex.Tokenize(input));
 
             var t = tree.Evaluate().Should().BeOfType<BinaryOperator>().Which;
-            t.Name.Should().Be(Pascal.Sub);
+            t.Name.Should().Be(PascalTerms.Sub);
         }
 
         [Test]
@@ -86,32 +86,32 @@ namespace Minesweeper.Test.Tests
             var tree = new SuperBasicMathAst(lex.Tokenize(input));
             var t = tree.Evaluate().Should().BeOfType<BinaryOperator>().Which;
 
-            t.TokenItem.Token.Name.Should().Be(Pascal.Sub);
+            t.TokenItem.Token.Name.Should().Be(PascalTerms.Sub);
 
             var left = t.Left.Should().BeOfType<IntegerNode>().Which;
             var right = t.Right.Should().BeOfType<IntegerNode>().Which;
 
-            left.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
+            left.TokenItem.Token.Name.Should().Be(PascalTerms.IntegerConst);
             left.TokenItem.Value.Should().Be("1");
-            right.TokenItem.Token.Name.Should().Be(Pascal.IntegerConst);
+            right.TokenItem.Token.Name.Should().Be(PascalTerms.IntegerConst);
             right.TokenItem.Value.Should().Be("2");
         }
 
         [Test]
         public void TestTree()
         {
-            var mulToken = new TokenItem() { Value = "*", Token = new Token() { Name = Pascal.Multi } };
-            var addToken = new TokenItem() { Value = "+", Token = new Token() { Name = Pascal.Add } };
+            var mulToken = new TokenItem() { Value = "*", Token = new Token() { Name = PascalTerms.Multi } };
+            var addToken = new TokenItem() { Value = "+", Token = new Token() { Name = PascalTerms.Add } };
             var mulop = new BinaryOperator(
-                new RealNode(new TokenItem() { Value = "2", Token = new Token() { Name = Pascal.IntegerConst } }),
-                new RealNode(new TokenItem() { Value = "7", Token = new Token() { Name = Pascal.IntegerConst } }),
+                new RealNode(new TokenItem() { Value = "2", Token = new Token() { Name = PascalTerms.IntegerConst } }),
+                new RealNode(new TokenItem() { Value = "7", Token = new Token() { Name = PascalTerms.IntegerConst } }),
                 mulToken);
             var addop = new BinaryOperator(
                 mulop,
-                new RealNode(new TokenItem() { Value = "3", Token = new Token() { Name = Pascal.IntegerConst } }),
+                new RealNode(new TokenItem() { Value = "3", Token = new Token() { Name = PascalTerms.IntegerConst } }),
                 addToken);
 
-            addop.TokenItem.Token.Name.Should().Be(Pascal.Add);
+            addop.TokenItem.Token.Name.Should().Be(PascalTerms.Add);
 
         }
     }

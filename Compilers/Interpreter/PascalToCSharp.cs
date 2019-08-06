@@ -28,17 +28,17 @@ namespace Minesweeper.Test
         private string VisitVariableDeclaration(VarDeclarationNode varDeclaration)
         {
             var typeValue = varDeclaration.TypeNode.TypeValue.ToUpper();
-            if (Pascal.Int == typeValue)
+            if (PascalTerms.Int == typeValue)
             {
                 typeValue = "int";
             }
 
-            if (Pascal.Real == typeValue)
+            if (PascalTerms.Real == typeValue)
             {
                 typeValue = "double";
             }
 
-            if (Pascal.Boolean == typeValue)
+            if (PascalTerms.Boolean == typeValue)
             {
                 typeValue = "bool";
             }
