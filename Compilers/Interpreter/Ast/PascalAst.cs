@@ -88,16 +88,17 @@ namespace Minesweeper.Test
         {
             var parameters = new List<ParameterNode>();
             Eat(Pascal.Function);
-            var procedureId = Current.Value;
             var token = Current;
             Eat(Pascal.Id);
-            if (Current.Token.Name == Pascal.LParinth)
+            var procedureId = token.Value;
+
+            if (Name == Pascal.LParinth)
             {
                 Eat(Pascal.LParinth);
-                while (Current.Token.Name != Pascal.RParinth)
+                while (Name != Pascal.RParinth)
                 {
                     parameters.AddRange(VariableDeclaration().Select(p => new ParameterNode(p)));
-                    if (Current.Token.Name == Pascal.Semi)
+                    if (Name == Pascal.Semi)
                     {
                         Eat(Pascal.Semi);
                     }
@@ -120,13 +121,13 @@ namespace Minesweeper.Test
             Eat(Pascal.Procedure);
             var procedureId = Current.Value;
             Eat(Pascal.Id);
-            if (Current.Token.Name == Pascal.LParinth)
+            if (Name == Pascal.LParinth)
             {
                 Eat(Pascal.LParinth);
-                while (Current.Token.Name != Pascal.RParinth)
+                while (Name != Pascal.RParinth)
                 {
                     parameters.AddRange(VariableDeclaration().Select(p => new ParameterNode(p)));
-                    if (Current.Token.Name == Pascal.Semi)
+                    if (Name == Pascal.Semi)
                     {
                         Eat(Pascal.Semi);
                     }
@@ -441,8 +442,10 @@ namespace Minesweeper.Test
 
         VariableOrFunctionCall Variable()
         {
-            var node = new VariableOrFunctionCall(_tokens.Current);
+            var token = _tokens.Current;
             Eat(Pascal.Id);
+
+            var node = new VariableOrFunctionCall(token);
             return node;
         }
         Node Parse()

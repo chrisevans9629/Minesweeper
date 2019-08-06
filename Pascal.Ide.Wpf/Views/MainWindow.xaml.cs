@@ -22,8 +22,7 @@ namespace Pascal.Ide.Wpf.Views
     /// </summary>
     public partial class MainWindow : Window, IMainWindow, IDisposable
     {
-
-        CompositeDisposable disposables = new CompositeDisposable();
+        readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly FlowDocument _doc;
         public MainWindow(IUnityContainer container)
         {
@@ -36,17 +35,20 @@ namespace Pascal.Ide.Wpf.Views
                 .FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(action => RichTextBox.TextChanged += action,
                     action => RichTextBox.TextChanged -= action);
 
-            var one = obs.Subscribe(unit => App.Current.Dispatcher.Invoke(OnCodeChanged) );
+           // var one = obs.Subscribe(unit => OnCodeChanged() );
 
             var two = obs
                     //todo: can improve by only looking at the code that has changed
-                //.Where(p=>p.EventArgs.)
-                .Throttle(TimeSpan.FromSeconds(5), new DispatcherScheduler(Dispatcher))
+                .Throttle(TimeSpan.FromSeconds(1), new DispatcherScheduler(Dispatcher))
                 
                 .SkipWhile(p=> _isBusy)
-                .Subscribe(unit => HighlightSyntax());
-            disposables.Add(one);
-            disposables.Add(two);
+                .Subscribe(unit =>
+                    {
+                        OnCodeChanged();
+                        HighlightSyntax();
+                    });
+            //_disposables.Add(one);
+            _disposables.Add(two);
         }
 
         private bool _isBusy = false;
@@ -136,7 +138,7 @@ namespace Pascal.Ide.Wpf.Views
 
         public void Dispose()
         {
-            disposables?.Dispose();
+            _disposables?.Dispose();
         }
     }
 }
