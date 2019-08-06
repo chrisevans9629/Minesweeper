@@ -19,7 +19,7 @@ namespace Minesweeper.Test
 
 
         public char Current => iterator.Current;
-        private int index => iterator.index;
+        private int Index => iterator.index;
         private int Column => iterator.Column;
         private int Line => iterator.Line;
         void Advance()
@@ -53,11 +53,11 @@ namespace Minesweeper.Test
             return token;
         }
 
-        TokenItem CreateToken(string name, string value)
+        TokenItem CreateToken(string name, string value , int? index = null)
         {
             var token = new TokenItem()
             {
-                Index = index-value.Length,
+                Index =  index ?? Index-value.Length,
                 Column = Column-value.Length,
                 Line = Line,
                 Value = value,
@@ -138,6 +138,7 @@ namespace Minesweeper.Test
                 else if (Current == '\'')
                 {
                     Advance();
+                    var index = Index;
                     var quote = "";
                     while (Current != '\'' && Current != default(char))
                     {
@@ -145,7 +146,7 @@ namespace Minesweeper.Test
                         Advance();
                     }
                     Advance();
-                    items.Add(CreateToken(PascalTerms.StringConst, quote));
+                    items.Add(CreateToken(PascalTerms.StringConst, quote, index));
                 }
                 else if (Current == '{')
                 {

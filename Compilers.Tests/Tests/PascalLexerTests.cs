@@ -30,6 +30,16 @@ namespace Minesweeper.Test.Tests
         }
 
         [Test]
+        public void StringConst_Index_ShouldStartAtBeginningOfString()
+        {
+            var input = @"'hello'";
+
+            var tokens = lexer.Tokenize(input);
+
+            tokens[0].Index.Should().Be(1);
+        }
+
+        [Test]
         public void BooleanConst()
         {
             var input = "true false True";
