@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Akavache;
 using Microsoft.Win32;
@@ -117,14 +118,15 @@ namespace Pascal.Ide.Wpf.ViewModels
 
         }
 
+        private IList<TokenItem> Tokens;
         public const string CodeKey = "Code";
         private void CodeChanged()
         {
             try
             {
                 BlobCache.LocalMachine.InsertObject(CodeKey, Code);
-                var tokens = lexer.Tokenize(Code);
-                AbstractSyntaxTree = ast.Evaluate(tokens);
+                Tokens = lexer.Tokenize(Code);
+                AbstractSyntaxTree = ast.Evaluate(Tokens);
                 analyzer.CheckSyntax(AbstractSyntaxTree);
                 Error = "";
             }
@@ -135,7 +137,10 @@ namespace Pascal.Ide.Wpf.ViewModels
             }
             finally
             {
-                _mainWindow.HighlightSyntax();
+                if (Tokens != null)
+                {
+                    _mainWindow.HighlightSyntax();
+                }
             }
         }
 

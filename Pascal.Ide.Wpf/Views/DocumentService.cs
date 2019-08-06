@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -8,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Minesweeper.Test;
 
 namespace Pascal.Ide.Wpf.Views
 {
@@ -25,17 +28,19 @@ namespace Pascal.Ide.Wpf.Views
             _isBusy = true;
             TextRange text = new TextRange(_doc.ContentStart, _doc.ContentEnd);
             text.ClearAllProperties();
-
+            var lexer = new PascalLexer();
             TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
             while (current != null)
             {
                 string textInRun = current.GetTextInRun(LogicalDirection.Forward);
                 if (!string.IsNullOrWhiteSpace(textInRun))
                 {
-                    foreach (var keyValuePair in Minesweeper.Test.Pascal.Reservations)
-                    {
-                        var matches = Regex.Matches(textInRun, keyValuePair.Key, RegexOptions.IgnoreCase);
-                        foreach (Match match in matches)
+
+                    var tokens = lexer.Tokenize(textInRun).Where(p=> Minesweeper.Test.Pascal.Reservations.ContainsKey(p.Token.Name));
+                   // foreach (var keyValuePair in Minesweeper.Test.Pascal.Reservations)
+                   // {
+                        //var matches = Regex.Matches(textInRun, keyValuePair.Key, RegexOptions.IgnoreCase);
+                        foreach (var match in tokens)
                         {
 
 
@@ -52,7 +57,7 @@ namespace Pascal.Ide.Wpf.Views
                                 selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.RoyalBlue));
                             }
                         }
-                    }
+                   // }
 
                     //int index = textInRun.IndexOf(keyword);
 
