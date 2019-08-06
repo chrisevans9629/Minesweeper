@@ -209,7 +209,7 @@ namespace Minesweeper.Test
                 return items.Contains(valueToContain);
             }
             throw new NotImplementedException();
-          
+
         }
 
         public object VisitPointer2(object pointer)
@@ -259,17 +259,13 @@ namespace Minesweeper.Test
         {
             if ((bool)VisitEqualOperator(ifNode.IfCheck))
             {
-                foreach (var node in ifNode.IfTrue)
-                {
-                    VisitNode(node);
-                }
+                var node = ifNode.IfTrue;
+                VisitNode(node);
             }
             else if (ifNode.IfFalse != null)
             {
-                foreach (var node in ifNode.IfFalse)
-                {
-                    VisitNode(node);
-                }
+                var node = ifNode.IfFalse;
+                VisitNode(node);
             }
 
             return null;

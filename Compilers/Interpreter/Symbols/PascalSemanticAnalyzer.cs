@@ -140,9 +140,9 @@ namespace Minesweeper.Test.Symbols
             {
 
             }
-            else if (node is IfStatementNode)
+            else if (node is IfStatementNode ifStatement)
             {
-
+                VisitIfStatement(ifStatement);
             }
             else if (node is RealNode)
             {
@@ -200,9 +200,28 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitWhileLoop(whileLoop);
             }
+            else if (node is NegationOperator negate)
+            {
+                VisitNegationOperator(negate);
+            }
             else
             {
                 throw new InvalidOperationException($"did not recognize node {node}");
+            }
+        }
+
+        private void VisitNegationOperator(NegationOperator negate)
+        {
+            VisitNode(negate.Right);
+        }
+
+        private void VisitIfStatement(IfStatementNode ifStatement)
+        {
+            VisitNode(ifStatement.IfCheck);
+            VisitNode(ifStatement.IfTrue);
+            if (ifStatement.IfFalse != null)
+            {
+                VisitNode(ifStatement.IfFalse);
             }
         }
 

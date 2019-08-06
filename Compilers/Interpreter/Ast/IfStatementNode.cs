@@ -14,19 +14,19 @@ namespace Minesweeper.Test
     public class IfStatementNode : Node, IStatementNode
     {
         public Node IfCheck { get; }
-        public IList<Node> IfTrue { get; }
-        public IList<Node> IfFalse { get; }
+        public Node IfTrue { get; }
+        public Node IfFalse { get; }
 
-        public IfStatementNode(Node ifCheck, IList<Node> IfTrue, IList<Node> IfFalse)
+        public IfStatementNode(Node ifCheck, Node ifTrue, Node ifFalse)
         {
             IfCheck = ifCheck;
-            this.IfTrue = IfTrue;
-            this.IfFalse = IfFalse;
+            this.IfTrue = ifTrue;
+            this.IfFalse = ifFalse;
         }
 
         public override string Display()
         {
-            return $"If ({IfCheck}) then {Aggregate(IfTrue)} else {Aggregate(IfFalse)}";
+            return $"If ({IfCheck}) then {IfTrue} else {IfFalse}";
         }
     }
 }

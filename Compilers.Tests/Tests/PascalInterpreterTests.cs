@@ -477,6 +477,7 @@ end.";
             analyzer.CheckSyntax(node);
             var interpret = interpreter.Interpret(node);
             
+
             var scope = interpret.Should().BeOfType<Memory>().Which;
 
             scope.GetValue("x", true).Should().Be(6);

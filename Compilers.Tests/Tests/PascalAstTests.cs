@@ -213,10 +213,10 @@ end;";
 
             ifStatement.IfCheck.Should().BeOfType<EqualOperator>().Which.Left.Should().BeOfType<VariableOrFunctionCall>();
             ifStatement.IfCheck.Should().BeOfType<EqualOperator>().Which.Right.Should().BeOfType<IntegerNode>();
-           var trueStatement = ifStatement.IfTrue.First().Should().BeOfType<AssignmentNode>().Which;
+           var trueStatement = ifStatement.IfTrue.Should().BeOfType<AssignmentNode>().Which;
            trueStatement.Left.VariableName.Should().Be("Summation");
            trueStatement.Right.Should().BeOfType<IntegerNode>();
-           var falseStatement =  ifStatement.IfFalse.First().Should().BeOfType<AssignmentNode>().Which;
+           var falseStatement =  ifStatement.IfFalse.Should().BeOfType<AssignmentNode>().Which;
 
            falseStatement.Left.VariableName.Should().Be("Summation");
            falseStatement.Right.Should().BeOfType<BinaryOperator>().Which.Left.Should().BeOfType<FunctionCallNode>()
@@ -234,8 +234,8 @@ end;";
 
            var result = ast.Statement();
            var iff = result.Should().BeOfType<IfStatementNode>().Which;
-           iff.IfTrue.First().Should().BeOfType<AssignmentNode>();
-           iff.IfFalse.First().Should().BeOfType<AssignmentNode>();
+           iff.IfTrue.Should().BeOfType<AssignmentNode>();
+           iff.IfFalse.Should().BeOfType<AssignmentNode>();
 
         }
         [Test]

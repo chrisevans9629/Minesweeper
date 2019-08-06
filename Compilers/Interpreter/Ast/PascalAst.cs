@@ -392,13 +392,13 @@ namespace Minesweeper.Test
             Eat(PascalTerms.Then);
             
             var tstatement = Statement();
-            IList<Node> estate = null;
+            Node estate = null;
             if (Current.Token.Name == PascalTerms.Else)
             {
                 Eat(PascalTerms.Else);
-                estate = new List<Node>(){ Statement() }; ;
+                estate =Statement();
             }
-            return new IfStatementNode(equal, new List<Node>(){tstatement}, estate);
+            return new IfStatementNode(equal, tstatement, estate);
         }
 
         private ProcedureCallNode ProcedureCall()
