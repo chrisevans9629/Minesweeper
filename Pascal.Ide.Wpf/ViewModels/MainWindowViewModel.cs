@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using Minesweeper.Test;
 using Minesweeper.Test.Symbols;
 using Pascal.Ide.Wpf.Models;
+using Pascal.Ide.Wpf.Views;
 using Prism.Commands;
 using Prism.Mvvm;
 
@@ -12,7 +13,7 @@ namespace Pascal.Ide.Wpf.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private readonly IMainWindow _mainWindow;
+        private readonly IDocumentService _mainWindow;
         PascalLexer lexer = new PascalLexer();
         PascalAst ast = new PascalAst();
         PascalSemanticAnalyzer analyzer = new PascalSemanticAnalyzer();
@@ -47,7 +48,7 @@ namespace Pascal.Ide.Wpf.ViewModels
         public DelegateCommand StartCommand { get; }
 
 
-        public MainWindowViewModel(IMainWindow mainWindow)
+        public MainWindowViewModel(IDocumentService mainWindow)
         {
             _mainWindow = mainWindow;
             StartCommand = new DelegateCommand(Start);
@@ -124,13 +125,17 @@ namespace Pascal.Ide.Wpf.ViewModels
                 BlobCache.LocalMachine.InsertObject(CodeKey, Code);
                 var tokens = lexer.Tokenize(Code);
                 AbstractSyntaxTree = ast.Evaluate(tokens);
-                var analize = analyzer.CheckSyntax(AbstractSyntaxTree);
+                analyzer.CheckSyntax(AbstractSyntaxTree);
                 Error = "";
             }
             catch (PascalException e)
             {
                 Console.WriteLine(e);
                 Error = $"{e.Message}\n{e.StackTrace}";
+            }
+            finally
+            {
+                _mainWindow.HighlightSyntax();
             }
         }
 

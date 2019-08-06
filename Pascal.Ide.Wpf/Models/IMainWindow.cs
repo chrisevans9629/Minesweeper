@@ -7,11 +7,10 @@ using System.Windows.Media;
 
 namespace Pascal.Ide.Wpf.Models
 {
-    public interface IMainWindow
-    {
-        string Code { get; set; }
-        event EventHandler CodeChanged;
-    }
+    //public interface IMainWindow
+    //{
+        
+    //}
    
    
 }

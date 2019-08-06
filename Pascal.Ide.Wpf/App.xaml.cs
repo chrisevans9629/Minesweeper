@@ -30,7 +30,7 @@ namespace Pascal.Ide.Wpf
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-
+            containerRegistry.RegisterSingleton<IDocumentService, DocumentService>();
         }
     }
 }

@@ -1,0 +1,120 @@
+﻿using System;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
+
+namespace Pascal.Ide.Wpf.Views
+{
+    public class DocumentService : IDocumentService, IDisposable
+    {
+
+        private bool _isBusy = false;
+        public void HighlightSyntax()
+        {
+            if (_isBusy)
+            {
+                return;
+            }
+
+            _isBusy = true;
+            TextRange text = new TextRange(_doc.ContentStart, _doc.ContentEnd);
+            text.ClearAllProperties();
+
+            TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
+            while (current != null)
+            {
+                string textInRun = current.GetTextInRun(LogicalDirection.Forward);
+                if (!string.IsNullOrWhiteSpace(textInRun))
+                {
+                    foreach (var keyValuePair in Minesweeper.Test.Pascal.Reservations)
+                    {
+                        var matches = Regex.Matches(textInRun, keyValuePair.Key, RegexOptions.IgnoreCase);
+                        foreach (Match match in matches)
+                        {
+
+
+                            var index = match.Index;
+                            if (index != -1)
+                            {
+                                TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
+                                TextPointer selectionEnd = selectionStart.GetPositionAtOffset(match.Value.Length, LogicalDirection.Forward);
+                                TextRange selection = new TextRange(selectionStart, selectionEnd);
+                                if (selection.Text != match.Value)
+                                {
+                                    continue;
+                                }
+                                selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.RoyalBlue));
+                            }
+                        }
+                    }
+
+                    //int index = textInRun.IndexOf(keyword);
+
+                }
+                current = current.GetNextContextPosition(LogicalDirection.Forward);
+            }
+
+            _isBusy = false;
+        }
+
+        public string Code
+        {
+            get => GetCode();
+            set => SetCode(value);
+        }
+        public event EventHandler CodeChanged;
+        private void SetCode(string value)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                _doc.Blocks.Clear();
+                var p = new Paragraph(new Run(value));
+                p.Margin = new Thickness(0);
+                _doc.Blocks.Add(p);
+                OnCodeChanged();
+            });
+
+        }
+
+
+        private string GetCode()
+        {
+            var run = new TextRange(_doc.ContentStart, _doc.ContentEnd);
+            return run.Text;
+        }
+
+        private void OnCodeChanged()
+        {
+            CodeChanged?.Invoke(this, EventArgs.Empty);
+        }
+        readonly CompositeDisposable _disposables = new CompositeDisposable();
+
+
+        public void Dispose()
+        {
+            _disposables?.Dispose();
+        }
+        private FlowDocument _doc;
+
+        public void Initialize(RichTextBox richTextBox)
+        {
+            _doc = new FlowDocument();
+            richTextBox.Document = _doc;
+
+            var obs = Observable
+                .FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(action => richTextBox.TextChanged += action,
+                    action => richTextBox.TextChanged -= action);
+            var two = obs
+                .Throttle(TimeSpan.FromSeconds(1), new DispatcherScheduler(App.Current.Dispatcher))
+                .SkipWhile(p => _isBusy)
+                .Subscribe(unit => OnCodeChanged());
+            _disposables.Add(two);
+        }
+    }
+}
