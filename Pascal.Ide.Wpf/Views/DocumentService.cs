@@ -18,7 +18,7 @@ namespace Pascal.Ide.Wpf.Views
     {
 
         private bool _isBusy = false;
-        public void HighlightSyntax()
+        public void HighlightSyntax(IList<HighlightParameters> parameters)
         {
             if (_isBusy)
             {
@@ -36,31 +36,27 @@ namespace Pascal.Ide.Wpf.Views
                 if (!string.IsNullOrWhiteSpace(textInRun))
                 {
 
-                    var tokens = lexer.Tokenize(textInRun).Where(p=> Minesweeper.Test.Pascal.Reservations.ContainsKey(p.Token.Name));
-                   // foreach (var keyValuePair in Minesweeper.Test.Pascal.Reservations)
-                   // {
-                        //var matches = Regex.Matches(textInRun, keyValuePair.Key, RegexOptions.IgnoreCase);
-                        foreach (var match in tokens)
+                    var tokens = lexer.Tokenize(textInRun);
+                    foreach (var match in tokens)
+                    {
+                        var param = parameters.FirstOrDefault(p => p.Filter(match));
+                        if (param == null)
                         {
-
-
-                            var index = match.Index;
-                            if (index != -1)
-                            {
-                                TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
-                                TextPointer selectionEnd = selectionStart.GetPositionAtOffset(match.Value.Length, LogicalDirection.Forward);
-                                TextRange selection = new TextRange(selectionStart, selectionEnd);
-                                if (selection.Text != match.Value)
-                                {
-                                    continue;
-                                }
-                                selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.RoyalBlue));
-                            }
+                            continue;
                         }
-                   // }
-
-                    //int index = textInRun.IndexOf(keyword);
-
+                        var index = match.Index;
+                        if (index != -1)
+                        {
+                            TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
+                            TextPointer selectionEnd = selectionStart.GetPositionAtOffset(match.Value.Length, LogicalDirection.Forward);
+                            TextRange selection = new TextRange(selectionStart, selectionEnd);
+                            if (selection.Text != match.Value)
+                            {
+                                continue;
+                            }
+                            selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(param.Color));
+                        }
+                    }
                 }
                 current = current.GetNextContextPosition(LogicalDirection.Forward);
             }

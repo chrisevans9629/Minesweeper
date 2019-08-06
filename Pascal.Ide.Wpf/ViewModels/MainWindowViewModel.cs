@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Media;
 using Akavache;
 using Microsoft.Win32;
 using Minesweeper.Test;
@@ -14,6 +15,7 @@ namespace Pascal.Ide.Wpf.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
+        private List<HighlightParameters> parameters;
         private readonly IDocumentService _mainWindow;
         PascalLexer lexer = new PascalLexer();
         PascalAst ast = new PascalAst();
@@ -52,6 +54,13 @@ namespace Pascal.Ide.Wpf.ViewModels
         public MainWindowViewModel(IDocumentService mainWindow)
         {
             _mainWindow = mainWindow;
+            parameters = new List<HighlightParameters>();
+            parameters.Add(new HighlightParameters()
+            {
+                Color = Colors.RoyalBlue,
+                Filter = item => Minesweeper.Test.Pascal.Reservations.ContainsKey(item.Token.Name)
+            });
+
             StartCommand = new DelegateCommand(Start);
             OpenCommand = new DelegateCommand(Open);
             _mainWindow.CodeChanged += (sender, args) => CodeChanged();
@@ -139,7 +148,7 @@ namespace Pascal.Ide.Wpf.ViewModels
             {
                 if (Tokens != null)
                 {
-                    _mainWindow.HighlightSyntax();
+                    _mainWindow.HighlightSyntax(parameters);
                 }
             }
         }
