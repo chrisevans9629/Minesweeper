@@ -21,6 +21,7 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="10">
+            <ComboBox ItemsSource="{Binding Compilers}" SelectedItem="{Binding SelectedCompiler}"/>
             <Button Content="Start" Command="{Binding StartCommand}" Width="100"/>
             <Button Content="Open" Command="{Binding OpenCommand}" Width="100"></Button>
         </StackPanel>

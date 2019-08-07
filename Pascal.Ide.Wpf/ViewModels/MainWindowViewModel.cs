@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Media;
 using Akavache;
@@ -50,9 +51,20 @@ namespace Pascal.Ide.Wpf.ViewModels
 
         public DelegateCommand StartCommand { get; }
 
-
+        private const string CompilerInterpreter = "Interpreter";
+        private string CompilerCSharp = "CSharp";
+        private string Compiler68000 = "68000 Assembler";
         public MainWindowViewModel(IDocumentService mainWindow)
         {
+            Compilers = new ObservableCollection<string>()
+            {
+                CompilerInterpreter,
+                CompilerCSharp,
+                Compiler68000
+            };
+
+            SelectedCompiler = CompilerInterpreter;
+
             _mainWindow = mainWindow;
             parameters = new List<HighlightParameters>
             {
@@ -117,6 +129,18 @@ namespace Pascal.Ide.Wpf.ViewModels
 
         public DelegateCommand OpenCommand { get; }
 
+        public ObservableCollection<string> Compilers
+        {
+            get => _compilers;
+            set => SetProperty(ref _compilers,value);
+        }
+
+        public string SelectedCompiler
+        {
+            get => _selectedCompiler;
+            set => SetProperty(ref _selectedCompiler,value);
+        }
+
         private void Start()
         {
             try
@@ -128,9 +152,19 @@ namespace Pascal.Ide.Wpf.ViewModels
                 }
 
                 analyzer.CheckSyntax(AbstractSyntaxTree);
-                var interpreter = new PascalInterpreter(console: console);
-                interpreter.Interpret(AbstractSyntaxTree);
-                Output = console.Output;
+                if (SelectedCompiler == CompilerInterpreter)
+                {
+                    var interpreter = new PascalInterpreter(console: console);
+                    interpreter.Interpret(AbstractSyntaxTree);
+                    Output = console.Output;
+                }
+
+                if (SelectedCompiler == CompilerCSharp)
+                {
+                    var csharp = new PascalToCSharp();
+                    var result = csharp.VisitNode(AbstractSyntaxTree);
+                    Output = result;
+                }
             }
             catch (PascalException e)
             {
@@ -140,6 +174,8 @@ namespace Pascal.Ide.Wpf.ViewModels
         }
 
         private IList<TokenItem> Tokens;
+        private ObservableCollection<string> _compilers;
+        private string _selectedCompiler;
         public const string CodeKey = "Code";
 
         private void CodeChanged()

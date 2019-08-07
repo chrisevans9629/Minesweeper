@@ -66,8 +66,8 @@
     </Compile>
     <Compile Include="Models\IMainWindow.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="Views\DocumentService.cs" />
-    <Compile Include="Views\IDocumentService.cs" />
+    <Compile Include="Models\DocumentService.cs" />
+    <Compile Include="Models\IDocumentService.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
