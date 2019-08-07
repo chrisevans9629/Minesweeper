@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
-    public class PascalInterpreter : SuperBasicMathInterpreter, IPascalNodeVisitor<object>
+    public class PascalInterpreter : IPascalNodeVisitor<object>
     {
         private readonly IConsole _console;
         private ILogger _logger;
@@ -13,13 +13,112 @@ namespace Minesweeper.Test
             _console = console ?? new ConsoleModel();
             this._logger = logger ?? new Logger();
         }
-        public override object Interpret(Node node)
+
+
+        public object VisitReal(RealNode num)
+        {
+            return num.Value;
+        }
+
+        public object VisitUnary(UnaryOperator op)
+        {
+            if (op.Name == PascalTerms.Add)
+            {
+                return VisitNode(op.Value);
+            }
+
+            if (op.Name == PascalTerms.Sub)
+            {
+                var value = VisitNode(op.Value);
+                if (value is double d)
+                {
+                    return -d;
+                }
+                if (value is int i)
+                {
+                    return -i;
+                }
+            }
+            return Fail(op);
+        }
+
+        public object Fail(Node node)
+        {
+            throw new ParserException(ErrorCode.UnexpectedToken, null, $"did not recognize node '{node}'");
+        }
+
+       
+
+        public object VisitInteger(IntegerNode integer)
+        {
+            return integer.Value;
+        }
+
+        public object VisitBinaryOperator(BinaryOperator op)
+        {
+            var doubleActions = new Dictionary<string, Func<double, double, double>>();
+            doubleActions.Add(PascalTerms.Add, (d, d1) => d + d1);
+            doubleActions.Add(PascalTerms.Sub, (d, d1) => d - d1);
+            doubleActions.Add(PascalTerms.Multi, (d, d1) => d * d1);
+            doubleActions.Add(PascalTerms.FloatDiv, (d, d1) => d / d1);
+            doubleActions.Add(PascalTerms.IntDiv, (d, d1) => (int)d / (int)d1);
+
+            var intActions = new Dictionary<string, Func<int, int, int>>();
+            intActions.Add(PascalTerms.Add, (d, d1) => d + d1);
+            intActions.Add(PascalTerms.Sub, (d, d1) => d - d1);
+            intActions.Add(PascalTerms.Multi, (d, d1) => d * d1);
+            intActions.Add(PascalTerms.FloatDiv, (d, d1) => d / d1);
+            intActions.Add(PascalTerms.IntDiv, (d, d1) => d / d1);
+
+
+            var strActions = new Dictionary<string, Func<string, string, string>>();
+            strActions.Add(PascalTerms.Add, (d, d1) => d + d1);
+
+
+
+            var left = VisitNode(op.Left);
+            var right = VisitNode(op.Right);
+            if (left is int l && right is int r)
+            {
+                if (intActions.ContainsKey(op.Name) != true)
+                {
+                    return Fail(op);
+                }
+                return intActions[op.Name](l, r);
+            }
+            else if ((left is int || left is double) && (right is int || right is double))
+            {
+                if (doubleActions.ContainsKey(op.Name) != true)
+                {
+                    return Fail(op);
+                }
+                return doubleActions[op.Name](Convert.ToDouble(left), Convert.ToDouble(right));
+            }
+            else if (left is string || right is string)
+            {
+                if (strActions.ContainsKey(op.Name) != true)
+                {
+                    return Fail(op);
+                }
+
+                return strActions[op.Name](left.ToString(), right.ToString());
+            }
+            else
+            {
+                return Fail(op);
+            }
+
+        }
+
+     
+
+        public object Interpret(Node node)
         {
             CreateGlobalMemory();
 
             try
             {
-                var result = base.Interpret(node);
+                var result = VisitNode(node);
             }
             catch (HaltException e)
             {
@@ -52,104 +151,26 @@ namespace Minesweeper.Test
             return compound;
         }
 
-        public override object VisitNode(Node node)
+        public object VisitNode(Node node)
         {
-            if (node is CompoundStatementNode compound)
-            {
-                return VisitCompoundStatement(compound);
-            }
+            return this.VisitNodeModel(node);
+        }
 
-            if (node is AssignmentNode assign)
-            {
-                return VisitAssignment(assign);
-            }
 
-            if (node is VariableOrFunctionCall var)
-            {
-                return VisitVariableOrFunctionCall(var);
-            }
+        public object VisitBool(BoolNode boolNode)
+        {
+            return boolNode.Value;
+        }
 
-            if (node is NoOp no)
-            {
-                return VisitNoOp(no);
-            }
+        public object VisitFunctionDeclaration(FunctionDeclarationNode funcdec)
+        {
+            CurrentScope.Add(funcdec.FunctionName, funcdec);
+            return null;
+        }
 
-            if (node is PascalProgramNode program)
-            {
-                return VisitProgram(program);
-            }
-
-            if (node is ProcedureCallNode call)
-            {
-                return VisitProcedureCall(call);
-            }
-            if (node is ProcedureDeclarationNode procedure)
-            {
-                return VisitProcedureDeclaration(procedure);
-            }
-
-            if (node is BoolNode b)
-            {
-                return b.Value;
-            }
-
-            if (node is IfStatementNode ifNode)
-            {
-                return VisitIfStatement(ifNode);
-            }
-
-            if (node is WhileLoopNode whileLoop)
-            {
-                return VisitWhileLoop(whileLoop);
-            }
-
-            if (node is ForLoopNode forLoop)
-            {
-                return VisitForLoop(forLoop);
-            }
-            if (node is EqualOperator eop)
-            {
-                return VisitEqualOperator(eop);
-            }
-            if (node is FunctionCallNode funcCall)
-            {
-                return VisitFunctionCall(funcCall);
-            }
-            if (node is FunctionDeclarationNode funcdec)
-            {
-                CurrentScope.Add(funcdec.FunctionName, funcdec);
-                return null;
-            }
-            if (node is VarDeclarationNode declaration)
-            {
-                return VisitVarDeclaration(declaration);
-            }
-
-            if (node is ConstantDeclarationNode constantDeclarationNode)
-            {
-                return VisitConstantDeclaration(constantDeclarationNode);
-            }
-
-            if (node is PointerNode pointer)
-            {
-                return VisitPointer(pointer);
-            }
-
-            if (node is StringNode str)
-            {
-                return str.CurrentValue;
-            }
-
-            if (node is InOperator inOperator)
-            {
-                return VisitInOperator(inOperator);
-            }
-
-            if (node is CaseStatementNode caseStatement)
-            {
-                return VisitCaseStatement(caseStatement);
-            }
-            return base.VisitNode(node);
+        public object VisitString(StringNode str)
+        {
+            return str.CurrentValue;
         }
 
         public object VisitWhileLoop(WhileLoopNode whileLoop)
@@ -250,7 +271,7 @@ namespace Minesweeper.Test
 
         public object VisitIfStatement(IfStatementNode ifNode)
         {
-            if ((bool)VisitEqualOperator(ifNode.IfCheck))
+            if ((bool)VisitNode(ifNode.IfCheck))
             {
                 var node = ifNode.IfTrue;
                 VisitNode(node);
@@ -264,20 +285,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        public object VisitEqualOperator(Node eop)
-        {
-            if (eop is EqualExpression exp)
-            {
-                return VisitEqualExpression(exp);
-            }
-
-            if (eop is NegationOperator negation)
-            {
-                return VisitNegationOperator(negation);
-            }
-
-            throw new RuntimeException(ErrorCode.UnexpectedToken, null, "Unexpected bool value");
-        }
+       
 
         public object VisitNegationOperator(NegationOperator negation)
         {

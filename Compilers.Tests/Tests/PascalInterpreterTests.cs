@@ -441,7 +441,7 @@ end.";
             var node = ast.Expression().Should().BeOfType<EqualOperator>().Which;
 
             interpreter.CreateGlobalMemory();
-            var interpret = interpreter.VisitEqualOperator(node);
+            var interpret = interpreter.VisitNode(node);
             interpret.Should().BeOfType<bool>().Which.Should().Be(result);
         }
 

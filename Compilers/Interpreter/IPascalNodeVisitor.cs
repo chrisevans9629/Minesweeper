@@ -1,4 +1,6 @@
-﻿namespace Minesweeper.Test
+﻿using System;
+
+namespace Minesweeper.Test
 {
     public interface IPascalNodeVisitor<T>
     {
@@ -26,5 +28,9 @@
         T VisitInteger(IntegerNode integer);
         T VisitBinaryOperator(BinaryOperator binary);
         T VisitUnary(UnaryOperator unary);
+        T Fail(Node node);
+        T VisitString(StringNode str);
+        T VisitFunctionDeclaration(FunctionDeclarationNode faDeclarationNode);
+        T VisitBool(BoolNode boolNode);
     }
 }

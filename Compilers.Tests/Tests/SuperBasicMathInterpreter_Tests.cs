@@ -24,9 +24,9 @@ namespace Minesweeper.Test.Tests
             var tree = new SuperBasicMathAst(lex.Tokenize(input));
             var t = tree.Evaluate();
 
-            var inter = new SuperBasicMathInterpreter();
+            var inter = new PascalInterpreter();
 
-            var r = inter.Interpret(t);
+            var r = inter.VisitNode(t);
             r.Should().Be(output);
         }
 
