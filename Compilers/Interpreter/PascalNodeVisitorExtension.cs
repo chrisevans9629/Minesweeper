@@ -8,6 +8,11 @@
             {
                 return visitor.VisitCompoundStatement(compound);
             }
+
+            if (node is BlockNode block)
+            {
+                return visitor.VisitBlock(block);
+            }
             if (node is EqualExpression exp)
             {
                 return visitor.VisitEqualExpression(exp);

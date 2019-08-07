@@ -5,7 +5,6 @@ using Minesweeper.Test.Symbols;
 
 namespace Minesweeper.Test
 {
-    
     public class PascalToCSharp : IPascalNodeVisitor<string>
     {
         private ScopedSymbolTable CurrentScope;
@@ -13,36 +12,21 @@ namespace Minesweeper.Test
         public string VisitNode(Node node)
         {
             return this.VisitNodeModel(node);
-            //if (node is PascalProgramNode program)
-            //{
-            //    return VisitProgram(program).Trim();
-            //}
-
-            //if (node is VarDeclarationNode varDeclaration)
-            //{
-            //    return VisitVariableDeclaration(varDeclaration);
-            //}
-
-            //if (node is NoOp)
-            //{
-            //    return "";
-            //}
-
-            //if (node is ProcedureCallNode procedureCall)
-            //{
-            //    return VisitProcedureCall(procedureCall);
-            //}
-
-            //if (node is StringNode str)
-            //{
-            //    return "\"" + str.CurrentValue + "\"";
-            //}
-            //throw new NotImplementedException($"Not done: {node}");
         }
 
         public string VisitProcedureDeclaration(ProcedureDeclarationNode procedureDeclaration)
         {
-            throw new NotImplementedException();
+            var str = $"{AddSpaces()}public void {procedureDeclaration.ProcedureId}\r\n";
+           // str += AddSpaces() + "{\r\n";
+
+            CurrentScope = new ScopedSymbolTable(procedureDeclaration.ProcedureId, CurrentScope.ScopeLevel +1, CurrentScope);
+
+            str += VisitNode(procedureDeclaration.Block);
+
+            CurrentScope = CurrentScope.ParentScope;
+
+            //str += AddSpaces() + "}\r\n";
+            return str;
         }
 
         public string VisitProcedureCall(ProcedureCallNode procedureCall)
@@ -136,7 +120,7 @@ namespace Minesweeper.Test
 
         public string VisitBinaryOperator(BinaryOperator binary)
         {
-            throw new NotImplementedException();
+            return $"{VisitNode(binary.Left)} {binary.Name} {VisitNode(binary.Right)}";
         }
 
         public string VisitUnary(UnaryOperator unary)
@@ -146,7 +130,7 @@ namespace Minesweeper.Test
 
         public string Fail(Node node)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(node.Display());
         }
 
         public string VisitString(StringNode str)
@@ -237,12 +221,12 @@ namespace Minesweeper.Test
 
         public string VisitAssignment(AssignmentNode assignment)
         {
-            return $"{VisitNode(assignment.Left)} = {VisitNode(assignment.Right)};\r\n";
+            return $"{AddSpaces()}{VisitNode(assignment.Left)} = {VisitNode(assignment.Right)};\r\n";
         }
 
         public string VisitVariableOrFunctionCall(VariableOrFunctionCall call)
         {
-            throw new NotImplementedException();
+            return call.VariableName;
         }
 
         private string VisitNodes(IList<Node> blockDeclarations)
