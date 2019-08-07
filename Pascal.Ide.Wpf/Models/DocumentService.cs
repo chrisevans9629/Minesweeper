@@ -35,35 +35,39 @@ namespace Pascal.Ide.Wpf.Views
                 string textInRun = current.GetTextInRun(LogicalDirection.Forward);
                 if (!string.IsNullOrWhiteSpace(textInRun))
                 {
+                    var tokens = new List<TokenItem>();
                     try
                     {
-                        var tokens = lexer.Tokenize(textInRun);
-                        foreach (var match in tokens)
-                        {
-                            var param = parameters.FirstOrDefault(p => p.Filter(match));
-                            if (param == null)
-                            {
-                                continue;
-                            }
-                            var index = match.Index;
-                            if (index != -1)
-                            {
-                                TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
-                                TextPointer selectionEnd = selectionStart.GetPositionAtOffset(match.Value.Length, LogicalDirection.Forward);
-                                TextRange selection = new TextRange(selectionStart, selectionEnd);
-                                if (selection.Text != match.Value)
-                                {
-                                    continue;
-                                }
-                                selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(param.Color));
-                            }
-                        }
+                        tokens = lexer.Tokenize(textInRun).ToList();
                     }
                     catch (PascalException e)
                     {
                         Console.WriteLine(e);
                     }
-                   
+
+                    foreach (var match in tokens)
+                    {
+                        var param = parameters.FirstOrDefault(p => p.Filter(match));
+                        if (param == null)
+                        {
+                            continue;
+                        }
+                        var index = match.Index;
+                        if (index != -1)
+                        {
+                            TextPointer selectionStart = current.GetPositionAtOffset(index, LogicalDirection.Forward);
+                            TextPointer selectionEnd = selectionStart.GetPositionAtOffset(match.Value.Length, LogicalDirection.Forward);
+                            TextRange selection = new TextRange(selectionStart, selectionEnd);
+                            if (selection.Text != match.Value)
+                            {
+                                continue;
+                            }
+                            selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(param.Color));
+                        }
+                    }
+
+
+
                 }
                 current = current.GetNextContextPosition(LogicalDirection.Forward);
             }
