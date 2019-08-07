@@ -5,7 +5,7 @@ using Minesweeper.Test.Symbols;
 
 namespace Minesweeper.Test
 {
-
+    
     public class PascalToCSharp
     {
         private ScopedSymbolTable CurrentScope;
