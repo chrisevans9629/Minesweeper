@@ -6,12 +6,12 @@ namespace Minesweeper.Test
     public class SuperBasicMathInterpreter
     {
 
-        object VisitNum(RealNode num)
+        public object VisitReal(RealNode num)
         {
             return num.Value;
         }
 
-        object VisitUnary(UnaryOperator op)
+        public object VisitUnary(UnaryOperator op)
         {
             if (op.Name == PascalTerms.Add)
             {
@@ -42,18 +42,31 @@ namespace Minesweeper.Test
         {
             if (node is RealNode leaf)
             {
-                return VisitNum(leaf);
+                return VisitReal(leaf);
             }
 
             if (node is IntegerNode integer)
             {
-                return integer.Value;
+                return VisitInteger(integer);
             }
 
-            if (node is BinaryOperator op) return VisitBinaryOperator(op);
-            if (node is UnaryOperator un) return VisitUnary(un);
+            if (node is BinaryOperator op)
+            {
+                return VisitBinaryOperator(op);
+            }
+
+            if (node is UnaryOperator un)
+            {
+                return VisitUnary(un);
+            }
             return Fail(node);
         }
+
+        public object VisitInteger(IntegerNode integer)
+        {
+            return integer.Value;
+        }
+
         public object VisitBinaryOperator(BinaryOperator op)
         {
             var doubleActions = new Dictionary<string, Func<double, double, double>>();

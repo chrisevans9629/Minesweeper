@@ -5,7 +5,7 @@ using Minesweeper.Test.Symbols;
 
 namespace Minesweeper.Test.Tests
 {
-    public class PascalSourceToSourceCompiler
+    public class PascalSourceToSourceCompiler 
     {
         private PascalLexer lexer;
         private PascalAst ast;
@@ -137,7 +137,7 @@ namespace Minesweeper.Test.Tests
             return str;
         }
 
-        private string VisitCompoundStatement(CompoundStatement compoundStatement)
+        private string VisitCompoundStatement(CompoundStatementNode compoundStatement)
         {
             var str = $"{AddSpaces(-3)}begin\r\n";
             foreach (var compoundStatementNode in compoundStatement.Nodes)

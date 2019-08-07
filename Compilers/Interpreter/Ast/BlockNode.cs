@@ -5,9 +5,9 @@ namespace Minesweeper.Test
     public class BlockNode : Node
     {
         public IList<Node> Declarations { get; }
-        public CompoundStatement CompoundStatement { get; }
+        public CompoundStatementNode CompoundStatement { get; }
 
-        public BlockNode(IList<Node> declarations, CompoundStatement compoundStatement)
+        public BlockNode(IList<Node> declarations, CompoundStatementNode compoundStatement)
         {
             Declarations = declarations;
             CompoundStatement = compoundStatement;

@@ -124,7 +124,7 @@ namespace Minesweeper.Test
             return str;
         }
 
-        private string VisitCompoundStatment(CompoundStatement compoundStatement, string name, string type)
+        private string VisitCompoundStatment(CompoundStatementNode compoundStatement, string name, string type)
         {
             return $"{AddSpaces()}public static {type} {name}()\r\n" + AddSpaces() + "{\r\n" + VisitNodes(compoundStatement.Nodes) + AddSpaces() + "}\r\n";
         }

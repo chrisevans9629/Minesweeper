@@ -17,12 +17,12 @@ namespace Minesweeper.Test
 
         }
 
-        CompoundStatement CompoundStatement()
+        CompoundStatementNode CompoundStatement()
         {
             Eat(PascalTerms.Begin);
             var nodes = StatementList();
             Eat(PascalTerms.End);
-            var root = new CompoundStatement();
+            var root = new CompoundStatementNode();
             root.Nodes = nodes.ToList();
             return root;
         }

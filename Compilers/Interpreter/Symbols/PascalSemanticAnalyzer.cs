@@ -116,7 +116,7 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitProgram(program);
             }
-            else if (node is CompoundStatement compound)
+            else if (node is CompoundStatementNode compound)
             {
                 VisitCompoundStatement(compound);
             }
@@ -402,7 +402,7 @@ namespace Minesweeper.Test.Symbols
             VisitCompoundStatement(programBlock.CompoundStatement);
         }
 
-        private void VisitCompoundStatement(CompoundStatement node)
+        private void VisitCompoundStatement(CompoundStatementNode node)
         {
             foreach (var nodeNode in node.Nodes)
             {

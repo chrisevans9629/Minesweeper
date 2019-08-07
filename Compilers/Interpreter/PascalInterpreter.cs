@@ -4,14 +4,7 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
-    public class HaltException : RuntimeException
-    {
-        public HaltException(ErrorCode error, TokenItem token, string message, Exception ex = null) : base(error, token, message, ex)
-        {
-        }
-    }
-
-    public class PascalInterpreter : SuperBasicMathInterpreter
+    public class PascalInterpreter : SuperBasicMathInterpreter, IPascalNodeVisitor<object>
     {
         private readonly IConsole _console;
         private ILogger _logger;
@@ -49,7 +42,7 @@ namespace Minesweeper.Test
             return CurrentScope.GetValue(key, true);
         }
         private Memory CurrentScope;
-        object VisitCompound(CompoundStatement compound)
+        public object VisitCompoundStatement(CompoundStatementNode compound)
         {
             foreach (var compoundNode in compound.Nodes)
             {
@@ -61,19 +54,19 @@ namespace Minesweeper.Test
 
         public override object VisitNode(Node node)
         {
-            if (node is CompoundStatement compound)
+            if (node is CompoundStatementNode compound)
             {
-                return VisitCompound(compound);
+                return VisitCompoundStatement(compound);
             }
 
             if (node is AssignmentNode assign)
             {
-                return VisitAssign(assign);
+                return VisitAssignment(assign);
             }
 
             if (node is VariableOrFunctionCall var)
             {
-                return VisitVariable(var);
+                return VisitVariableOrFunctionCall(var);
             }
 
             if (node is NoOp no)
@@ -102,7 +95,7 @@ namespace Minesweeper.Test
 
             if (node is IfStatementNode ifNode)
             {
-                return VisitIfNode(ifNode);
+                return VisitIfStatement(ifNode);
             }
 
             if (node is WhileLoopNode whileLoop)
@@ -134,7 +127,7 @@ namespace Minesweeper.Test
 
             if (node is ConstantDeclarationNode constantDeclarationNode)
             {
-                return VisitConstantDec(constantDeclarationNode);
+                return VisitConstantDeclaration(constantDeclarationNode);
             }
 
             if (node is PointerNode pointer)
@@ -159,7 +152,7 @@ namespace Minesweeper.Test
             return base.VisitNode(node);
         }
 
-        private object VisitWhileLoop(WhileLoopNode whileLoop)
+        public object VisitWhileLoop(WhileLoopNode whileLoop)
         {
             while ((bool)VisitNode(whileLoop.BoolExpression))
             {
@@ -168,7 +161,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        private object VisitCaseStatement(CaseStatementNode caseStatement)
+        public object VisitCaseStatement(CaseStatementNode caseStatement)
         {
             var comparer = VisitNode(caseStatement.CompareExpression);
 
@@ -188,7 +181,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        private object VisitInOperator(InOperator inOperator)
+        public object VisitInOperator(InOperator inOperator)
         {
             var valueToContain = VisitNode(inOperator.CompareNode).ToString()[0];
 
@@ -234,16 +227,16 @@ namespace Minesweeper.Test
             throw new NotImplementedException($"{pointer}");
         }
 
-        private object VisitConstantDec(ConstantDeclarationNode constantDeclarationNode)
+        public object VisitConstantDeclaration(ConstantDeclarationNode constantDeclarationNode)
         {
             CurrentScope.Add(constantDeclarationNode.ConstantName, VisitNode(constantDeclarationNode.Value));
             return null;
         }
 
-        private object VisitForLoop(ForLoopNode forLoop)
+        public object VisitForLoop(ForLoopNode forLoop)
         {
             var fromName = forLoop.AssignFromNode.Left.VariableName;
-            VisitAssign(forLoop.AssignFromNode);
+            VisitAssignment(forLoop.AssignFromNode);
             var toInt = VisitNode(forLoop.ToNode);
             var fromValue = CurrentScope.GetValue(fromName, true);
             CurrentScope = new Memory("_ForLoop_", CurrentScope);
@@ -255,7 +248,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        private object VisitIfNode(IfStatementNode ifNode)
+        public object VisitIfStatement(IfStatementNode ifNode)
         {
             if ((bool)VisitEqualOperator(ifNode.IfCheck))
             {
@@ -275,30 +268,44 @@ namespace Minesweeper.Test
         {
             if (eop is EqualExpression exp)
             {
-                var left = VisitNode(exp.Left);
-                var right = VisitNode(exp.Right);
-                if (eop is EqualOperator)
-                {
-                    return left.Equals(right);
-                }
-                else if (eop is NotEqualOperator)
-                {
-                    return !left.Equals(right);
-                }
-                throw new RuntimeException(ErrorCode.UnexpectedToken, exp.TokenItem, $"Did not find an equality operator called {exp.Name}");
+                return VisitEqualExpression(exp);
             }
 
             if (eop is NegationOperator negation)
             {
-                var right = VisitNode(negation.Right);
-                if (right is bool b)
-                {
-                    return !b;
-                }
-                throw new RuntimeException(ErrorCode.UnexpectedToken, negation.TokenItem, $"Did not find an equality operator called {negation.TokenItem.Token.Name}");
+                return VisitNegationOperator(negation);
             }
 
             throw new RuntimeException(ErrorCode.UnexpectedToken, null, "Unexpected bool value");
+        }
+
+        public object VisitNegationOperator(NegationOperator negation)
+        {
+            var right = VisitNode(negation.Right);
+            if (right is bool b)
+            {
+                return !b;
+            }
+
+            throw new RuntimeException(ErrorCode.UnexpectedToken, negation.TokenItem,
+                $"Did not find an equality operator called {negation.TokenItem.Token.Name}");
+        }
+
+        public object VisitEqualExpression(EqualExpression exp)
+        {
+            var left = VisitNode(exp.Left);
+            var right = VisitNode(exp.Right);
+            if (exp is EqualOperator)
+            {
+                return left.Equals(right);
+            }
+            else if (exp is NotEqualOperator)
+            {
+                return !left.Equals(right);
+            }
+
+            throw new RuntimeException(ErrorCode.UnexpectedToken, exp.TokenItem,
+                $"Did not find an equality operator called {exp.Name}");
         }
 
         private void VisitCall<T>(CallNode call) where T : DeclarationNode
@@ -337,7 +344,7 @@ namespace Minesweeper.Test
 
         }
 
-        private object VisitFunctionCall(CallNode call)
+        public object VisitFunctionCall(CallNode call)
         {
             try
             {
@@ -359,7 +366,7 @@ namespace Minesweeper.Test
 
         }
 
-        private object VisitProcedureCall(ProcedureCallNode call)
+        public object VisitProcedureCall(ProcedureCallNode call)
         {
             if (call.ProcedureName.ToUpper() == "READ")
             {
@@ -404,33 +411,33 @@ namespace Minesweeper.Test
             return null;
         }
 
-        private object VisitProcedureDeclaration(ProcedureDeclarationNode procedure)
+        public object VisitProcedureDeclaration(ProcedureDeclarationNode procedure)
         {
             this.CurrentScope.Add(procedure.ProcedureId, procedure);
             return null;
         }
 
-        private object VisitProgram(PascalProgramNode programNode)
+        public object VisitProgram(PascalProgramNode programNode)
         {
             return VisitBlock(programNode.Block);
         }
 
-        object VisitVarDeclaration(VarDeclarationNode varDeclaration)
+        public object VisitVarDeclaration(VarDeclarationNode varDeclaration)
         {
             this.CurrentScope.Add(varDeclaration.VarNode.VariableName, null);
             return null;
         }
-        private object VisitBlock(BlockNode block)
+        public object VisitBlock(BlockNode block)
         {
             foreach (var blockDeclaration in block.Declarations)
             {
                 VisitNode(blockDeclaration);
             }
 
-            return VisitCompound(block.CompoundStatement);
+            return VisitCompoundStatement(block.CompoundStatement);
         }
 
-        object VisitAssign(AssignmentNode node)
+        public object VisitAssignment(AssignmentNode node)
         {
             var name = node.Left.VariableName.ToUpper();
             var value = VisitNode(node.Right);
@@ -446,7 +453,7 @@ namespace Minesweeper.Test
             return value;
         }
 
-        object VisitVariable(VariableOrFunctionCall var)
+        public object VisitVariableOrFunctionCall(VariableOrFunctionCall var)
         {
             var name = var.VariableName.ToUpper();
             var value = CurrentScope.GetValue(name, true);
@@ -458,7 +465,7 @@ namespace Minesweeper.Test
             return value;
         }
 
-        static object VisitNoOp(NoOp noop)
+        public object VisitNoOp(NoOp noop)
         {
             return noop;
         }
