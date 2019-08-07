@@ -5,7 +5,7 @@ using Minesweeper.Test.Symbols;
 
 namespace Minesweeper.Test.Tests
 {
-    public class PascalSourceToSourceCompiler 
+    public class PascalSourceToSourceCompiler : IPascalNodeVisitor<string>
     {
         private PascalLexer lexer;
         private PascalAst ast;
@@ -28,7 +28,7 @@ namespace Minesweeper.Test.Tests
             return VisitNode(tree);
         }
 
-        private string VisitNode(Node node)
+        public string VisitNode(Node node)
         {
             if (node is PascalProgramNode program)
             {
@@ -117,7 +117,7 @@ namespace Minesweeper.Test.Tests
 
             return spaces;
         }
-        private string VisitVarDeclaration(VarDeclarationNode declaration)
+        public string VisitVarDeclaration(VarDeclarationNode declaration)
         {
             var symbol = new VariableSymbol(declaration.VarNode.VariableName,
                 CurrentScope.LookupSymbol(declaration.TypeNode.TypeValue, true));
@@ -126,7 +126,12 @@ namespace Minesweeper.Test.Tests
             return $"{AddSpaces()}var {declaration.VarNode.VariableName}{CurrentScope.ScopeLevel} : {declaration.TypeNode.TypeValue.ToUpper()};\r\n";
         }
 
-        private string VisitBlock(BlockNode block)
+        public string VisitNoOp(NoOp noOp)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitBlock(BlockNode block)
         {
             var str = "";
             foreach (var blockDeclaration in block.Declarations)
@@ -137,7 +142,7 @@ namespace Minesweeper.Test.Tests
             return str;
         }
 
-        private string VisitCompoundStatement(CompoundStatementNode compoundStatement)
+        public string VisitCompoundStatement(CompoundStatementNode compoundStatement)
         {
             var str = $"{AddSpaces(-3)}begin\r\n";
             foreach (var compoundStatementNode in compoundStatement.Nodes)
@@ -149,14 +154,124 @@ namespace Minesweeper.Test.Tests
             return str;
         }
 
-       
-        private string VisitProgram(PascalProgramNode program)
+        public string VisitAssignment(AssignmentNode assignment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitVariableOrFunctionCall(VariableOrFunctionCall call)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public string VisitProgram(PascalProgramNode program)
         {
             var zero = new ScopedSymbolTable(program.ProgramName, 0);
             PascalSemanticAnalyzer.DefineBuiltIns(zero);
             CurrentScope = zero;
             var programStr = VisitProgramBlockNode(program);
             return programStr;
+        }
+
+        public string VisitProcedureDeclaration(ProcedureDeclarationNode procedureDeclaration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitProcedureCall(ProcedureCallNode procedureCall)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitFunctionCall(CallNode functionCall)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitEqualExpression(EqualExpression equalExpression)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitNegationOperator(NegationOperator negationOperator)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitIfStatement(IfStatementNode ifStatement)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitForLoop(ForLoopNode forLoop)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitConstantDeclaration(ConstantDeclarationNode constantDeclaration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitPointer(PointerNode pointer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitInOperator(InOperator inOperator)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitCaseStatement(CaseStatementNode caseStatement)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitWhileLoop(WhileLoopNode whileLoop)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitReal(RealNode real)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitInteger(IntegerNode integer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitBinaryOperator(BinaryOperator binary)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitUnary(UnaryOperator unary)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Fail(Node node)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitString(StringNode str)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitFunctionDeclaration(FunctionDeclarationNode faDeclarationNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitBool(BoolNode boolNode)
+        {
+            throw new NotImplementedException();
         }
 
         private string VisitProgramBlockNode(PascalProgramNode program)
