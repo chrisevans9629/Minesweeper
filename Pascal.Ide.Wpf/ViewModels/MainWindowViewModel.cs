@@ -54,13 +54,15 @@ namespace Pascal.Ide.Wpf.ViewModels
         private const string CompilerInterpreter = "Interpreter";
         private string CompilerCSharp = "CSharp";
         private string Compiler68000 = "68000 Assembler";
+        private string CompilerPascal = "Pascal";
         public MainWindowViewModel(IDocumentService mainWindow)
         {
             Compilers = new ObservableCollection<string>()
             {
                 CompilerInterpreter,
                 CompilerCSharp,
-                Compiler68000
+                Compiler68000,
+                CompilerPascal
             };
 
             SelectedCompiler = CompilerInterpreter;

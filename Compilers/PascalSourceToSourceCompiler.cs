@@ -30,9 +30,20 @@ namespace Minesweeper.Test.Tests
 
         private string VisitNode(Node node)
         {
-            if (node is PascalProgramNode program) return VisitProgram(program);
-            if (node is BlockNode block) return VisitBlock(block);
-            if (node is VarDeclarationNode declaration) return VisitVarDeclaration(declaration);
+            if (node is PascalProgramNode program)
+            {
+                return VisitProgram(program);
+            }
+
+            if (node is BlockNode block)
+            {
+                return VisitBlock(block);
+            }
+
+            if (node is VarDeclarationNode declaration)
+            {
+                return VisitVarDeclaration(declaration);
+            }
             if (node is ProcedureDeclarationNode procedureDeclaration)
             {
                 return VisitProcedureDec(procedureDeclaration);
@@ -142,8 +153,7 @@ namespace Minesweeper.Test.Tests
         private string VisitProgram(PascalProgramNode program)
         {
             var zero = new ScopedSymbolTable(program.ProgramName, 0);
-            zero.Define(new BuiltInTypeSymbol(PascalTerms.Int));
-            zero.Define(new BuiltInTypeSymbol(PascalTerms.Real));
+            PascalSemanticAnalyzer.DefineBuiltIns(zero);
             CurrentScope = zero;
             var programStr = VisitProgramBlockNode(program);
             return programStr;

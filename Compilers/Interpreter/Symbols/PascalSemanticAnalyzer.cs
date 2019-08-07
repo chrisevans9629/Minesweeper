@@ -22,7 +22,7 @@ namespace Minesweeper.Test.Symbols
             CurrentScope = global;
         }
 
-        private static void DefineBuiltIns(ScopedSymbolTable levelZero)
+        public static void DefineBuiltIns(ScopedSymbolTable levelZero)
         {
             levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Int));
             levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Real));

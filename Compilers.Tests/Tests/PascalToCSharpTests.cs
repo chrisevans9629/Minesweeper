@@ -20,7 +20,24 @@ namespace Minesweeper.Test.Tests
             cSharp = new PascalToCSharp();
         }
 
-        [TestCase("program test; var asdf : integer;begin end.", "public static class test\n{\nstatic int asdf;\npublic static void Main()\n{\n}\n}")]
+        [TestCase("program test; var asdf : integer;begin end.", 
+            @"public static class test
+{
+    static int asdf;
+    public static void Main()
+    {
+    }
+}")]
+        [TestCase("program test; var asdf : integer;begin WriteLn('hello world!'); end.",
+            @"using System;
+public static class test
+{
+    static int asdf;
+    public static void Main()
+    {
+        Console.WriteLine(" + "\"hello world!\"" + @");
+    }
+}")]
         public void PascalInput_Should_CreateOutput(string input, string output)
         {
             var tokens = lexer.Tokenize(input);

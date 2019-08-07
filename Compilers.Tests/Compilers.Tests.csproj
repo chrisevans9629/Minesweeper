@@ -52,7 +52,6 @@
     <Compile Include="Tests\PascalInterpreterTests.cs" />
     <Compile Include="Tests\PascalLexerTests.cs" />
     <Compile Include="Tests\PascalSemanticAnalyzerTests.cs" />
-    <Compile Include="Tests\PascalSourceToSourceCompiler.cs" />
     <Compile Include="Tests\PascalSourceToSourceTests.cs" />
     <Compile Include="Tests\PascalTestInputs.cs" />
     <Compile Include="Tests\PascalToCSharpTests.cs" />
