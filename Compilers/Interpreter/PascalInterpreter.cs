@@ -44,10 +44,10 @@ namespace Minesweeper.Test
 
         public object Fail(Node node)
         {
-            throw new ParserException(ErrorCode.UnexpectedToken, null, $"did not recognize node '{node}'");
+            return this.FailModel(node);
         }
 
-       
+
 
         public object VisitInteger(IntegerNode integer)
         {
@@ -110,7 +110,7 @@ namespace Minesweeper.Test
 
         }
 
-     
+
 
         public object Interpret(Node node)
         {
@@ -285,7 +285,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-       
+
 
         public object VisitNegationOperator(NegationOperator negation)
         {

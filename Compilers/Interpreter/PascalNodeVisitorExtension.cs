@@ -2,6 +2,10 @@
 {
     public static class PascalNodeVisitorExtension
     {
+        public static T FailModel<T>(this IPascalNodeVisitor<T> visit, Node node)
+        {
+            throw new ParserException(ErrorCode.UnexpectedToken, null, $"did not recognize node '{node}'");
+        }
         public static T VisitNodeModel<T>(this IPascalNodeVisitor<T> visitor, Node node)
         {
             if (node is CompoundStatementNode compound)
