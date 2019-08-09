@@ -1,7 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Framework" Version="16.0.461" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.0.461" />
+  </ItemGroup>
+  <UsingTask TaskName="Compilers.Build.BuildPascal"
+             AssemblyFile="bin\debug\netstandard2.0\Compilers.dll"/>
+  <UsingTask TaskName="Compilers.Build.AddTask"
+             AssemblyFile="bin\debug\netstandard2.0\Compilers.dll"/>
+  
+  <Target Name="FirstTarget" AfterTargets="AfterBuild">
+    <Message Text="hello world from msbuild!" Importance="High"></Message>
+  </Target>
+  <Target Name="Addition" AfterTargets="AfterBuild">
+    <AddTask Number1="10" Number2="12">
+      <Output TaskParameter="Sum" PropertyName="CalculatedSum" />
+    </AddTask>
+    <Message Text="10 + 12 = $(CalculatedSum)" />
+  </Target>
+  <Target Name="MyTarget" AfterTargets="AfterBuild">
+    <BuildPascal></BuildPascal>
+  </Target>
 </Project>
