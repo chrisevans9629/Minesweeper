@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Minesweeper.Test.Symbols
 {
-    public class PascalSemanticAnalyzer
+    public class PascalSemanticAnalyzer : IPascalNodeVisitor<object>
     {
         private readonly ILogger _logger;
         private ScopedSymbolTable _currentScope;
-        private void VisitProgram(PascalProgramNode programNode)
+        public object VisitProgram(PascalProgramNode programNode)
         {
             var levelZero = new ScopedSymbolTable(programNode.ProgramName, 0, null, _logger);
             CurrentScope = levelZero;
@@ -20,6 +20,7 @@ namespace Minesweeper.Test.Symbols
             CurrentScope = global;
             VisitBlock(programNode.Block);
             CurrentScope = global;
+            return null;
         }
 
         public static void DefineBuiltIns(ScopedSymbolTable levelZero)
@@ -110,112 +111,114 @@ namespace Minesweeper.Test.Symbols
 
 
 
-        private void VisitNode(Node node)
+        public object VisitNode(Node node)
         {
-            if (node is PascalProgramNode program)
-            {
-                VisitProgram(program);
-            }
-            else if (node is CompoundStatementNode compound)
-            {
-                VisitCompoundStatement(compound);
-            }
-            else if (node is AssignmentNode ass)
-            {
-                VisitAssign(ass);
-            }
-            else if (node is NoOp nope)
-            {
-                VisitNoOp(nope);
-            }
-            else if (node is EqualExpression equal)
-            {
-                VisitEqualExpression(equal);
-            }
-            else if (node is InOperator op)
-            {
+            return this.VisitNodeModel(node);
+            //if (node is PascalProgramNode program)
+            //{
+            //    VisitProgram(program);
+            //}
+            //else if (node is CompoundStatementNode compound)
+            //{
+            //    VisitCompoundStatement(compound);
+            //}
+            //else if (node is AssignmentNode ass)
+            //{
+            //    VisitAssign(ass);
+            //}
+            //else if (node is NoOp nope)
+            //{
+            //    VisitNoOp(nope);
+            //}
+            //else if (node is EqualExpression equal)
+            //{
+            //    VisitEqualExpression(equal);
+            //}
+            //else if (node is InOperator op)
+            //{
 
-            }
-            else if (node is PointerNode pointer)
-            {
+            //}
+            //else if (node is PointerNode pointer)
+            //{
 
-            }
-            else if (node is IfStatementNode ifStatement)
-            {
-                VisitIfStatement(ifStatement);
-            }
-            else if (node is RealNode)
-            {
+            //}
+            //else if (node is IfStatementNode ifStatement)
+            //{
+            //    VisitIfStatement(ifStatement);
+            //}
+            //else if (node is RealNode)
+            //{
 
-            }
-            else if (node is IntegerNode)
-            {
+            //}
+            //else if (node is IntegerNode)
+            //{
 
-            }
-            else if (node is StringNode str)
-            {
+            //}
+            //else if (node is StringNode str)
+            //{
 
-            }
-            else if (node is VariableOrFunctionCall variable)
-            {
-                VisitVariable(variable);
-            }
-            else if (node is BinaryOperator)
-            {
+            //}
+            //else if (node is VariableOrFunctionCall variable)
+            //{
+            //    VisitVariable(variable);
+            //}
+            //else if (node is BinaryOperator)
+            //{
 
-            }
-            else if (node is UnaryOperator)
-            {
+            //}
+            //else if (node is UnaryOperator)
+            //{
 
-            }
-            else if (node is VarDeclarationNode declaration)
-            {
-                VisitVarDeclaration(declaration);
-            }
-            else if (node is ProcedureDeclarationNode procedureDeclaration)
-            {
-                VisitProcedureDeclaration(procedureDeclaration);
-            }
-            else if (node is FunctionDeclarationNode functionDeclaration)
-            {
-                VisitFunctionDeclaration(functionDeclaration);
-            }
-            else if (node is FunctionCallNode funCall)
-            {
-                VisitCall(funCall);
-            }
-            else if (node is ProcedureCallNode procCall)
-            {
-                VisitCall(procCall);
-            }
-            else if (node is ConstantDeclarationNode decNode)
-            {
-                VisitConstantDeclaration(decNode);
-            }
-            else if (node is CaseStatementNode caseStatement)
-            {
-                VisitCaseStatement(caseStatement);
-            }
-            else if (node is WhileLoopNode whileLoop)
-            {
-                VisitWhileLoop(whileLoop);
-            }
-            else if (node is NegationOperator negate)
-            {
-                VisitNegationOperator(negate);
-            }
-            else
-            {
-                throw new InvalidOperationException($"did not recognize node {node}");
-            }
+            //}
+            //else if (node is VarDeclarationNode declaration)
+            //{
+            //    VisitVarDeclaration(declaration);
+            //}
+            //else if (node is ProcedureDeclarationNode procedureDeclaration)
+            //{
+            //    VisitProcedureDeclaration(procedureDeclaration);
+            //}
+            //else if (node is FunctionDeclarationNode functionDeclaration)
+            //{
+            //    VisitFunctionDeclaration(functionDeclaration);
+            //}
+            //else if (node is FunctionCallNode funCall)
+            //{
+            //    VisitCall(funCall);
+            //}
+            //else if (node is ProcedureCallNode procCall)
+            //{
+            //    VisitCall(procCall);
+            //}
+            //else if (node is ConstantDeclarationNode decNode)
+            //{
+            //    VisitConstantDeclaration(decNode);
+            //}
+            //else if (node is CaseStatementNode caseStatement)
+            //{
+            //    VisitCaseStatement(caseStatement);
+            //}
+            //else if (node is WhileLoopNode whileLoop)
+            //{
+            //    VisitWhileLoop(whileLoop);
+            //}
+            //else if (node is NegationOperator negate)
+            //{
+            //    VisitNegationOperator(negate);
+            //}
+            //else
+            //{
+            //    throw new InvalidOperationException($"did not recognize node {node}");
+            //}
         }
 
-        private void VisitNegationOperator(NegationOperator negate)
+        public object VisitNegationOperator(NegationOperator negate)
         {
             VisitNode(negate.Right);
+            return null;
         }
 
-        private void VisitIfStatement(IfStatementNode ifStatement)
+        public object VisitIfStatement(IfStatementNode ifStatement)
         {
             VisitNode(ifStatement.IfCheck);
             VisitNode(ifStatement.IfTrue);
@@ -223,23 +226,72 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitNode(ifStatement.IfFalse);
             }
+
+            return null;
         }
 
-        private void VisitEqualExpression(EqualExpression equal)
+        public object VisitForLoop(ForLoopNode forLoop)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitFunctionCall(CallNode functionCall)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitEqualExpression(EqualExpression equal)
         {
             VisitNode(equal.Left);
             VisitNode(equal.Right);
+            return null;
         }
 
-        private void VisitWhileLoop(WhileLoopNode whileLoop)
+        public object VisitWhileLoop(WhileLoopNode whileLoop)
         {
             VisitNode(whileLoop.BoolExpression);
             CurrentScope = new ScopedSymbolTable("_while_", CurrentScope.ScopeLevel + 1, CurrentScope);
             VisitNode(whileLoop.DoStatement);
             CurrentScope = CurrentScope.ParentScope;
+            return null;
         }
 
-        private void VisitCaseStatement(CaseStatementNode caseStatement)
+        public object VisitReal(RealNode real)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitInteger(IntegerNode integer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitBinaryOperator(BinaryOperator binary)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitUnary(UnaryOperator unary)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Fail(Node node)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitString(StringNode str)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitInOperator(InOperator inOperator)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitCaseStatement(CaseStatementNode caseStatement)
         {
             VisitNode(caseStatement.CompareExpression);
             foreach (var caseStatementCaseItemNode in caseStatement.CaseItemNodes)
@@ -251,6 +303,8 @@ namespace Minesweeper.Test.Symbols
             {
                 VisitNode(caseStatement.ElseStatement);
             }
+
+            return null;
         }
 
         private void VisitCaseItem(CaseItemNode caseItem)
@@ -262,7 +316,7 @@ namespace Minesweeper.Test.Symbols
             VisitNode(caseItem.Statement);
         }
 
-        private void VisitConstantDeclaration(ConstantDeclarationNode decNode)
+        public object VisitConstantDeclaration(ConstantDeclarationNode decNode)
         {
             var value = decNode.Value;
 
@@ -281,18 +335,30 @@ namespace Minesweeper.Test.Symbols
             
             //VisitNode(decNode.Value);
             this.DefineVariableSymbol(decNode.TokenItem, decNode.ConstantName, typeName);
+            return null;
         }
 
-        private void VisitProcedureDeclaration(ProcedureDeclarationNode procedureDeclaration)
+        public object VisitPointer(PointerNode pointer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitProcedureDeclaration(ProcedureDeclarationNode procedureDeclaration)
         {
             DeclareParameters(procedureDeclaration);
             VisitBlock(procedureDeclaration.Block);
             CurrentScope = CurrentScope.ParentScope;
             var procedure = new ProcedureDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters);
             CurrentScope.Define(procedure);
+            return null;
         }
 
-        private void VisitFunctionDeclaration(FunctionDeclarationNode procedureDeclaration)
+        public object VisitProcedureCall(ProcedureCallNode procedureCall)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitFunctionDeclaration(FunctionDeclarationNode procedureDeclaration)
         {
             DeclareParameters(procedureDeclaration);
             DefineVariableSymbol(procedureDeclaration.Token, procedureDeclaration.FunctionName, procedureDeclaration.ReturnType.TypeValue);
@@ -313,6 +379,12 @@ namespace Minesweeper.Test.Symbols
             CurrentScope = CurrentScope.ParentScope;
             var procedure = new FunctionDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters);
             CurrentScope.Define(procedure);
+            return null;
+        }
+
+        public object VisitBool(BoolNode boolNode)
+        {
+            throw new NotImplementedException();
         }
 
         private void DeclareParameters(DeclarationNode procedureDeclaration)
@@ -357,11 +429,15 @@ namespace Minesweeper.Test.Symbols
 
         }
 
-        
 
-        private void VisitNoOp(NoOp nope)
+        public object VisitVariableOrFunctionCall(VariableOrFunctionCall call)
         {
+            throw new NotImplementedException();
+        }
 
+        public object VisitNoOp(NoOp nope)
+        {
+            return null;
         }
 
         private void VisitAssign(AssignmentNode ass)
@@ -393,28 +469,37 @@ namespace Minesweeper.Test.Symbols
         }
 
 
-        private void VisitBlock(BlockNode programBlock)
+        public object VisitBlock(BlockNode programBlock)
         {
             foreach (var programBlockDeclaration in programBlock.Declarations)
             {
                 VisitNode(programBlockDeclaration);
             }
             VisitCompoundStatement(programBlock.CompoundStatement);
+            return null;
         }
 
-        private void VisitCompoundStatement(CompoundStatementNode node)
+        public object VisitCompoundStatement(CompoundStatementNode node)
         {
             foreach (var nodeNode in node.Nodes)
             {
                 VisitNode(nodeNode);
             }
+
+            return null;
         }
 
-        private void VisitVarDeclaration(VarDeclarationNode node)
+        public object VisitAssignment(AssignmentNode assignment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitVarDeclaration(VarDeclarationNode node)
         {
             var typeName = node.TypeNode.TypeValue;
             var varName = node.VarNode.VariableName;
             DefineVariableSymbol(node.VarNode.TokenItem, varName, typeName);
+            return null;
         }
 
         private void DefineVariableSymbol(TokenItem node, string varName, string typeName)

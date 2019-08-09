@@ -14,12 +14,14 @@ using Minesweeper.Test;
 
 namespace Pascal.Ide.Wpf.Views
 {
+    
     public class DocumentService : IDocumentService, IDisposable
     {
 
         private bool _isBusy = false;
         public void HighlightSyntax(IList<HighlightParameters> parameters)
         {
+            
             if (_isBusy)
             {
                 return;
@@ -29,6 +31,7 @@ namespace Pascal.Ide.Wpf.Views
             TextRange text = new TextRange(_doc.ContentStart, _doc.ContentEnd);
             text.ClearAllProperties();
             var lexer = new PascalLexer();
+            
             TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
             while (current != null)
             {
