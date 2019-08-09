@@ -112,9 +112,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="HelloWorld.Pascal" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-
-  
-
+  <UsingTask TaskName="Compilers.Build.BuildPascal" AssemblyFile="bin\debug\Compilers.dll" />
+  <Target Name="MyTarget" AfterTargets="AfterBuild">
+    <BuildPascal FileName="HelloWorld.Pascal">
+    </BuildPascal>
+  </Target>
 </Project>
