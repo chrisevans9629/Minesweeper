@@ -295,7 +295,14 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitString(StringNode str)
         {
-            return str.CurrentValue;
+            if (str.CurrentValue.Length == 1)
+            {
+                return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Char, true);
+            }
+            else
+            {
+                return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true);
+            }
         }
 
         public object VisitInOperator(InOperator inOperator)
@@ -470,8 +477,24 @@ namespace Minesweeper.Test.Symbols
         public object VisitAssignment(AssignmentNode ass)
         {
             var variable = VisitVariable(ass.Left) as VariableSymbol;
-            VisitNode(ass.Right);
+            var assignmentType = VisitNode(ass.Right);
             variable.Initialized = true;
+
+            if (assignmentType is Symbol symbol)
+            {
+                var varTypeName = variable.Type.Name;
+                var assTypeName = symbol.Name;
+                if (varTypeName.ToUpper() != assTypeName.ToUpper())
+                {
+                    throw new SemanticException(ErrorCode.TypeMismatch, ass.TokenItem, $"Cannot assign type '{assTypeName}' to '{variable.Name}' with type {varTypeName}");
+                }
+            }
+            else
+            {
+                throw new NotImplementedException($"assignment not returning type symbol '{assignmentType}'");
+            }
+
+
             if (variable.Type.Name == PascalTerms.Int && ass.Right is RealNode r)
             {
                 throw new SemanticException(ErrorCode.TypeMismatch, r.TokenItem, $"Cannot assign Real to integer");

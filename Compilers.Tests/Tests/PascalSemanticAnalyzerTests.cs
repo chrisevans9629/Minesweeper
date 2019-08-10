@@ -54,6 +54,35 @@ end;";
         }
 
         [Test]
+        public void StringWithChar_Should_Pass()
+        {
+            var input = @"
+Program HelloWorld;
+var t : string;
+begin
+  t := 't';
+  t := 'tt';
+  writeln('Hello, world!');
+end.
+";
+            CheckSyntax(input);
+        }
+
+        [Test]
+        public void CharToString_Should_Fail()
+        {
+            var input = @"
+Program HelloWorld;
+var t : char;
+begin
+  t := 't';
+  t := 'tt';
+  writeln('Hello, world!');
+end.";
+           Assert.Throws<SemanticException>(()=> CheckSyntax(input));
+        }
+
+        [Test]
         public void FunctionDeclaration_Should_CreateFunctionSymbol()
         {
             var input = PascalInterpreterTests.GetFile("PascalFunction.txt");
