@@ -32,5 +32,7 @@ namespace Minesweeper.Test
         T VisitString(StringNode str);
         T VisitFunctionDeclaration(FunctionDeclarationNode faDeclarationNode);
         T VisitBool(BoolNode boolNode);
+        T VisitRangeExpression(ListRangeExpressionNode listRange);
+        T VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode);
     }
 }

@@ -3,13 +3,14 @@
 namespace Minesweeper.Test
 {
 
-    public abstract class ListNode : Node
+    public interface IToken
+    {
+        TokenItem TokenItem { get; set; }
+    }
+    public class ListItemsExpressionNode : Node, IToken
     {
         public TokenItem TokenItem { get; set; }
 
-    }
-    public class ListItemsExpressionNode : ListNode
-    {
         public ListItemsExpressionNode(IList<StringNode> items, TokenItem tokenItem)
         {
             Items = items;
@@ -22,7 +23,7 @@ namespace Minesweeper.Test
             return $"List({Aggregate(Items)})";
         }
     }
-    public class ListRangeExpressionNode : ListNode
+    public class ListRangeExpressionNode : Node, IToken
     {
         public StringNode FromNode { get; }
         public StringNode ToNode { get; }
@@ -37,5 +38,7 @@ namespace Minesweeper.Test
         {
             return $"List({FromNode}..{ToNode})";
         }
+
+        public TokenItem TokenItem { get; set; }
     }
 }

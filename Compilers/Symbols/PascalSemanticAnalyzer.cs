@@ -10,10 +10,7 @@ namespace Minesweeper.Test.Symbols
         private ScopedSymbolTable _currentScope;
         public object VisitProgram(PascalProgramNode programNode)
         {
-            var levelZero = new ScopedSymbolTable(programNode.ProgramName, 0, null, _logger);
-            CurrentScope = levelZero;
-
-            DefineBuiltIns(levelZero);
+            var levelZero = CreateCurrentScope(programNode.ProgramName);
 
 
             var global = new ScopedSymbolTable("Global", 1, levelZero, _logger);
@@ -21,6 +18,15 @@ namespace Minesweeper.Test.Symbols
             VisitBlock(programNode.Block);
             CurrentScope = global;
             return null;
+        }
+
+        public ScopedSymbolTable CreateCurrentScope(string name)
+        {
+            var levelZero = new ScopedSymbolTable(name, 0, null, _logger);
+            CurrentScope = levelZero;
+
+            DefineBuiltIns(levelZero);
+            return levelZero;
         }
 
         public static void DefineBuiltIns(ScopedSymbolTable levelZero)
@@ -232,12 +238,15 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitForLoop(ForLoopNode forLoop)
         {
-            throw new NotImplementedException();
+            VisitAssignment(forLoop.AssignFromNode);
+            VisitNode(forLoop.ToNode);
+            VisitNode(forLoop.DoStatements);
+            return null;
         }
 
         public object VisitFunctionCall(CallNode functionCall)
         {
-            throw new NotImplementedException();
+            return VisitCall(functionCall);
         }
 
         public object VisitEqualExpression(EqualExpression equal)
@@ -258,37 +267,43 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitReal(RealNode real)
         {
-            throw new NotImplementedException();
+            return real.Value;
         }
 
         public object VisitInteger(IntegerNode integer)
         {
-            throw new NotImplementedException();
+            return integer.Value;
         }
 
         public object VisitBinaryOperator(BinaryOperator binary)
         {
-            throw new NotImplementedException();
+            VisitNode(binary.Left);
+            VisitNode(binary.Right);
+            return null;
         }
 
         public object VisitUnary(UnaryOperator unary)
         {
-            throw new NotImplementedException();
+            VisitNode(unary.Value);
+            return null;
         }
 
         public object Fail(Node node)
         {
-            throw new NotImplementedException();
+            return this.FailModel(node);
         }
 
         public object VisitString(StringNode str)
         {
-            throw new NotImplementedException();
+            return str.CurrentValue;
         }
 
         public object VisitInOperator(InOperator inOperator)
         {
-            throw new NotImplementedException();
+            VisitNode(inOperator.CompareNode);
+
+            VisitNode(inOperator.ListExpression);
+            return null;
         }
 
         public object VisitCaseStatement(CaseStatementNode caseStatement)
@@ -332,7 +347,7 @@ namespace Minesweeper.Test.Symbols
                 typeName = PascalTerms.String;
             }
 
-            
+
             //VisitNode(decNode.Value);
             this.DefineVariableSymbol(decNode.TokenItem, decNode.ConstantName, typeName);
             return null;
@@ -340,7 +355,7 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitPointer(PointerNode pointer)
         {
-            throw new NotImplementedException();
+            return pointer.Value;
         }
 
         public object VisitProcedureDeclaration(ProcedureDeclarationNode procedureDeclaration)
@@ -355,11 +370,13 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitProcedureCall(ProcedureCallNode procedureCall)
         {
-            throw new NotImplementedException();
+            return VisitCall(procedureCall);
         }
 
         public object VisitFunctionDeclaration(FunctionDeclarationNode procedureDeclaration)
         {
+            var procedure = new FunctionDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters);
+            CurrentScope.Define(procedure);
             DeclareParameters(procedureDeclaration);
             DefineVariableSymbol(procedureDeclaration.Token, procedureDeclaration.FunctionName, procedureDeclaration.ReturnType.TypeValue);
             VisitBlock(procedureDeclaration.Block);
@@ -377,14 +394,23 @@ namespace Minesweeper.Test.Symbols
             }
 
             CurrentScope = CurrentScope.ParentScope;
-            var procedure = new FunctionDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters);
-            CurrentScope.Define(procedure);
+
             return null;
         }
 
         public object VisitBool(BoolNode boolNode)
         {
-            throw new NotImplementedException();
+            return boolNode.Value;
+        }
+
+        public object VisitRangeExpression(ListRangeExpressionNode listRange)
+        {
+            return null;
+        }
+
+        public object VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
+        {
+            return null;
         }
 
         private void DeclareParameters(DeclarationNode procedureDeclaration)
@@ -406,33 +432,34 @@ namespace Minesweeper.Test.Symbols
 
         }
 
-        private void VisitCall(CallNode funCall)
+        private object VisitCall(CallNode funCall)
         {
-           var symbol = CurrentScope.LookupSymbols<DeclarationSymbol>(funCall.Name, true);
-           if (symbol.Any() != true)
-           {
+            var symbol = CurrentScope.LookupSymbols<DeclarationSymbol>(funCall.Name, true);
+            if (symbol.Any() != true)
+            {
                 NotFound(funCall.Token, funCall.Type, funCall.Name);
-           }
+            }
 
-           foreach (var funCallParameter in funCall.Parameters)
-           {
-               VisitNode(funCallParameter);
-           }
+            foreach (var funCallParameter in funCall.Parameters)
+            {
+                VisitNode(funCallParameter);
+            }
 
-           var callCount = funCall.Parameters.Count;
+            var callCount = funCall.Parameters.Count;
 
 
-           if (symbol.All(p => p.Parameters.Count != callCount))
-           {
+            if (symbol.All(p => p.Parameters.Count != callCount))
+            {
                 throw new SemanticException(ErrorCode.ParameterMismatch, funCall.Token, $"Function {funCall.Name} has {symbol.First().Parameters.Count} parameters but {callCount} was used");
-           }
+            }
 
+            return null;
         }
 
 
         public object VisitVariableOrFunctionCall(VariableOrFunctionCall call)
         {
-            throw new NotImplementedException();
+            return VisitVariable(call);
         }
 
         public object VisitNoOp(NoOp nope)
@@ -440,21 +467,27 @@ namespace Minesweeper.Test.Symbols
             return null;
         }
 
-        private void VisitAssign(AssignmentNode ass)
+        public object VisitAssignment(AssignmentNode ass)
         {
-            var variable = VisitVariable(ass.Left);
+            var variable = VisitVariable(ass.Left) as VariableSymbol;
             VisitNode(ass.Right);
             variable.Initialized = true;
             if (variable.Type.Name == PascalTerms.Int && ass.Right is RealNode r)
             {
                 throw new SemanticException(ErrorCode.TypeMismatch, r.TokenItem, $"Cannot assign Real to integer");
             }
+
+            return null;
         }
 
-        private VariableSymbol VisitVariable(VariableOrFunctionCall assLeft)
+        private object VisitVariable(VariableOrFunctionCall assLeft)
         {
             var varName = assLeft.VariableName;
-            var symbol = CurrentScope.LookupSymbol<VariableSymbol>(varName, true);
+            Symbol symbol = CurrentScope.LookupSymbol<VariableSymbol>(varName, true);
+            if (symbol == null)
+            {
+                symbol = CurrentScope.LookupSymbol<FunctionDeclarationSymbol>(varName, true);
+            }
             if (symbol == null)
             {
                 NotFound(assLeft.TokenItem, "Variable", varName);
@@ -489,10 +522,7 @@ namespace Minesweeper.Test.Symbols
             return null;
         }
 
-        public object VisitAssignment(AssignmentNode assignment)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public object VisitVarDeclaration(VarDeclarationNode node)
         {

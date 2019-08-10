@@ -150,6 +150,16 @@ namespace Minesweeper.Test
             return boolNode.Value.ToString();
         }
 
+        public string VisitRangeExpression(ListRangeExpressionNode listRange)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
+        {
+            throw new NotImplementedException();
+        }
+
         public string VisitVarDeclaration(VarDeclarationNode varDeclaration)
         {
             var typeValue = varDeclaration.TypeNode.TypeValue.ToUpper();

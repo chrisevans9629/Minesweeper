@@ -82,6 +82,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Compilers.Build\Compilers.Build.csproj">
+      <Project>{cabbb686-15fa-4cc1-8a5d-3e1a6f553822}</Project>
+      <Name>Compilers.Build</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Compilers\Compilers.csproj">
       <Project>{1449d9b1-bf39-45ef-a3cc-5fe8d5dc8180}</Project>
       <Name>Compilers</Name>
@@ -118,9 +122,9 @@
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <UsingTask TaskName="Compilers.Build.BuildPascal" AssemblyFile="bin\debug\Compilers.dll" />
+  <!--<UsingTask TaskName="Compilers.Build.BuildPascal" AssemblyFile="bin\debug\Compilers.Build.dll" />
   <Target Name="MyTarget" AfterTargets="AfterBuild">
     <BuildPascal FileName="HelloWorld.Pascal">
     </BuildPascal>
-  </Target>
+  </Target>-->
 </Project>

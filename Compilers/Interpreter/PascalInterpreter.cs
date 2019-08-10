@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -162,6 +163,23 @@ namespace Minesweeper.Test
             return boolNode.Value;
         }
 
+        public object VisitRangeExpression(ListRangeExpressionNode listRange)
+        {
+            var from = listRange.FromNode.CurrentValue[0];
+
+            var to = listRange.ToNode.CurrentValue[0];
+            var list = Enumerable.Range(from, to).Select(p=> (char)p);
+
+            return list.Cast<object>();
+        }
+
+        public object VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
+        {
+            var items = itemsExpressionNode.Items.Select(p => p.CurrentValue[0]);
+
+            return items.Cast<object>();
+        }
+
         public object VisitFunctionDeclaration(FunctionDeclarationNode funcdec)
         {
             CurrentScope.Add(funcdec.FunctionName, funcdec);
@@ -206,23 +224,13 @@ namespace Minesweeper.Test
         {
             var valueToContain = VisitNode(inOperator.CompareNode).ToString()[0];
 
-            if (inOperator.ListExpression is ListRangeExpressionNode listRange)
+            var list = VisitNode(inOperator.ListExpression);
+            if (list is IEnumerable<object> enumerable)
             {
-                var from = listRange.FromNode.CurrentValue[0];
-
-                var to = listRange.ToNode.CurrentValue[0];
-                var list = Enumerable.Range(from, to);
-
-                return list.Contains(valueToContain);
+                return enumerable.Contains(valueToContain);
             }
 
-            if (inOperator.ListExpression is ListItemsExpressionNode listItems)
-            {
-                var items = listItems.Items.Select(p => p.CurrentValue[0]);
-
-                return items.Contains(valueToContain);
-            }
-            throw new NotImplementedException();
+            throw new NotImplementedException("must be a list");
 
         }
 

@@ -22,7 +22,7 @@ namespace Minesweeper.Test.Tests
         private PascalInterpreter interpreter;
         private PascalLexer lexer;
         private PascalAst ast;
-        private PascalSemanticAnalyzer table;
+        private PascalSemanticAnalyzer analyzer;
         private LoggerMock logger;
         [SetUp]
         public void Setup()
@@ -31,9 +31,27 @@ namespace Minesweeper.Test.Tests
             interpreter = new PascalInterpreter(logger);
             lexer = new PascalLexer();
             ast = new PascalAst();
-            table = new PascalSemanticAnalyzer(logger);
+            analyzer = new PascalSemanticAnalyzer(logger);
         }
 
+
+
+        [Test]
+        public void FunctionAssignment_Should_Pass()
+        {
+            var input = @"
+function GetNum: char;
+var look : char;
+begin
+   if look = 't' then Writeln('Integer');
+   GetNum := Look;
+end;";
+            var tokens = lexer.Tokenize(input);
+            ast.CreateIterator(tokens);
+            var node = ast.FunctionDeclaration();
+            analyzer.CreateCurrentScope("test");
+            this.analyzer.VisitFunctionDeclaration(node);
+        }
 
         [Test]
         public void FunctionDeclaration_Should_CreateFunctionSymbol()
@@ -60,7 +78,7 @@ namespace Minesweeper.Test.Tests
         {
             var input =
                 "PROGRAM Part10;\r\nVAR\r\n   number     : INTEGER;\r\n   a, b, c, x : INTEGER;\r\n   y          : REAL;\r\n\r\nBEGIN {Part10}\r\n   BEGIN\r\n      number := 2;\r\n      a := number;\r\n      b := 10 * a + 10 * number DIV 4;\r\n      c := a - - b\r\n   END;\r\n   x := 11;\r\n   y := 20 / 7 + 3.14;\r\n   { writeln('a = ', a); }\r\n   { writeln('b = ', b); }\r\n   { writeln('c = ', c); }\r\n   { writeln('number = ', number); }\r\n   { writeln('x = ', x); }\r\n   { writeln('y = ', y); }\r\nEND.  {Part10}";
-            var result = table.CheckSyntax(ast.Evaluate(lexer.Tokenize(input)));
+            var result = analyzer.CheckSyntax(ast.Evaluate(lexer.Tokenize(input)));
             result.Should().NotBeNull();
 
             var symbol = result.LookupSymbol("number", true);
@@ -76,7 +94,7 @@ namespace Minesweeper.Test.Tests
 
             var node = ast.Evaluate(lexer.Tokenize(input));
 
-            var tableBuilder = this.table;
+            var tableBuilder = this.analyzer;
 
             var t = Assert.Throws<SemanticException>(()=> tableBuilder.CheckSyntax(node));
             t.Error.Should().Be(ErrorCode.IdNotFound);
@@ -87,7 +105,7 @@ namespace Minesweeper.Test.Tests
         {
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var result = Assert.Throws<SemanticException>(() => table.CheckSyntax(node));
+            var result = Assert.Throws<SemanticException>(() => analyzer.CheckSyntax(node));
             result.Error.Should().Be(ErrorCode.DuplicateId);
         }
 
@@ -104,7 +122,7 @@ namespace Minesweeper.Test.Tests
         {
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var result = table.CheckSyntax(node);
+            var result = analyzer.CheckSyntax(node);
             return result;
         }
 
@@ -115,7 +133,7 @@ namespace Minesweeper.Test.Tests
             var input = "program SymTab3;\r\n   var x, y : integer;\r\n\r\nbegin\r\n\r\nend.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var result = table.CheckSyntax(node);
+            var result = analyzer.CheckSyntax(node);
 
             result.Count.Should().BeGreaterOrEqualTo(4);
         }
@@ -125,7 +143,7 @@ namespace Minesweeper.Test.Tests
         {
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var result = table.CheckSyntax(node);
+            var result = analyzer.CheckSyntax(node);
             var memory = interpreter.Interpret(node).Should().BeOfType<Memory>().Subject;
              memory.ContainsKey("a").Should().BeTrue();
         }
@@ -162,7 +180,7 @@ namespace Minesweeper.Test.Tests
                     var tokens = lexer.Tokenize(file);
 
                     var node = ast.Evaluate(tokens);
-                    var result = table.CheckSyntax(node);
+                    var result = analyzer.CheckSyntax(node);
                 }
                 catch (PascalException e)
                 {
@@ -177,7 +195,7 @@ namespace Minesweeper.Test.Tests
                 "program test; var x : integer; procedure test(a : integer;); var b : integer; begin end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var memory = table.CheckSyntax(node);
+            var memory = analyzer.CheckSyntax(node);
 
             memory.LookupSymbol("test", true).Should().NotBeNull();
             memory.LookupSymbol("x", true).Should().NotBeNull();
@@ -191,7 +209,7 @@ namespace Minesweeper.Test.Tests
             var input = "program globalTest; var x : integer; procedure test(a : integer;); var b : integer; begin x := 2; end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var memory = table.CheckSyntax(node);
+            var memory = analyzer.CheckSyntax(node);
         }
 
         [Test]
@@ -200,7 +218,7 @@ namespace Minesweeper.Test.Tests
             var input = "program globalTest; var x : integer; procedure test(x : integer;); var b : integer; begin x := 2; end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var memory = table.CheckSyntax(node);
+            var memory = analyzer.CheckSyntax(node);
         }
 
         [Test]
@@ -209,7 +227,7 @@ namespace Minesweeper.Test.Tests
             var input ="program globalTest; var x : integer; procedure test(a : integer;); var b : integer; begin a := 2; end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var memory = table.CheckSyntax(node);
+            var memory = analyzer.CheckSyntax(node);
             
             
             logger.Calls.Should().Contain("Opened Scope globalTest");
@@ -224,7 +242,7 @@ namespace Minesweeper.Test.Tests
         {
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
-            var result = table.CheckSyntax(node);
+            var result = analyzer.CheckSyntax(node);
         }
 
 

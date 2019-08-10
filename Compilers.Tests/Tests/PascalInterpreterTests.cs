@@ -51,6 +51,8 @@ end.
         }
 
 
+       
+
         [TestCase("1", "\tMOVE #1,D0\r\n")]
         [TestCase("1+2", "\tMOVE #1,D0\r\n\tMOVE D0,D1\r\n\tMOVE #2,D0\r\n\tADD D1,D0\r\n")]
         [TestCase("", "\r\n.Error: Integer Expected.\r\n")]

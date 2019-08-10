@@ -136,6 +136,15 @@
                 return visitor.VisitUnary(un);
             }
 
+            if (node is ListItemsExpressionNode itemsExpressionNode)
+            {
+                return visitor.VisitListItemsExpression(itemsExpressionNode);
+            }
+
+            if (node is ListRangeExpressionNode listRange)
+            {
+                return visitor.VisitRangeExpression(listRange);
+            }
             return visitor.Fail(node);
         }
     }

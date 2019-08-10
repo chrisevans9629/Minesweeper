@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using Minesweeper.Test;
@@ -6,6 +7,7 @@ using Minesweeper.Test.Symbols;
 
 namespace Compilers.Tests
 {
+
     public class PascalToIl : IPascalNodeVisitor<object>
     {
         public object VisitNode(Node node)
@@ -225,6 +227,16 @@ namespace Compilers.Tests
         }
 
         public object VisitBool(BoolNode boolNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitRangeExpression(ListRangeExpressionNode listRange)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
         {
             throw new NotImplementedException();
         }

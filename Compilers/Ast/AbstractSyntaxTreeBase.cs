@@ -93,7 +93,7 @@ namespace Minesweeper.Test
             return result;
         }
 
-        public ListNode ListNode()
+        public Node ListNode()
         {
             var list = Current;
             Eat(PascalTerms.LeftBracket);

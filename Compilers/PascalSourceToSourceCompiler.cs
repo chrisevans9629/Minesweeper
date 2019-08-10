@@ -274,6 +274,16 @@ namespace Minesweeper.Test.Tests
             throw new NotImplementedException();
         }
 
+        public string VisitRangeExpression(ListRangeExpressionNode listRange)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
+        {
+            throw new NotImplementedException();
+        }
+
         private string VisitProgramBlockNode(PascalProgramNode program)
         {
             var programStr = $"program {program.ProgramName}{CurrentScope.ScopeLevel};\r\n";
