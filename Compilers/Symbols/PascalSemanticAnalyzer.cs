@@ -251,9 +251,41 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitEqualExpression(EqualExpression equal)
         {
-            VisitNode(equal.Left);
-            VisitNode(equal.Right);
+            var left = VisitNode(equal.Left);
+            var right = VisitNode(equal.Right);
+            return CheckTypeMatch(equal.TokenItem, left, right, equal);
+        }
+
+        BuiltInTypeSymbol GetBuiltInType(object sym)
+        {
+            if (sym is Symbol symbol)
+            {
+                if (symbol is BuiltInTypeSymbol t)
+                {
+                    return t;
+                }
+                if (symbol.Type != null)
+                {
+                    return GetBuiltInType(symbol.Type);
+                }
+            }
+            
+           
             return null;
+        }
+        private object CheckTypeMatch(TokenItem tokenItem, object left, object right, Node nodeForLog)
+        {
+            if (GetBuiltInType(left) is BuiltInTypeSymbol a && GetBuiltInType(right) is BuiltInTypeSymbol b)
+            {
+                if (a.Name == b.Name)
+                {
+                    return a;
+                }
+
+                throw new SemanticException(ErrorCode.TypeMismatch, tokenItem, $"type {a} is not assignable to {b}");
+            }
+
+            throw new NotImplementedException($"{nodeForLog}");
         }
 
         public object VisitWhileLoop(WhileLoopNode whileLoop)
@@ -267,19 +299,21 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitReal(RealNode real)
         {
-            return real.Value;
+            //return real.Value;
+            return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Real, true);
+
         }
 
         public object VisitInteger(IntegerNode integer)
         {
-            return integer.Value;
+            return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Int, true);
         }
 
         public object VisitBinaryOperator(BinaryOperator binary)
         {
-            VisitNode(binary.Left);
-            VisitNode(binary.Right);
-            return null;
+            var left = VisitNode(binary.Left);
+            var right = VisitNode(binary.Right);
+            return CheckTypeMatch(binary.TokenItem, left, right, binary);
         }
 
         public object VisitUnary(UnaryOperator unary)
@@ -480,19 +514,7 @@ namespace Minesweeper.Test.Symbols
             var assignmentType = VisitNode(ass.Right);
             variable.Initialized = true;
 
-            if (assignmentType is Symbol symbol)
-            {
-                var varTypeName = variable.Type.Name;
-                var assTypeName = symbol.Name;
-                if (varTypeName.ToUpper() != assTypeName.ToUpper())
-                {
-                    throw new SemanticException(ErrorCode.TypeMismatch, ass.TokenItem, $"Cannot assign type '{assTypeName}' to '{variable.Name}' with type {varTypeName}");
-                }
-            }
-            else
-            {
-                throw new NotImplementedException($"assignment not returning type symbol '{assignmentType}'");
-            }
+            CheckType(ass.TokenItem, assignmentType, variable);
 
 
             if (variable.Type.Name == PascalTerms.Int && ass.Right is RealNode r)
@@ -501,6 +523,26 @@ namespace Minesweeper.Test.Symbols
             }
 
             return null;
+        }
+
+        private  object CheckType(TokenItem token, object assignmentType, Symbol variable)
+        {
+            if (GetBuiltInType(assignmentType) is BuiltInTypeSymbol symbol)
+            {
+                var varTypeName = variable.Type.Name;
+                var assTypeName = symbol.Name;
+                if (varTypeName.ToUpper() != assTypeName.ToUpper())
+                {
+                    throw new SemanticException(ErrorCode.TypeMismatch, token,
+                        $"Cannot assign type '{assTypeName}' to '{variable.Name}' with type {varTypeName}");
+                }
+
+                return symbol;
+            }
+            else
+            {
+                throw new NotImplementedException($"assignment not returning type symbol '{assignmentType}'");
+            }
         }
 
         private object VisitVariable(VariableOrFunctionCall assLeft)
