@@ -255,7 +255,7 @@ end.";
         }
 
 
-        public object VisitPointer3()
+        private static object VisitPointer3()
         {
             return ".";
         }

@@ -100,15 +100,15 @@ namespace Minesweeper.Test.Tests
         [Test]
         public void TestTree()
         {
-            var mulToken = new TokenItem() { Value = "*", Token = new Token() { Name = PascalTerms.Multi } };
-            var addToken = new TokenItem() { Value = "+", Token = new Token() { Name = PascalTerms.Add } };
+            var mulToken = new TokenItem { Value = "*", Token = new Token() { Name = PascalTerms.Multi } };
+            var addToken = new TokenItem { Value = "+", Token = new Token() { Name = PascalTerms.Add } };
             var mulop = new BinaryOperator(
-                new RealNode(new TokenItem() { Value = "2", Token = new Token() { Name = PascalTerms.IntegerConst } }),
-                new RealNode(new TokenItem() { Value = "7", Token = new Token() { Name = PascalTerms.IntegerConst } }),
+                new RealNode(new TokenItem { Value = "2", Token = new Token() { Name = PascalTerms.IntegerConst } }),
+                new RealNode(new TokenItem { Value = "7", Token = new Token() { Name = PascalTerms.IntegerConst } }),
                 mulToken);
             var addop = new BinaryOperator(
                 mulop,
-                new RealNode(new TokenItem() { Value = "3", Token = new Token() { Name = PascalTerms.IntegerConst } }),
+                new RealNode(new TokenItem { Value = "3", Token = new Token() { Name = PascalTerms.IntegerConst } }),
                 addToken);
 
             addop.TokenItem.Token.Name.Should().Be(PascalTerms.Add);
