@@ -31,11 +31,11 @@ namespace Minesweeper.Test.Symbols
 
         public static void DefineBuiltIns(ScopedSymbolTable levelZero)
         {
-            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Int));
+            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Int, PascalTerms.Real));
             levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Real));
             levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Pointer));
             levelZero.Define(new BuiltInTypeSymbol(PascalTerms.String));
-            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Char));
+            levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Char, PascalTerms.String));
             levelZero.Define(new BuiltInTypeSymbol(PascalTerms.Boolean));
             levelZero.Define(new ProcedureDeclarationSymbol("READ", new List<ParameterNode>()
             {
@@ -47,7 +47,7 @@ namespace Minesweeper.Test.Symbols
             {
                 new ParameterNode(new VarDeclarationNode(new VariableOrFunctionCall(new TokenItem() {Value = "look"}),
                     new TypeNode(new TokenItem() {Value = PascalTerms.Char})))
-            }));
+            }, levelZero.LookupSymbol(PascalTerms.Char, true)));
             levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()));
             levelZero.Define(new ProcedureDeclarationSymbol("Halt", new List<ParameterNode>()));
             levelZero.Define(new ProcedureDeclarationSymbol("WriteLn", new List<ParameterNode>()
@@ -282,6 +282,16 @@ namespace Minesweeper.Test.Symbols
                     return a;
                 }
 
+                if (a.Conversions.Contains(b.Name))
+                {
+                    return a;
+                }
+                if (b.Conversions.Contains(a.Name))
+                {
+                    return b;
+                }
+
+
                 throw new SemanticException(ErrorCode.TypeMismatch, tokenItem, $"type {a} is not assignable to {b}");
             }
 
@@ -318,8 +328,8 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitUnary(UnaryOperator unary)
         {
-            VisitNode(unary.Value);
-            return null;
+            var value = VisitNode(unary.Value);
+            return value;
         }
 
         public object Fail(Node node)
@@ -416,7 +426,7 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitFunctionDeclaration(FunctionDeclarationNode procedureDeclaration)
         {
-            var procedure = new FunctionDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters);
+            var procedure = new FunctionDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters, CurrentScope.LookupSymbol(procedureDeclaration.ReturnType.TypeValue, true));
             CurrentScope.Define(procedure);
             DeclareParameters(procedureDeclaration);
             DefineVariableSymbol(procedureDeclaration.Token, procedureDeclaration.FunctionName, procedureDeclaration.ReturnType.TypeValue);
@@ -436,7 +446,7 @@ namespace Minesweeper.Test.Symbols
 
             CurrentScope = CurrentScope.ParentScope;
 
-            return null;
+            return procedure;
         }
 
         public object VisitBool(BoolNode boolNode)
@@ -475,8 +485,8 @@ namespace Minesweeper.Test.Symbols
 
         private object VisitCall(CallNode funCall)
         {
-            var symbol = CurrentScope.LookupSymbols<DeclarationSymbol>(funCall.Name, true);
-            if (symbol.Any() != true)
+            var symbols = CurrentScope.LookupSymbols<DeclarationSymbol>(funCall.Name, true);
+            if (symbols.Any() != true)
             {
                 NotFound(funCall.Token, funCall.Type, funCall.Name);
             }
@@ -488,13 +498,16 @@ namespace Minesweeper.Test.Symbols
 
             var callCount = funCall.Parameters.Count;
 
+            
 
-            if (symbol.All(p => p.Parameters.Count != callCount))
+            if (symbols.All(p => p.Parameters.Count != callCount))
             {
-                throw new SemanticException(ErrorCode.ParameterMismatch, funCall.Token, $"Function {funCall.Name} has {symbol.First().Parameters.Count} parameters but {callCount} was used");
+                throw new SemanticException(ErrorCode.ParameterMismatch, funCall.Token, $"Function {funCall.Name} has {symbols.First().Parameters.Count} parameters but {callCount} was used");
             }
 
-            return null;
+            var symbol = symbols.First(p => p.Parameters.Count == callCount);
+
+            return symbol.Type;
         }
 
 
@@ -514,7 +527,7 @@ namespace Minesweeper.Test.Symbols
             var assignmentType = VisitNode(ass.Right);
             variable.Initialized = true;
 
-            CheckType(ass.TokenItem, assignmentType, variable);
+            //CheckType(ass.TokenItem, assignmentType, variable);
 
 
             if (variable.Type.Name == PascalTerms.Int && ass.Right is RealNode r)
@@ -522,28 +535,28 @@ namespace Minesweeper.Test.Symbols
                 throw new SemanticException(ErrorCode.TypeMismatch, r.TokenItem, $"Cannot assign Real to integer");
             }
 
-            return null;
+            return CheckTypeMatch(ass.TokenItem, variable, assignmentType, ass);
         }
 
-        private  object CheckType(TokenItem token, object assignmentType, Symbol variable)
-        {
-            if (GetBuiltInType(assignmentType) is BuiltInTypeSymbol symbol)
-            {
-                var varTypeName = variable.Type.Name;
-                var assTypeName = symbol.Name;
-                if (varTypeName.ToUpper() != assTypeName.ToUpper())
-                {
-                    throw new SemanticException(ErrorCode.TypeMismatch, token,
-                        $"Cannot assign type '{assTypeName}' to '{variable.Name}' with type {varTypeName}");
-                }
+        //private  object CheckType(TokenItem token, object assignmentType, Symbol variable)
+        //{
+        //    if (GetBuiltInType(assignmentType) is BuiltInTypeSymbol symbol)
+        //    {
+        //        var varTypeName = variable.Type.Name.ToUpper();
+        //        var assTypeName = symbol.Name.ToUpper();
+        //        if (varTypeName != assTypeName && symbol.Conversions.Select(p=>p.ToUpper()).Contains(varTypeName.ToUpper()) != true)
+        //        {
+        //            throw new SemanticException(ErrorCode.TypeMismatch, token,
+        //                $"Cannot assign type '{assTypeName}' to '{variable.Name}' with type {varTypeName}");
+        //        }
 
-                return symbol;
-            }
-            else
-            {
-                throw new NotImplementedException($"assignment not returning type symbol '{assignmentType}'");
-            }
-        }
+        //        return symbol;
+        //    }
+        //    else
+        //    {
+        //        throw new NotImplementedException($"assignment not returning type symbol '{assignmentType}'");
+        //    }
+        //}
 
         private object VisitVariable(VariableOrFunctionCall assLeft)
         {

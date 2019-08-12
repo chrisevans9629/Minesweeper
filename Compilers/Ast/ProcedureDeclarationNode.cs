@@ -11,7 +11,7 @@ namespace Minesweeper.Test
             Name = procedureId;
             Block = block;
             Parameters = parameters;
-            Type = "Procedure";
+            MethodType = "Procedure";
         }
 
        

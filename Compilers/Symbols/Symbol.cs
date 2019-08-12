@@ -1,4 +1,7 @@
-﻿namespace Minesweeper.Test.Symbols
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace Minesweeper.Test.Symbols
 {
     public class Symbol
     {
@@ -14,8 +17,10 @@
     
     public class BuiltInTypeSymbol : Symbol
     {
-        public BuiltInTypeSymbol(string name) : base(name)
+        public IList<string> Conversions { get; set; }
+        public BuiltInTypeSymbol(string name, params string[] conversions) : base(name)
         {
+            Conversions = new List<string>(conversions);
         }
 
         public override string ToString()

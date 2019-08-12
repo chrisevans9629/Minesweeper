@@ -24,8 +24,9 @@ namespace Minesweeper.Test.Symbols
 
     public class FunctionDeclarationSymbol : DeclarationSymbol
     {
-        public FunctionDeclarationSymbol(string name, IList<ParameterNode> parameters) : base(name, parameters)
+        public FunctionDeclarationSymbol(string name, IList<ParameterNode> parameters, Symbol type) : base(name, parameters)
         {
+            Type = type;
         }
     }
 

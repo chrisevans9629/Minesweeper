@@ -31,14 +31,14 @@ namespace Minesweeper.Test
     }
     public abstract class DeclarationNode : Node
     {
-        public string Type { get; set; }
+        protected string MethodType { get; set; }
         public string Name { get; protected set; }
         public IList<ParameterNode> Parameters { get; protected set; }
         public BlockNode Block { get; protected set; }
         public TokenItem Token { get; protected set; }
         public override string Display()
         {
-            return $"{Type}({Name}, {Node.Aggregate(Parameters)}, {Block})";
+            return $"{MethodType}({Name}, {Node.Aggregate(Parameters)}, {Block})";
         }
     }
 
@@ -55,7 +55,7 @@ namespace Minesweeper.Test
             Block = block;
             Token = token;
             ReturnType = returnType;
-            Type = "Function";
+            MethodType = "Function";
         }
        
     }
