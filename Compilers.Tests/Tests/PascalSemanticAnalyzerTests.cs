@@ -270,6 +270,7 @@ end.")]
                 }
                 catch (PascalException e)
                 {
+                    Console.WriteLine(e);
                 }
             }
         }

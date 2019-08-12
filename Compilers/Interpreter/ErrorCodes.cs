@@ -18,7 +18,12 @@ namespace Minesweeper.Test
         public ErrorCode Error { get; }
         public TokenItem Token { get; }
 
-        public PascalException(ErrorCode error, TokenItem token, string message, Exception ex = null) : base(message + Location(token), ex)
+
+        public PascalException(ErrorCode error, TokenItem token, string message) : this(error, token, message, null)
+        {
+        }
+
+        public PascalException(ErrorCode error, TokenItem token, string message, Exception ex) : base(message + Location(token), ex)
         {
             Error = error;
             Token = token;
