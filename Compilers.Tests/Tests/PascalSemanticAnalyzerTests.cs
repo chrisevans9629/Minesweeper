@@ -106,7 +106,28 @@ end.";
         public void PascalProgram_ShouldGetSymbols()
         {
             var input =
-                "PROGRAM Part10;\r\nVAR\r\n   number     : INTEGER;\r\n   a, b, c, x : INTEGER;\r\n   y          : REAL;\r\n\r\nBEGIN {Part10}\r\n   BEGIN\r\n      number := 2;\r\n      a := number;\r\n      b := 10 * a + 10 * number DIV 4;\r\n      c := a - - b\r\n   END;\r\n   x := 11;\r\n   y := 20 / 7 + 3.14;\r\n   { writeln('a = ', a); }\r\n   { writeln('b = ', b); }\r\n   { writeln('c = ', c); }\r\n   { writeln('number = ', number); }\r\n   { writeln('x = ', x); }\r\n   { writeln('y = ', y); }\r\nEND.  {Part10}";
+                @"PROGRAM Part10;
+VAR
+   number     : INTEGER;
+   a, b, c, x : INTEGER;
+   y          : REAL;
+
+BEGIN {Part10}
+   BEGIN
+      number := 2;
+      a := number;
+      b := 10 * a + 10 * number DIV 4;
+      c := a - - b
+   END;
+   x := 11;
+   y := 20 / 7 + 3.14;
+   { writeln('a = ', a); }
+   { writeln('b = ', b); }
+   { writeln('c = ', c); }
+   { writeln('number = ', number); }
+   { writeln('x = ', x); }
+   { writeln('y = ', y); }
+END.  {Part10}";
             var result = analyzer.CheckSyntax(ast.Evaluate(lexer.Tokenize(input)));
             result.Should().NotBeNull();
 
@@ -114,6 +135,42 @@ end.";
 
             symbol.Type.Name.Should().Be(PascalTerms.Int);
         }
+
+
+        [Test]
+        public void PascalAssignIntegerToReal_Should_Pass()
+        {
+            var input = @"
+program HelloWorld;
+var t : real;
+begin
+    t := 10 * 10.0;
+    writeln('Hello, world!');
+end.";
+            CheckSyntax(input);
+        }
+
+
+        [TestCase(@"
+program HelloWorld;
+var t : integer;
+begin
+    t := 10 * 10.0;
+    writeln('Hello, world!');
+end.")]
+        [TestCase(@"
+program HelloWorld;
+var t : integer;
+begin
+    t := 10.0 * 10;
+    writeln('Hello, world!');
+end.")]
+        public void PascalAssignRealToInteger_Should_Fail(string input)
+        {
+           Assert.Throws<SemanticException>(()=> CheckSyntax(input));
+        }
+
+
 
         [TestCase("program test; begin a := 2; end.")]
         [TestCase("program test; var a: integer; begin a := b; end.")]

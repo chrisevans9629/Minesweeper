@@ -82,6 +82,8 @@ namespace Minesweeper.Test
             RightBracket
         };
 
+        public static string Collection = "COLLECTION";
+
 
         public static Token CreateToken(string name)
         {

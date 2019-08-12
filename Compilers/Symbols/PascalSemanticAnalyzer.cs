@@ -273,7 +273,7 @@ namespace Minesweeper.Test.Symbols
            
             return null;
         }
-        private object CheckTypeMatch(TokenItem tokenItem, object left, object right, Node nodeForLog)
+        private object CheckTypeMatch(TokenItem tokenItem, object left, object right, Node nodeForLog, bool twoWayConversion = true)
         {
             if (GetBuiltInType(left) is BuiltInTypeSymbol a && GetBuiltInType(right) is BuiltInTypeSymbol b)
             {
@@ -282,20 +282,25 @@ namespace Minesweeper.Test.Symbols
                     return a;
                 }
 
-                if (a.Conversions.Contains(b.Name))
-                {
-                    return a;
-                }
-                if (b.Conversions.Contains(a.Name))
+                if (a.Conversions.Contains(b.Name) && twoWayConversion)
                 {
                     return b;
                 }
+                if (b.Conversions.Contains(a.Name))
+                {
+                    return a;
+                }
 
 
-                throw new SemanticException(ErrorCode.TypeMismatch, tokenItem, $"type {a} is not assignable to {b}");
+                TypeMismatch(tokenItem, a, b);
             }
 
             throw new NotImplementedException($"{nodeForLog}");
+        }
+
+        private static void TypeMismatch(TokenItem tokenItem, BuiltInTypeSymbol a, BuiltInTypeSymbol b)
+        {
+            throw new SemanticException(ErrorCode.TypeMismatch, tokenItem, $"type {a} is not assignable to {b}");
         }
 
         public object VisitWhileLoop(WhileLoopNode whileLoop)
@@ -351,10 +356,19 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitInOperator(InOperator inOperator)
         {
-            VisitNode(inOperator.CompareNode);
+            var compare = VisitNode(inOperator.CompareNode);
 
-            VisitNode(inOperator.ListExpression);
-            return null;
+            var list = VisitNode(inOperator.ListExpression);
+            if (list is CollectionTypeSymbol collection)
+            {
+                var comType = GetBuiltInType(compare);
+                if (collection.ItemType.Name != comType.Name && comType.Conversions.Contains(collection.ItemType.Name) != true)
+                {
+                    TypeMismatch(inOperator.TokenItem, collection, comType);
+                }
+            }
+
+            return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Boolean, true);
         }
 
         public object VisitCaseStatement(CaseStatementNode caseStatement)
@@ -456,12 +470,26 @@ namespace Minesweeper.Test.Symbols
 
         public object VisitRangeExpression(ListRangeExpressionNode listRange)
         {
-            return null;
+
+            CheckTypeMatch(listRange.TokenItem, VisitNode(listRange.FromNode), VisitNode(listRange.ToNode), listRange);
+            
+            return new CollectionTypeSymbol(CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true));
         }
 
         public object VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
         {
-            return null;
+            Node prevNode = null;
+            foreach (var stringNode in itemsExpressionNode.Items)
+            {
+                if (prevNode == null)
+                {
+                    prevNode = stringNode;
+                }
+
+                CheckTypeMatch(itemsExpressionNode.TokenItem, VisitNode(prevNode), VisitNode(stringNode), itemsExpressionNode);
+                prevNode = stringNode;
+            }
+            return new CollectionTypeSymbol(CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true));
         }
 
         private void DeclareParameters(DeclarationNode procedureDeclaration)
@@ -530,12 +558,12 @@ namespace Minesweeper.Test.Symbols
             //CheckType(ass.TokenItem, assignmentType, variable);
 
 
-            if (variable.Type.Name == PascalTerms.Int && ass.Right is RealNode r)
-            {
-                throw new SemanticException(ErrorCode.TypeMismatch, r.TokenItem, $"Cannot assign Real to integer");
-            }
+            //if (variable.Type.Name == PascalTerms.Int && ass.Right is RealNode r)
+            //{
+            //    throw new SemanticException(ErrorCode.TypeMismatch, r.TokenItem, $"Cannot assign Real to integer");
+            //}
 
-            return CheckTypeMatch(ass.TokenItem, variable, assignmentType, ass);
+            return CheckTypeMatch(ass.TokenItem, variable, assignmentType, ass, false);
         }
 
         //private  object CheckType(TokenItem token, object assignmentType, Symbol variable)
@@ -606,11 +634,10 @@ namespace Minesweeper.Test.Symbols
         {
             var typeName = node.TypeNode.TypeValue;
             var varName = node.VarNode.VariableName;
-            DefineVariableSymbol(node.VarNode.TokenItem, varName, typeName);
-            return null;
+            return DefineVariableSymbol(node.VarNode.TokenItem, varName, typeName);
         }
 
-        private void DefineVariableSymbol(TokenItem node, string varName, string typeName)
+        private VariableSymbol DefineVariableSymbol(TokenItem node, string varName, string typeName)
         {
             var variable = CurrentScope.LookupSymbol(varName, false);
             if (variable != null)
@@ -627,6 +654,7 @@ namespace Minesweeper.Test.Symbols
 
             var varSymbol = new VariableSymbol(varName, symbol);
             CurrentScope.Define(varSymbol);
+            return varSymbol;
         }
     }
 }

@@ -15,6 +15,15 @@ namespace Minesweeper.Test.Symbols
         }
     }
     
+    public class CollectionTypeSymbol : BuiltInTypeSymbol
+    {
+        public BuiltInTypeSymbol ItemType { get; set; }
+        public CollectionTypeSymbol(BuiltInTypeSymbol itemType) : base(PascalTerms.Collection)
+        {
+            ItemType = itemType;
+        }
+    }
+
     public class BuiltInTypeSymbol : Symbol
     {
         public IList<string> Conversions { get; set; }
