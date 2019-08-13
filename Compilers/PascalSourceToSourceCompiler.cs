@@ -79,7 +79,7 @@ namespace Minesweeper.Test.Tests
         {
             var prev = CurrentScope;
             var namedec = $"{AddSpaces()}procedure {procedureDeclaration.ProcedureId}{CurrentScope.ScopeLevel}";
-            CurrentScope = new ScopedSymbolTable(procedureDeclaration.ProcedureId, prev.ScopeLevel + 1, prev);
+            CurrentScope = new ScopedSymbolTable(procedureDeclaration.ProcedureId,  prev);
             var dec =
                 $"{namedec}({VisitProcedureDecParams(procedureDeclaration.Parameters)});\r\n" +
                 VisitBlock(procedureDeclaration.Block);
@@ -167,7 +167,7 @@ namespace Minesweeper.Test.Tests
 
         public string VisitProgram(PascalProgramNode program)
         {
-            var zero = new ScopedSymbolTable(program.ProgramName, 0);
+            var zero = new ScopedSymbolTable(program.ProgramName);
             PascalSemanticAnalyzer.DefineBuiltIns(zero);
             CurrentScope = zero;
             var programStr = VisitProgramBlockNode(program);
@@ -287,7 +287,7 @@ namespace Minesweeper.Test.Tests
         private string VisitProgramBlockNode(PascalProgramNode program)
         {
             var programStr = $"program {program.ProgramName}{CurrentScope.ScopeLevel};\r\n";
-            var global = new ScopedSymbolTable("Global", CurrentScope.ScopeLevel + 1, CurrentScope);
+            var global = new ScopedSymbolTable("Global", CurrentScope);
             CurrentScope = global;
 
             foreach (var blockDeclaration in program.Block.Declarations)

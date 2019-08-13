@@ -102,7 +102,7 @@ namespace Minesweeper.Test
                     return Fail(op);
                 }
 
-                return strActions[op.Name](left.ToString(), right.ToString());
+                return strActions[op.Name](left?.ToString(), right?.ToString());
             }
             else
             {
@@ -440,6 +440,7 @@ namespace Minesweeper.Test
 
         public object VisitVarDeclaration(VarDeclarationNode varDeclaration)
         {
+            
             this.CurrentScope.Add(varDeclaration.VarNode.VariableName, null);
             return null;
         }

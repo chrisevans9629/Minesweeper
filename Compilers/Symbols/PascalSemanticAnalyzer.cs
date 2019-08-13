@@ -13,7 +13,7 @@ namespace Minesweeper.Test.Symbols
             var levelZero = CreateCurrentScope(programNode.ProgramName);
 
 
-            var global = new ScopedSymbolTable("Global", 1, levelZero, _logger);
+            var global = new ScopedSymbolTable("Global",  levelZero, _logger);
             CurrentScope = global;
             VisitBlock(programNode.Block);
             CurrentScope = global;
@@ -22,7 +22,7 @@ namespace Minesweeper.Test.Symbols
 
         public ScopedSymbolTable CreateCurrentScope(string name)
         {
-            var levelZero = new ScopedSymbolTable(name, 0, null, _logger);
+            var levelZero = new ScopedSymbolTable(name,  null, _logger);
             CurrentScope = levelZero;
 
             DefineBuiltIns(levelZero);
@@ -306,7 +306,7 @@ namespace Minesweeper.Test.Symbols
         public object VisitWhileLoop(WhileLoopNode whileLoop)
         {
             VisitNode(whileLoop.BoolExpression);
-            CurrentScope = new ScopedSymbolTable("_while_", CurrentScope.ScopeLevel + 1, CurrentScope);
+            CurrentScope = new ScopedSymbolTable("_while_",  CurrentScope);
             VisitNode(whileLoop.DoStatement);
             CurrentScope = CurrentScope.ParentScope;
             return null;
@@ -495,7 +495,7 @@ namespace Minesweeper.Test.Symbols
         private void DeclareParameters(DeclarationNode procedureDeclaration)
         {
             var name = procedureDeclaration.Name;
-            var scope = new ScopedSymbolTable(name, CurrentScope.ScopeLevel + 1, CurrentScope, _logger);
+            var scope = new ScopedSymbolTable(name,  CurrentScope, _logger);
             CurrentScope = scope;
             var param = procedureDeclaration.Parameters;
             foreach (var varDeclaration in param.Select(p => p.Declaration))

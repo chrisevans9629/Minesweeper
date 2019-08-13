@@ -260,6 +260,21 @@ end.";
             return ".";
         }
 
+
+        [Test]
+        public void AddIntegerToItself_Should_Pass()
+        {
+            var input = @"
+program test;
+var i : integer;
+begin
+    i := i + 1;
+    writeln(i);
+end.";
+            this.Evaluate(input);
+            Assert.Pass();
+        }
+
         [Test]
         public void EvaluatePointerG_Should_ReturnDot3()
         {

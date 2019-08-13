@@ -6,6 +6,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -30,17 +31,26 @@ namespace Pascal.Ide.Wpf.Models
             set => CodeHasChanged(value);
         }
 
-        private void CodeHasChanged(string value)
+        private async void CodeHasChanged(string value)
         {
-            if (fastColoredTextBox != null)
+            while (fastColoredTextBox == null)
             {
-                App.Current.Dispatcher.Invoke(() =>
+                if (fastColoredTextBox != null)
                 {
-                    fastColoredTextBox.Text = value;
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        fastColoredTextBox.Text = value;
 
-                });
+                    });
+
+                }
+                else
+                {
+                    await Task.Delay(100);
+                }
 
             }
+
         }
 
         public event EventHandler CodeChanged;
@@ -49,29 +59,29 @@ namespace Pascal.Ide.Wpf.Models
             fastColoredTextBox = rtb as FastColoredTextBox;
             fastColoredTextBox.BackColor = Color.FromArgb(61, 61, 61);
             fastColoredTextBox.ForeColor = Color.White;
-            
+
             fastColoredTextBox.Font = new Font("Times New Roman", 18);
             fastColoredTextBox.TextChangedDelayed += FastColoredTextBoxOnTextChangedDelayed;
         }
 
         private void FastColoredTextBoxOnTextChangedDelayed(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            
+
             OnCodeChanged();
         }
 
-         public class HighlightStyles
+        public class HighlightStyles
         {
             public HighlightParameters HighlightParameters { get; set; }
             public TextStyle TextStyle { get; set; }
         }
 
-         IList<HighlightStyles> HighlightStyleList { get; set; }
+        IList<HighlightStyles> HighlightStyleList { get; set; }
         public void HighlightSyntax(IList<HighlightParameters> parameters)
         {
             try
             {
-                
+
                 var lexer = new PascalLexer();
                 var tokens = lexer.Tokenize(Code);
                 if (HighlightStyleList == null)
@@ -82,7 +92,7 @@ namespace Pascal.Ide.Wpf.Models
                         TextStyle = new TextStyle(new SolidBrush(p.Color), new SolidBrush(Color.Transparent), FontStyle.Regular)
                     }).ToList();
                 }
-                fastColoredTextBox.VisibleRange.ClearStyle(HighlightStyleList.Select(p=>p.TextStyle as Style).ToArray());
+                fastColoredTextBox.VisibleRange.ClearStyle(HighlightStyleList.Select(p => p.TextStyle as Style).ToArray());
 
                 foreach (var tokenItem in tokens)
                 {
@@ -92,7 +102,7 @@ namespace Pascal.Ide.Wpf.Models
                         {
                             var range = fastColoredTextBox.GetRange(tokenItem.Index, tokenItem.Index + tokenItem.Value.Length);
                             range.SetStyle(highlightParameterse.TextStyle);
-                            
+
                         }
                     }
                 }

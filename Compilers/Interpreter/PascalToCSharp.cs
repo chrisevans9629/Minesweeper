@@ -21,7 +21,7 @@ namespace Minesweeper.Test
             var str = $"{AddSpaces()}public void {procedureDeclaration.ProcedureId}\r\n";
            // str += AddSpaces() + "{\r\n";
 
-            CurrentScope = new ScopedSymbolTable(procedureDeclaration.ProcedureId, CurrentScope.ScopeLevel +1, CurrentScope);
+            CurrentScope = new ScopedSymbolTable(procedureDeclaration.ProcedureId, CurrentScope);
 
             str += VisitNode(procedureDeclaration.Block);
 
@@ -182,7 +182,7 @@ namespace Minesweeper.Test
 
         public string VisitProgram(PascalProgramNode program)
         {
-            var zero = new ScopedSymbolTable(program.ProgramName, 0);
+            var zero = new ScopedSymbolTable(program.ProgramName);
             PascalSemanticAnalyzer.DefineBuiltIns(zero);
             CurrentScope = zero;
             name = "Main";
@@ -217,7 +217,7 @@ namespace Minesweeper.Test
         public string VisitBlock(BlockNode block)
         {
             var str = AddSpaces() + "{\r\n";
-            CurrentScope = new ScopedSymbolTable(name, CurrentScope.ScopeLevel + 1, CurrentScope);
+            CurrentScope = new ScopedSymbolTable(name,  CurrentScope);
             str += $"{VisitNodes(block.Declarations)}{VisitCompoundStatement(block.CompoundStatement)}";
             CurrentScope = CurrentScope.ParentScope;
             str += AddSpaces() + "}\r\n";

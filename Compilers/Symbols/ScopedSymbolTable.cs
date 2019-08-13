@@ -12,14 +12,14 @@ namespace Minesweeper.Test.Symbols
         public int ScopeLevel { get; }
         IList<Symbol> symbols = new List<Symbol>();
 
-        public ScopedSymbolTable(string scopeName, int scopeLevel, ScopedSymbolTable parentScope = null, ILogger logger = null)
+        public ScopedSymbolTable(string scopeName,  ScopedSymbolTable parentScope = null, ILogger logger = null)
         {
             ParentScope = parentScope;
             _logger = logger ?? new Logger();
             ScopeName = scopeName;
-            ScopeLevel = scopeLevel;
+            ScopeLevel = ParentScope?.ScopeLevel + 1 ?? 0;
             
-            if (parentScope?.ScopeLevel >= scopeLevel)
+            if (parentScope?.ScopeLevel >= ScopeLevel)
             {
                 throw new InvalidOperationException($"Parent scope must be greater:\nParent: {parentScope}, Current: {this}");
             }
