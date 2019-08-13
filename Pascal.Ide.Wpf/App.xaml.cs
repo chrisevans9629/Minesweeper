@@ -3,6 +3,7 @@ using Prism.Ioc;
 using Prism.Modularity;
 using System.Windows;
 using Akavache;
+using Pascal.Ide.Wpf.Models;
 
 namespace Pascal.Ide.Wpf
 {
@@ -30,7 +31,7 @@ namespace Pascal.Ide.Wpf
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterSingleton<IDocumentService, DocumentService>();
+            containerRegistry.RegisterSingleton<IDocumentService, FastCodeDocumentService>();
         }
     }
 }

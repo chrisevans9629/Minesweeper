@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
-using System.Windows.Media;
 using Akavache;
 using Microsoft.Win32;
 using Minesweeper.Test;
@@ -72,17 +72,17 @@ namespace Pascal.Ide.Wpf.ViewModels
             {
                 new HighlightParameters()
                 {
-                    Color = Colors.RoyalBlue,
+                    Color = Color.RoyalBlue,
                     Filter = item => Minesweeper.Test.PascalTerms.Reservations.ContainsKey(item.Token.Name)
                 },
                 new HighlightParameters()
                 {
-                    Color = Colors.Yellow,
+                    Color = Color.Yellow,
                     Filter = item => item.Token.Name == PascalTerms.IntegerConst || item.Token.Name == PascalTerms.RealConst
                 },
                 new HighlightParameters()
                 {
-                    Color = Colors.SaddleBrown,
+                    Color = Color.SaddleBrown,
                     Filter = item => item.Token.Name == PascalTerms.StringConst
                 }
             };

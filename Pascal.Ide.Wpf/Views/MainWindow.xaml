@@ -32,51 +32,9 @@
             Grid.Row="1"
             Margin="10" 
             >
-            <TabItem Header="Rich Text">
-                <RichTextBox 
-           
-                    AcceptsReturn="True" 
-                    FontSize="18" 
-                    Foreground="White"
-                    Background="{StaticResource PanelColor}"
-                    HorizontalScrollBarVisibility="Auto" 
-                    VerticalScrollBarVisibility="Auto" 
-                    AcceptsTab="True"  
-                    Name="RichTextBox"
-                >
-                    <RichTextBox.Resources>
-                        <Style TargetType="{x:Type Paragraph}">
-                            <Setter Property="Margin" Value="0"/>
-                        </Style>
-                    </RichTextBox.Resources>
-
-                </RichTextBox>
-
-            </TabItem>
-            <TabItem Header="TextBox">
-                <Grid>
-                    <TextBlock
-                        x:Name="Tx1"
-                        HorizontalAlignment="{Binding Path=HorizontalAlignment, ElementName=Tb1}"
-                        VerticalAlignment="{Binding Path=VerticalAlignment, ElementName=Tb1}"
-                        Margin="{Binding Path=Margin, ElementName=Tb1}"
-                        FontSize="{Binding Path=FontSize, ElementName=Tb1}"
-                    />
-
-                    <TextBox
-                        x:Name="Tb1"
-                        FontSize="24"
-                        Background="Transparent"
-                        Foreground="Transparent"
-                        TextChanged="Tb1_TextChanged"
-                         AcceptsReturn="True"
-                        AcceptsTab="True"
-                    />
-                </Grid>
-            </TabItem>
             <TabItem Header="FastCode">
                 <WindowsFormsHost >
-                    <fctb:FastColoredTextBox x:Name="FastColoredTextBox" TextChangedDelayed="FastColoredTextBox_OnTextChangedDelayed"></fctb:FastColoredTextBox>
+                    <fctb:FastColoredTextBox x:Name="FastColoredTextBox"></fctb:FastColoredTextBox>
                 </WindowsFormsHost>
             </TabItem>
         </TabControl>

@@ -22,50 +22,8 @@ namespace Pascal.Ide.Wpf.Views
         {
             var ser = container.Resolve<IDocumentService>();
             InitializeComponent();
-            ser.Initialize(RichTextBox);
-            var txtBox = FastColoredTextBox;
-            if (DataContext is MainWindowViewModel vm)
-            {
-                
-                _vm = vm;
-                txtBox.Text = vm.Code;
-            }
-
-
-
-
-        }
-        private void Tb1_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var inlines = this.Tx1.Inlines;
-            inlines.Clear();
-
-            foreach (char ch in this.Tb1.Text)
-            {
-                if (Char.IsDigit(ch))
-                {
-                    var run = new Run(ch.ToString());
-                    run.Foreground = Brushes.Blue;
-                    inlines.Add(run);
-                }
-                else if (Char.IsLetter(ch))
-                {
-                    var run = new Run(ch.ToString());
-                    run.Foreground = Brushes.Red;
-                    inlines.Add(run);
-                }
-                else
-                {
-                    var run = new Run(ch.ToString());
-                    run.Foreground = Brushes.LimeGreen;
-                    inlines.Add(run);
-                }
-            }
-        }
-
-        private void FastColoredTextBox_OnTextChangedDelayed(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
-        {
-            _vm.Code = FastColoredTextBox.Text;
+            ser.Initialize(FastColoredTextBox);
+           
         }
     }
 }
