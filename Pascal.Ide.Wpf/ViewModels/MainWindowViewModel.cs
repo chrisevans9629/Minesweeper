@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using Akavache;
 using Microsoft.Win32;
 using Minesweeper.Test;
@@ -72,7 +73,7 @@ namespace Pascal.Ide.Wpf.ViewModels
             {
                 new HighlightParameters()
                 {
-                    Color = Color.RoyalBlue,
+                    Color = Color.LightSkyBlue,
                     Filter = item => Minesweeper.Test.PascalTerms.Reservations.ContainsKey(item.Token.Name)
                 },
                 new HighlightParameters()
@@ -84,6 +85,11 @@ namespace Pascal.Ide.Wpf.ViewModels
                 {
                     Color = Color.SaddleBrown,
                     Filter = item => item.Token.Name == PascalTerms.StringConst
+                },
+                new HighlightParameters()
+                {
+                    Color = Color.Aquamarine,
+                    Filter = item => PascalTerms.BuiltInTypes.Contains(item.Value.ToUpper())
                 }
             };
 
