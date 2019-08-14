@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:Pascal.Ide.Wpf.ViewModels"
         xmlns:fctb="clr-namespace:FastColoredTextBoxNS;assembly=FastColoredTextBox"
+        xmlns:test="clr-namespace:Minesweeper.Test;assembly=Compilers"
         mc:Ignorable="d"
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}" WindowState="Maximized" Background="{StaticResource BackgroundColor}"
@@ -38,9 +39,29 @@
                 </WindowsFormsHost>
             </TabItem>
         </TabControl>
-        <ScrollViewer Grid.Row="1" Grid.Column="2" Background="{StaticResource PanelColor}">
-            <TextBlock Text="{Binding AbstractSyntaxTree}" Foreground="White" TextWrapping="Wrap"/>
-        </ScrollViewer>
+        <TabControl Grid.Row="1" Grid.Column="2" Background="{StaticResource PanelColor}">
+            <TabItem Header="New">
+                <TreeView  ItemsSource="{Binding AbstractSyntaxTree.Children}">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="IsExpanded" Value="True"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate DataType="test:Node" ItemsSource="{Binding Children}">
+                            <Label Content="{Binding GetTypeName}"></Label>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </TabItem>
+
+            <TabItem Header="Old">
+                <ScrollViewer >
+                    <TextBlock Text="{Binding AbstractSyntaxTree}" Foreground="White" TextWrapping="Wrap"/>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+        
         <TabControl
             Grid.Row="2"
             Grid.Column="0" 

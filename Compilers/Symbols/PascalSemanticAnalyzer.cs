@@ -295,7 +295,8 @@ namespace Minesweeper.Test.Symbols
                 TypeMismatch(tokenItem, a, b);
             }
 
-            throw new NotImplementedException($"{nodeForLog}");
+            return null;
+            //throw new NotImplementedException($"{nodeForLog}");
         }
 
         private static void TypeMismatch(TokenItem tokenItem, BuiltInTypeSymbol a, BuiltInTypeSymbol b)

@@ -11,6 +11,8 @@ namespace Minesweeper.Test
 
         }
 
+        public string GetTypeName => GetType().Name;
+
         public override string ToString()
         {
             return Display();
