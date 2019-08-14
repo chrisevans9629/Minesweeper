@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Minesweeper.Test
 {
@@ -12,6 +13,9 @@ namespace Minesweeper.Test
             Declarations = declarations;
             CompoundStatement = compoundStatement;
         }
+
+        public override IEnumerable<Node> Children => Declarations.Append(CompoundStatement);
+
         public override string Display()
         {
             return $"Block({Aggregate(Declarations)}, {CompoundStatement.Display()})";

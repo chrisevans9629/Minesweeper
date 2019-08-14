@@ -24,6 +24,8 @@ namespace Minesweeper.Test
             this.IfFalse = ifFalse;
         }
 
+        public override IEnumerable<Node> Children => new[] {IfCheck, IfTrue, IfFalse};
+
         public override string Display()
         {
             return $"If ({IfCheck}) then {IfTrue} else {IfFalse}";

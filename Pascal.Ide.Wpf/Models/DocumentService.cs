@@ -13,15 +13,20 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using FastColoredTextBoxNS;
 using Minesweeper.Test;
+using Minesweeper.Test.Symbols;
 using Pascal.Ide.Wpf.Views;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
 using FontStyle = System.Drawing.FontStyle;
 using Style = FastColoredTextBoxNS.Style;
-using TextChangedEventArgs = System.Windows.Controls.TextChangedEventArgs;
 
 namespace Pascal.Ide.Wpf.Models
 {
+    public class HighlightStyles
+    {
+        public HighlightParameters HighlightParameters { get; set; }
+        public TextStyle TextStyle { get; set; }
+    }
     public class FastCodeDocumentService : IDocumentService
     {
         private FastColoredTextBox fastColoredTextBox;
@@ -31,26 +36,16 @@ namespace Pascal.Ide.Wpf.Models
             set => CodeHasChanged(value);
         }
 
-        private async void CodeHasChanged(string value)
+        private void CodeHasChanged(string value)
         {
-            while (fastColoredTextBox == null)
+            if (fastColoredTextBox != null)
             {
-                if (fastColoredTextBox != null)
+                App.Current.Dispatcher.Invoke(() =>
                 {
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        fastColoredTextBox.Text = value;
-
-                    });
-
-                }
-                else
-                {
-                    await Task.Delay(100);
-                }
+                    fastColoredTextBox.Text = value;
+                });
 
             }
-
         }
 
         public event EventHandler CodeChanged;
@@ -66,24 +61,24 @@ namespace Pascal.Ide.Wpf.Models
 
         private void FastColoredTextBoxOnTextChangedDelayed(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-
             OnCodeChanged();
         }
 
-        public class HighlightStyles
-        {
-            public HighlightParameters HighlightParameters { get; set; }
-            public TextStyle TextStyle { get; set; }
-        }
+
 
         IList<HighlightStyles> HighlightStyleList { get; set; }
         public void HighlightSyntax(IList<HighlightParameters> parameters)
         {
             try
             {
-
+                fastColoredTextBox.VisibleRange.ClearStyle(errorStyle);
                 var lexer = new PascalLexer();
                 var tokens = lexer.Tokenize(Code);
+                var ast = new PascalAst();
+                var node = ast.Evaluate(tokens);
+                var semantics = new PascalSemanticAnalyzer();
+                semantics.CheckSyntax(node);
+
                 if (HighlightStyleList == null)
                 {
                     HighlightStyleList = parameters.Select(p => new HighlightStyles()
@@ -109,11 +104,13 @@ namespace Pascal.Ide.Wpf.Models
             }
             catch (PascalException e)
             {
+                var range = fastColoredTextBox.GetRange(e.Token.Index, e.Token.Index + e.Token.Value.Length);
+                range.SetStyle(errorStyle);
                 Console.WriteLine(e);
             }
         }
 
-
+        TextStyle errorStyle = new TextStyle(new SolidBrush(Color.Red), new SolidBrush(Color.Transparent), FontStyle.Regular );
 
         protected virtual void OnCodeChanged()
         {

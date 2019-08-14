@@ -1,4 +1,6 @@
-﻿namespace Minesweeper.Test
+﻿using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
     public class VarDeclarationNode : Node
     {
@@ -10,6 +12,8 @@
             VarNode = varNode;
             TypeNode = typeNode;
         }
+
+        public override IEnumerable<Node> Children => new Node[] {VarNode, TypeNode};
 
         public override string Display()
         {

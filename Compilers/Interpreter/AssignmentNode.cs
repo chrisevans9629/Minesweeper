@@ -1,4 +1,6 @@
-﻿namespace Minesweeper.Test
+﻿using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
     public class AssignmentNode : Node, IStatementNode
     {
@@ -11,6 +13,8 @@
             Right = right;
             TokenItem = item;
         }
+
+        public override IEnumerable<Node> Children => new[] {Left, Right};
 
         public override string Display()
         {

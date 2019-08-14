@@ -1,7 +1,10 @@
-﻿namespace Minesweeper.Test
+﻿using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
     public abstract class EqualExpression : ExpressionNode
     {
+        public override IEnumerable<Node> Children => new[] {Left, Right};  
         public Node Left { get; set; }
         public Node Right { get; set; }
         public TokenItem TokenItem { get; set; }
@@ -30,6 +33,8 @@
             Right = right;
             TokenItem = tokenItem;
         }
+
+        public override IEnumerable<Node> Children => new[] {Right};
 
         public override string Display()
         {

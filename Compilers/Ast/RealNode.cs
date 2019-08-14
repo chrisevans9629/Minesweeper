@@ -1,4 +1,6 @@
-﻿namespace Minesweeper.Test
+﻿using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
 
     public class IntegerNode : ExpressionNode
@@ -10,6 +12,9 @@
             TokenItem = tokenItem;
             Value = int.Parse(tokenItem.Value);
         }
+
+        public override IEnumerable<Node> Children { get; }
+
         public override string Display()
         {
             return $"Integer({Value})";
@@ -26,6 +31,8 @@
 
         public TokenItem TokenItem { get; set; }
         public double Value { get; set; }
+        public override IEnumerable<Node> Children { get; }
+
         public override string Display()
         {
             return $"Real({Value})";

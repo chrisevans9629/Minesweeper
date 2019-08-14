@@ -504,6 +504,8 @@ namespace Minesweeper.Test
             TokenItem = tokenItem;
         }
 
+        public override IEnumerable<Node> Children => new[] {Value};
+
         public override string Display()
         {
             return $"Constant({ConstantName}, {Value})";

@@ -1,4 +1,6 @@
-﻿namespace Minesweeper.Test
+﻿using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
     public class BoolNode : ExpressionNode
     {
@@ -11,6 +13,8 @@
             Value = bool.Parse(tokensCurrent.Value.ToLower());
         }
 
+
+        public override IEnumerable<Node> Children { get; }
 
         public override string Display()
         {

@@ -9,6 +9,8 @@ namespace Minesweeper.Test
             Nodes = new List<Node>();
         }
         public IList<Node> Nodes { get; set; }
+        public override IEnumerable<Node> Children => Nodes;
+
         public override string Display()
         {
             return $"Compound({Aggregate(Nodes)}";

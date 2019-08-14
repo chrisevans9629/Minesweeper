@@ -14,6 +14,8 @@ namespace Minesweeper.Test
         public Node BoolExpression { get; set; }
         public Node DoStatement { get; set; }
 
+        public override IEnumerable<Node> Children => new[] {BoolExpression, DoStatement};
+
         public override string Display()
         {
             return $"While({BoolExpression}, do {DoStatement})";
@@ -34,6 +36,8 @@ namespace Minesweeper.Test
         public Node ToNode { get;  }
 
         public Node DoStatements { get;  }
+
+        public override IEnumerable<Node> Children => new[] {AssignFromNode, ToNode, DoStatements};
 
         public override string Display()
         {

@@ -18,6 +18,8 @@ namespace Minesweeper.Test
         }
 
         public IList<StringNode> Items { get; set; }
+        public override IEnumerable<Node> Children => Items;
+
         public override string Display()
         {
             return $"List({Aggregate(Items)})";
@@ -34,6 +36,9 @@ namespace Minesweeper.Test
             ToNode = toNode;
             TokenItem = tokenItem;
         }
+
+        public override IEnumerable<Node> Children => new[] {FromNode, ToNode};
+
         public override string Display()
         {
             return $"List({FromNode}..{ToNode})";

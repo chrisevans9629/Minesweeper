@@ -14,6 +14,6 @@ namespace Minesweeper.Test
             MethodType = "Procedure";
         }
 
-       
+
     }
 }

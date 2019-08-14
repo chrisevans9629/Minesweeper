@@ -1,4 +1,6 @@
-﻿namespace Minesweeper.Test
+﻿using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
     public class PascalProgramNode : Node
     {
@@ -11,6 +13,9 @@
             Block = block;
             TokenItem = name;
         }
+
+        public override IEnumerable<Node> Children => new[] {Block};
+
         public override string Display()
         {
             return $"Program({ProgramName}, {Block.Display()})";

@@ -1,4 +1,6 @@
-﻿namespace Minesweeper.Test
+﻿using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
     public class VariableOrFunctionCall : ExpressionNode
     {
@@ -9,6 +11,8 @@
             TokenItem = token;
             VariableName = token.Value;
         }
+
+        public override IEnumerable<Node> Children { get; }
 
         public override string Display()
         {

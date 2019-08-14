@@ -16,6 +16,7 @@ namespace Minesweeper.Test
             return Display();
         }
 
+        public abstract IEnumerable<Node> Children { get; }
         public static string Aggregate(IEnumerable<Node> nodes)
         {
             if (nodes == null) return "";

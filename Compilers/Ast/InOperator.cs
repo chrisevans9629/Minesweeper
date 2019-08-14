@@ -1,4 +1,6 @@
-﻿namespace Minesweeper.Test
+﻿using System.Collections.Generic;
+
+namespace Minesweeper.Test
 {
     public class InOperator : ExpressionNode
     {
@@ -12,6 +14,8 @@
             ListExpression = listExpression;
             TokenItem = tokenItem;
         }
+
+        public override IEnumerable<Node> Children => new[] {CompareNode, ListExpression};
 
         public override string Display()
         {

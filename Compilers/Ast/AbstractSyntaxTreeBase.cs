@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Minesweeper.Test
@@ -21,6 +22,8 @@ namespace Minesweeper.Test
 
         public IList<ExpressionNode> Cases { get; set; }
         public Node Statement { get; set; }
+        public override IEnumerable<Node> Children => new Node[] {Statement}.Union(Cases);
+
         public override string Display()
         {
             return $"{Aggregate(Cases)} : {Statement}";
@@ -39,6 +42,8 @@ namespace Minesweeper.Test
         public IList<CaseItemNode> CaseItemNodes { get; set; }
 
         public Node ElseStatement { get; set; }
+        public override IEnumerable<Node> Children => new Node[] {CompareExpression}.Union(CaseItemNodes).Append(ElseStatement);
+
         public override string Display()
         {
             return $"Case({CompareExpression} of {Aggregate(CaseItemNodes)} else {ElseStatement}";

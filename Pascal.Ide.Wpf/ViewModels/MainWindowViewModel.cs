@@ -30,19 +30,19 @@ namespace Pascal.Ide.Wpf.ViewModels
 
         public string Title
         {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
+            get => _title;
+            set => SetProperty(ref _title, value);
         }
 
-        public string Code
-        {
-            get => _mainWindow.Code;
-            set
-            {
-                _mainWindow.Code = value;
-                RaisePropertyChanged();
-            }
-        }
+        // string Code
+        //{
+        //    get => _mainWindow.Code;
+        //    set
+        //    {
+        //        _mainWindow.Code = value;
+        //        RaisePropertyChanged();
+        //    }
+        //}
 
         public string Error
         {
@@ -96,7 +96,7 @@ namespace Pascal.Ide.Wpf.ViewModels
             StartCommand = new DelegateCommand(Start);
             OpenCommand = new DelegateCommand(Open);
             _mainWindow.CodeChanged += (sender, args) => CodeChanged();
-            BlobCache.LocalMachine.GetOrCreateObject(CodeKey, () => "").Subscribe(s => Code = s);
+            BlobCache.LocalMachine.GetOrCreateObject(CodeKey, () => "").Subscribe(s => _mainWindow.Code = s);
             BlobCache.LocalMachine.GetOrCreateObject(InputKey, () => "").Subscribe(s => Input = s);
         }
 
@@ -108,7 +108,7 @@ namespace Pascal.Ide.Wpf.ViewModels
             if (dialog.ShowDialog() == true)
             {
                 var file = dialog.FileName;
-                Code = File.ReadAllText(file);
+                _mainWindow.Code = File.ReadAllText(file);
             }
         }
 
@@ -140,13 +140,13 @@ namespace Pascal.Ide.Wpf.ViewModels
         public ObservableCollection<string> Compilers
         {
             get => _compilers;
-            set => SetProperty(ref _compilers,value);
+            set => SetProperty(ref _compilers, value);
         }
 
         public string SelectedCompiler
         {
             get => _selectedCompiler;
-            set => SetProperty(ref _selectedCompiler,value);
+            set => SetProperty(ref _selectedCompiler, value);
         }
 
         private void Start()
@@ -190,8 +190,8 @@ namespace Pascal.Ide.Wpf.ViewModels
         {
             try
             {
-                BlobCache.LocalMachine.InsertObject(CodeKey, Code);
-                Tokens = lexer.Tokenize(Code);
+                BlobCache.LocalMachine.InsertObject(CodeKey, _mainWindow.Code);
+                Tokens = lexer.Tokenize(_mainWindow.Code);
                 AbstractSyntaxTree = ast.Evaluate(Tokens);
                 analyzer.CheckSyntax(AbstractSyntaxTree);
                 Error = "";
@@ -203,10 +203,7 @@ namespace Pascal.Ide.Wpf.ViewModels
             }
             finally
             {
-                if (Tokens != null)
-                {
-                    _mainWindow.HighlightSyntax(parameters);
-                }
+                _mainWindow.HighlightSyntax(parameters);
             }
         }
     }

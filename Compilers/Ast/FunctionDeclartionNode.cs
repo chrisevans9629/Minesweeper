@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Minesweeper.Test
 {
@@ -17,6 +18,8 @@ namespace Minesweeper.Test
             Type = type;
         }
 
+        public override IEnumerable<Node> Children => Parameters;
+
         public override string Display()
         {
             return $"{Type} {Name}({Node.Aggregate(Parameters)})";
@@ -33,13 +36,15 @@ namespace Minesweeper.Test
     {
         protected string MethodType { get; set; }
         public string Name { get; protected set; }
-        public IList<ParameterNode> Parameters { get; protected set; }
+        public IList<ParameterNode> Parameters { get; protected set; } = new List<ParameterNode>();
         public BlockNode Block { get; protected set; }
         public TokenItem Token { get; protected set; }
         public override string Display()
         {
             return $"{MethodType}({Name}, {Node.Aggregate(Parameters)}, {Block})";
         }
+
+        public override IEnumerable<Node> Children => new Node[] {Block}.Union(Parameters);
     }
 
     public class FunctionDeclarationNode : DeclarationNode
