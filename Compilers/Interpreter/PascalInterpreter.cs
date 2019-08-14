@@ -5,6 +5,16 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
+    public class PascalDefaultValues
+    {
+        public PascalDefaultValues()
+        {
+            DefaultValues.Add(PascalTerms.Int, 0);
+            DefaultValues.Add(PascalTerms.Real, 0.0);
+        }
+        public Dictionary<string, object> DefaultValues { get; set; } = new Dictionary<string, object>();
+
+    }
     public class PascalInterpreter : IPascalNodeVisitor<object>
     {
         private readonly IConsole _console;
@@ -168,7 +178,7 @@ namespace Minesweeper.Test
             var from = listRange.FromNode.CurrentValue[0];
 
             var to = listRange.ToNode.CurrentValue[0];
-            var list = Enumerable.Range(from, to).Select(p=> (char)p);
+            var list = Enumerable.Range(from, to).Select(p => (char)p);
 
             return list.Cast<object>();
         }
@@ -437,11 +447,18 @@ namespace Minesweeper.Test
         {
             return VisitBlock(programNode.Block);
         }
-
+        PascalDefaultValues defaultValues = new PascalDefaultValues();
         public object VisitVarDeclaration(VarDeclarationNode varDeclaration)
         {
-            
-            this.CurrentScope.Add(varDeclaration.VarNode.VariableName, null);
+            var typeName = varDeclaration.TypeNode.TypeValue.ToUpper();
+            if (defaultValues.DefaultValues.ContainsKey(typeName))
+            {
+                this.CurrentScope.Add(varDeclaration.VarNode.VariableName, defaultValues.DefaultValues[typeName]);
+            }
+            else
+            {
+                this.CurrentScope.Add(varDeclaration.VarNode.VariableName, null);
+            }
             return null;
         }
         public object VisitBlock(BlockNode block)

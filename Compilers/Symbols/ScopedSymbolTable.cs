@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace Minesweeper.Test.Symbols
 {
+
+    
     public class ScopedSymbolTable
     {
         public ScopedSymbolTable ParentScope { get; }
