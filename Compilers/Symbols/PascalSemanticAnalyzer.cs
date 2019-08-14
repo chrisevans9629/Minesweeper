@@ -13,7 +13,7 @@ namespace Minesweeper.Test.Symbols
             var levelZero = CreateCurrentScope(programNode.ProgramName);
 
 
-            var global = new ScopedSymbolTable("Global",  levelZero, _logger);
+            var global = new ScopedSymbolTable("Global", levelZero, _logger);
             CurrentScope = global;
             VisitBlock(programNode.Block);
             CurrentScope = global;
@@ -22,7 +22,7 @@ namespace Minesweeper.Test.Symbols
 
         public ScopedSymbolTable CreateCurrentScope(string name)
         {
-            var levelZero = new ScopedSymbolTable(name,  null, _logger);
+            var levelZero = new ScopedSymbolTable(name, null, _logger);
             CurrentScope = levelZero;
 
             DefineBuiltIns(levelZero);
@@ -109,10 +109,23 @@ namespace Minesweeper.Test.Symbols
         {
             _logger = logger ?? new Logger();
         }
+
+        private PascalResult<ScopedSymbolTable> pascalResult;
+        public PascalResult<ScopedSymbolTable> CheckSyntaxResult(Node rootNode)
+        {
+            pascalResult = new PascalResult<ScopedSymbolTable>();
+            VisitNode(rootNode);
+            pascalResult.Result = CurrentScope;
+            return pascalResult;
+        }
         public ScopedSymbolTable CheckSyntax(Node rootNode)
         {
-            VisitNode(rootNode);
-            return CurrentScope;
+            var r = CheckSyntaxResult(rootNode);
+            if (r.Errors.Any())
+            {
+                throw r.Errors[0];
+            }
+            return r.Result;
         }
 
 
@@ -120,102 +133,6 @@ namespace Minesweeper.Test.Symbols
         public object VisitNode(Node node)
         {
             return this.VisitNodeModel(node);
-            //if (node is PascalProgramNode program)
-            //{
-            //    VisitProgram(program);
-            //}
-            //else if (node is CompoundStatementNode compound)
-            //{
-            //    VisitCompoundStatement(compound);
-            //}
-            //else if (node is AssignmentNode ass)
-            //{
-            //    VisitAssign(ass);
-            //}
-            //else if (node is NoOp nope)
-            //{
-            //    VisitNoOp(nope);
-            //}
-            //else if (node is EqualExpression equal)
-            //{
-            //    VisitEqualExpression(equal);
-            //}
-            //else if (node is InOperator op)
-            //{
-
-            //}
-            //else if (node is PointerNode pointer)
-            //{
-
-            //}
-            //else if (node is IfStatementNode ifStatement)
-            //{
-            //    VisitIfStatement(ifStatement);
-            //}
-            //else if (node is RealNode)
-            //{
-
-            //}
-            //else if (node is IntegerNode)
-            //{
-
-            //}
-            //else if (node is StringNode str)
-            //{
-
-            //}
-            //else if (node is VariableOrFunctionCall variable)
-            //{
-            //    VisitVariable(variable);
-            //}
-            //else if (node is BinaryOperator)
-            //{
-
-            //}
-            //else if (node is UnaryOperator)
-            //{
-
-            //}
-            //else if (node is VarDeclarationNode declaration)
-            //{
-            //    VisitVarDeclaration(declaration);
-            //}
-            //else if (node is ProcedureDeclarationNode procedureDeclaration)
-            //{
-            //    VisitProcedureDeclaration(procedureDeclaration);
-            //}
-            //else if (node is FunctionDeclarationNode functionDeclaration)
-            //{
-            //    VisitFunctionDeclaration(functionDeclaration);
-            //}
-            //else if (node is FunctionCallNode funCall)
-            //{
-            //    VisitCall(funCall);
-            //}
-            //else if (node is ProcedureCallNode procCall)
-            //{
-            //    VisitCall(procCall);
-            //}
-            //else if (node is ConstantDeclarationNode decNode)
-            //{
-            //    VisitConstantDeclaration(decNode);
-            //}
-            //else if (node is CaseStatementNode caseStatement)
-            //{
-            //    VisitCaseStatement(caseStatement);
-            //}
-            //else if (node is WhileLoopNode whileLoop)
-            //{
-            //    VisitWhileLoop(whileLoop);
-            //}
-            //else if (node is NegationOperator negate)
-            //{
-            //    VisitNegationOperator(negate);
-            //}
-            //else
-            //{
-            //    throw new InvalidOperationException($"did not recognize node {node}");
-            //}
         }
 
         public object VisitNegationOperator(NegationOperator negate)
@@ -269,8 +186,8 @@ namespace Minesweeper.Test.Symbols
                     return GetBuiltInType(symbol.Type);
                 }
             }
-            
-           
+
+
             return null;
         }
         private object CheckTypeMatch(TokenItem tokenItem, object left, object right, Node nodeForLog, bool twoWayConversion = true)
@@ -299,15 +216,15 @@ namespace Minesweeper.Test.Symbols
             //throw new NotImplementedException($"{nodeForLog}");
         }
 
-        private static void TypeMismatch(TokenItem tokenItem, BuiltInTypeSymbol a, BuiltInTypeSymbol b)
+        private void TypeMismatch(TokenItem tokenItem, BuiltInTypeSymbol a, BuiltInTypeSymbol b)
         {
-            throw new SemanticException(ErrorCode.TypeMismatch, tokenItem, $"type {a} is not assignable to {b}");
+            pascalResult.Errors.Add(new SemanticException(ErrorCode.TypeMismatch, tokenItem, $"type {a} is not assignable to {b}"));
         }
 
         public object VisitWhileLoop(WhileLoopNode whileLoop)
         {
             VisitNode(whileLoop.BoolExpression);
-            CurrentScope = new ScopedSymbolTable("_while_",  CurrentScope);
+            CurrentScope = new ScopedSymbolTable("_while_", CurrentScope);
             VisitNode(whileLoop.DoStatement);
             CurrentScope = CurrentScope.ParentScope;
             return null;
@@ -456,7 +373,7 @@ namespace Minesweeper.Test.Symbols
 
             if (!returnVariable.Initialized)
             {
-                throw new SemanticException(ErrorCode.DoesNotReturnValue, procedureDeclaration.Token, $"Function {procedureDeclaration.FunctionName} does not return a value");
+                pascalResult.Errors.Add(new SemanticException(ErrorCode.DoesNotReturnValue, procedureDeclaration.Token, $"Function {procedureDeclaration.FunctionName} does not return a value"));
             }
 
             CurrentScope = CurrentScope.ParentScope;
@@ -473,7 +390,7 @@ namespace Minesweeper.Test.Symbols
         {
 
             CheckTypeMatch(listRange.TokenItem, VisitNode(listRange.FromNode), VisitNode(listRange.ToNode), listRange);
-            
+
             return new CollectionTypeSymbol(CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true));
         }
 
@@ -496,7 +413,7 @@ namespace Minesweeper.Test.Symbols
         private void DeclareParameters(DeclarationNode procedureDeclaration)
         {
             var name = procedureDeclaration.Name;
-            var scope = new ScopedSymbolTable(name,  CurrentScope, _logger);
+            var scope = new ScopedSymbolTable(name, CurrentScope, _logger);
             CurrentScope = scope;
             var param = procedureDeclaration.Parameters;
             foreach (var varDeclaration in param.Select(p => p.Declaration))
@@ -527,16 +444,18 @@ namespace Minesweeper.Test.Symbols
 
             var callCount = funCall.Parameters.Count;
 
-            
+
 
             if (symbols.All(p => p.Parameters.Count != callCount))
             {
-                throw new SemanticException(ErrorCode.ParameterMismatch, funCall.Token, $"Function {funCall.Name} has {symbols.First().Parameters.Count} parameters but {callCount} was used");
+                pascalResult.Errors.Add(new SemanticException(ErrorCode.ParameterMismatch,
+                    funCall.Token,
+                    $"Function {funCall.Name} has {symbols.FirstOrDefault()?.Parameters?.Count} parameters but {callCount} was used"));
             }
 
-            var symbol = symbols.First(p => p.Parameters.Count == callCount);
+            var symbol = symbols.FirstOrDefault(p => p.Parameters.Count == callCount);
 
-            return symbol.Type;
+            return symbol?.Type;
         }
 
 
@@ -554,7 +473,10 @@ namespace Minesweeper.Test.Symbols
         {
             var variable = VisitVariable(ass.Left) as VariableSymbol;
             var assignmentType = VisitNode(ass.Right);
-            variable.Initialized = true;
+            if (variable != null)
+            {
+                variable.Initialized = true;
+            }
 
             //CheckType(ass.TokenItem, assignmentType, variable);
 
@@ -603,9 +525,9 @@ namespace Minesweeper.Test.Symbols
             return symbol;
         }
 
-        private static void NotFound(TokenItem assLeft, string type, string varName)
+        private void NotFound(TokenItem assLeft, string type, string varName)
         {
-            throw new SemanticException(ErrorCode.IdNotFound, assLeft, $"{type} '{varName}' was not declared");
+            pascalResult.Errors.Add(new SemanticException(ErrorCode.IdNotFound, assLeft, $"{type} '{varName}' was not declared"));
         }
 
 
@@ -643,14 +565,14 @@ namespace Minesweeper.Test.Symbols
             var variable = CurrentScope.LookupSymbol(varName, false);
             if (variable != null)
             {
-                throw new SemanticException(ErrorCode.DuplicateId, node,
-                    $"Variable '{varName}' has already been defined as {variable}");
+                pascalResult.Errors.Add(new SemanticException(ErrorCode.DuplicateId, node,
+                    $"Variable '{varName}' has already been defined as {variable}"));
             }
 
             var symbol = this.CurrentScope.LookupSymbol(typeName, true);
             if (symbol == null)
             {
-                throw new SemanticException(ErrorCode.IdNotFound, node, $"Could not find type {typeName}");
+                pascalResult.Errors.Add(new SemanticException(ErrorCode.IdNotFound, node, $"Could not find type {typeName}"));
             }
 
             var varSymbol = new VariableSymbol(varName, symbol);

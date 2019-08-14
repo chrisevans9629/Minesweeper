@@ -67,17 +67,12 @@ namespace Pascal.Ide.Wpf.Models
 
 
         IList<HighlightStyles> HighlightStyleList { get; set; }
-        public void HighlightSyntax(IList<HighlightParameters> parameters)
+        public void HighlightSyntax(IList<HighlightParameters> parameters, IList<TokenItem> tokens, IList<PascalException> errors)
         {
             try
             {
                 fastColoredTextBox.VisibleRange.ClearStyle(errorStyle);
-                var lexer = new PascalLexer();
-                var tokens = lexer.Tokenize(Code);
-                var ast = new PascalAst();
-                var node = ast.Evaluate(tokens);
-                var semantics = new PascalSemanticAnalyzer();
-                semantics.CheckSyntax(node);
+
 
                 if (HighlightStyleList == null)
                 {
@@ -101,11 +96,18 @@ namespace Pascal.Ide.Wpf.Models
                         }
                     }
                 }
+
+                foreach (var e in errors)
+                {
+                    if (e.Token != null)
+                    {
+                        var range = fastColoredTextBox.GetRange(e.Token.Index, e.Token.Index + e.Token.Value.Length);
+                        range.SetStyle(errorStyle);
+                    }
+                }
             }
             catch (PascalException e)
             {
-                var range = fastColoredTextBox.GetRange(e.Token.Index, e.Token.Index + e.Token.Value.Length);
-                range.SetStyle(errorStyle);
                 Console.WriteLine(e);
             }
         }

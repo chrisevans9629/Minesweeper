@@ -477,14 +477,26 @@ namespace Minesweeper.Test
             return Evaluate(items);
         }
 
-        public Node Evaluate(IList<TokenItem> tokens)
+        public PascalResult<Node> EvaluateResult(IList<TokenItem> tokens)
         {
             CreateIterator(tokens);
-            return Parse();
+            var node = Parse();
+            pascalResult.Result = node;
+            return pascalResult;
+        }
+        public Node Evaluate(IList<TokenItem> tokens)
+        {
+            var result = EvaluateResult(tokens);
+            if (result.Errors.Any())
+            {
+                throw result.Errors[0];
+            }
+            return result.Result;
         }
 
         public void CreateIterator(IList<TokenItem> tokens)
         {
+            pascalResult = new PascalResult<Node>();
             _tokens = new Iterator<TokenItem>(tokens.ToArray());
         }
 

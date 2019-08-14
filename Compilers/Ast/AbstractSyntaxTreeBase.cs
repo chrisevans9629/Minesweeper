@@ -10,19 +10,19 @@ namespace Minesweeper.Test
 
     }
 
-   
+
     public class CaseItemNode : Node
     {
         public CaseItemNode(IList<ExpressionNode> cases, Node statement)
         {
-            
+
             Cases = cases;
             Statement = statement ?? throw new ArgumentNullException(nameof(statement));
         }
 
         public IList<ExpressionNode> Cases { get; set; }
         public Node Statement { get; set; }
-        public override IEnumerable<Node> Children => new Node[] {Statement}.Union(Cases);
+        public override IEnumerable<Node> Children => new Node[] { Statement }.Union(Cases);
 
         public override string Display()
         {
@@ -42,7 +42,7 @@ namespace Minesweeper.Test
         public IList<CaseItemNode> CaseItemNodes { get; set; }
 
         public Node ElseStatement { get; set; }
-        public override IEnumerable<Node> Children => new Node[] {CompareExpression}.Union(CaseItemNodes).Append(ElseStatement);
+        public override IEnumerable<Node> Children => new Node[] { CompareExpression }.Union(CaseItemNodes).Append(ElseStatement);
 
         public override string Display()
         {
@@ -63,6 +63,8 @@ namespace Minesweeper.Test
     }
     public abstract class AbstractSyntaxTreeBase
     {
+        protected PascalResult<Node> pascalResult;
+
         protected readonly ILogger Logger;
 
         public AbstractSyntaxTreeBase(ILogger logger)
@@ -75,7 +77,7 @@ namespace Minesweeper.Test
 
         public ExpressionNode Expression()
         {
-            
+
             var result = AddSub();
             if (Name == PascalTerms.In)
             {
@@ -115,7 +117,7 @@ namespace Minesweeper.Test
             }
             else
             {
-                var items = new List<StringNode>(){from};
+                var items = new List<StringNode>() { from };
                 while (Name == PascalTerms.Comma)
                 {
                     Eat(PascalTerms.Comma);
@@ -125,7 +127,7 @@ namespace Minesweeper.Test
                 Eat(PascalTerms.RightBracket);
                 return new ListItemsExpressionNode(items, list);
             }
-            
+
         }
 
         private ExpressionNode AddSub()
@@ -161,7 +163,7 @@ namespace Minesweeper.Test
         }
 
 
-       
+
         protected virtual ExpressionNode ParseNumber()
         {
             var current = _tokens.Current;
@@ -169,7 +171,7 @@ namespace Minesweeper.Test
             if (Name == PascalTerms.Pointer)
             {
                 Eat(PascalTerms.Pointer);
-                return new PointerNode( current);
+                return new PointerNode(current);
             }
 
             if (Name == PascalTerms.StringConst)
@@ -191,7 +193,7 @@ namespace Minesweeper.Test
                 var value = new IntegerNode(current);
                 return value;
             }
-           
+
             Error("Number");
             return null;
         }
@@ -201,7 +203,7 @@ namespace Minesweeper.Test
             var current = _tokens.Current;
             var par = Parenthese();
             if (par != null) return par;
-            
+
             if (current.Token.Name == PascalTerms.Add)
             {
                 Eat(PascalTerms.Add);
@@ -215,7 +217,7 @@ namespace Minesweeper.Test
             return ParseNumber();
         }
 
-       
+
 
         protected virtual ExpressionNode Parenthese()
         {
@@ -232,12 +234,12 @@ namespace Minesweeper.Test
 
 
 
-        
+
         ExpressionNode MultiDiv()
         {
             ExpressionNode Action()
             {
-               return ParaUnaryOperators();
+                return ParaUnaryOperators();
             }
 
             var result = Action();
@@ -245,7 +247,7 @@ namespace Minesweeper.Test
             while (_tokens.Current != null && _tokens.Current.Token.Name != PascalTerms.IntegerConst)
             {
                 var token = _tokens.Current;
-                
+
                 if (_tokens.Current.Token.Name == PascalTerms.Multi)
                 {
                     Eat(PascalTerms.Multi);
@@ -272,7 +274,7 @@ namespace Minesweeper.Test
             return result;
         }
         protected Iterator<TokenItem> _tokens;
-        
+
         public void Eat(string name)
         {
             if (_tokens.Current?.Token.Name == name)
@@ -289,10 +291,10 @@ namespace Minesweeper.Test
         protected void Error(string expectedName)
         {
             var current = _tokens.CurrentOrPrevious();
-            
-            throw new ParserException(ErrorCode.UnexpectedToken,
+
+            pascalResult.Errors.Add(new ParserException(ErrorCode.UnexpectedToken,
                 current,
-                $"Expected an '{expectedName}' token but was '{current?.Token.Name}'");
+                $"Expected an '{expectedName}' token but was '{current?.Token.Name}'"));
         }
 
         public abstract Node Evaluate();

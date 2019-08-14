@@ -14,7 +14,7 @@ namespace Pascal.Ide.Wpf.Views
         event EventHandler CodeChanged;
         void Initialize(object rtb);
 
-        void HighlightSyntax(IList<HighlightParameters> parameters);
+        void HighlightSyntax(IList<HighlightParameters> parameters, IList<TokenItem> tokens, IList<PascalException> errors);
     }
 
     public class HighlightParameters

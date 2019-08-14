@@ -5,11 +5,17 @@ using Minesweeper.Test;
 
 namespace Minesweeper.Test
 {
+    public class PascalResult<T>
+    {
+        public IList<PascalException> Errors { get; set; } = new List<PascalException>();
+
+        public T Result { get; set; }
+    }
     public class PascalLexer
     {
         private readonly ILogger _logger;
         private string _str;
-       
+
         private LexerIterator iterator;
         public PascalLexer(ILogger logger = null)
         {
@@ -27,13 +33,13 @@ namespace Minesweeper.Test
             iterator.Advance();
         }
 
-       
+
 
         TokenItem Id()
         {
             var result = "";
 
-           
+
             while (char.IsLetterOrDigit(Current) || Current == '_')
             {
                 result += Current;
@@ -49,16 +55,16 @@ namespace Minesweeper.Test
             {
                 token.Token = PascalTerms.Reservations[result.ToUpper()];
             }
-           
+
             return token;
         }
 
-        TokenItem CreateToken(string name, string value , int? index = null)
+        TokenItem CreateToken(string name, string value, int? index = null)
         {
             var token = new TokenItem()
             {
-                Index =  index ?? Index-value.Length,
-                Column = Column-value.Length,
+                Index = index ?? Index - value.Length,
+                Column = Column - value.Length,
                 Line = Line,
                 Value = value,
                 Token = new Token()
@@ -73,8 +79,10 @@ namespace Minesweeper.Test
         {
             return iterator.Peek();
         }
-        public IList<TokenItem> Tokenize(string str)
+
+        public PascalResult<IList<TokenItem>> TokenizeResult(string str)
         {
+            var result = new PascalResult<IList<TokenItem>>();
             _str = str;
             _logger.Log($"Tokenizing String:\n'{_str}'");
             iterator = new LexerIterator(str.ToCharArray());
@@ -90,10 +98,10 @@ namespace Minesweeper.Test
                 {
                     items.Add(Id());
                 }
-                else if(Current == '^' && char.IsLetter(Peek()))
+                else if (Current == '^' && char.IsLetter(Peek()))
                 {
                     Advance();
-                    items.Add(CreateToken(PascalTerms.Pointer,Current.ToString()));
+                    items.Add(CreateToken(PascalTerms.Pointer, Current.ToString()));
                     Advance();
                 }
                 else if (Current == '<' && Peek() == '>')
@@ -117,7 +125,12 @@ namespace Minesweeper.Test
                     bool hasFloat = false;
                     while (char.IsNumber(Current) || Current == '.')
                     {
-                        if (Current == '.' && hasFloat) throw new InvalidOperationException($"Number {num} cannot have two periods");
+                        if (Current == '.' && hasFloat)
+                        {
+                            result.Errors.Add(
+                             new LexerException(ErrorCode.UnexpectedToken, CreateToken("Error", num) ,$"Number {num} cannot have two periods"));
+                            Advance();
+                        }
                         if (Current == '.')
                         {
                             hasFloat = true;
@@ -170,19 +183,28 @@ namespace Minesweeper.Test
                     var current = Current;
                     Advance();
                     var token = CreateToken("Error", current.ToString());
-                    throw new LexerException(ErrorCode.UnexpectedToken, token, 
-                        $"Unexpected token '{current}'");
+                    result.Errors.Add(
+                     new LexerException(ErrorCode.UnexpectedToken, token,
+                        $"Unexpected token '{current}'"));
+                    Advance();
                 }
             }
 
-            return items;
+            result.Result = items;
+            return result;
         }
 
-        public IList<TokenItem> Tokenize()
+        public IList<TokenItem> Tokenize(string str)
         {
-            return Tokenize(_str);
-        }
+            var data = TokenizeResult(str);
+            if (data.Errors.Any())
+            {
+                throw data.Errors[0];
+            }
+            return data.Result;
 
+        }
+      
 
     }
 }

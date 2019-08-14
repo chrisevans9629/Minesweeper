@@ -23,7 +23,7 @@ namespace Pascal.Ide.Wpf.ViewModels
         PascalAst ast = new PascalAst();
         PascalSemanticAnalyzer analyzer = new PascalSemanticAnalyzer();
         private string _title = "Pascal Studio";
-        private string _error;
+        private ObservableCollection<PascalException> _errors;
         private string _output;
         private string _input;
         private Node _abstractSyntaxTree;
@@ -44,10 +44,10 @@ namespace Pascal.Ide.Wpf.ViewModels
         //    }
         //}
 
-        public string Error
+        public ObservableCollection<PascalException> Errors
         {
-            get => _error;
-            set => SetProperty(ref _error, value);
+            get => _errors;
+            set => SetProperty(ref _errors, value);
         }
 
         public DelegateCommand StartCommand { get; }
@@ -67,7 +67,7 @@ namespace Pascal.Ide.Wpf.ViewModels
             };
 
             SelectedCompiler = CompilerInterpreter;
-
+            Errors = new ObservableCollection<PascalException>();
             _mainWindow = mainWindow;
             parameters = new List<HighlightParameters>
             {
@@ -151,6 +151,8 @@ namespace Pascal.Ide.Wpf.ViewModels
 
         private void Start()
         {
+            Errors = new ObservableCollection<PascalException>();
+
             try
             {
                 var console = new ConsoleModel();
@@ -177,7 +179,7 @@ namespace Pascal.Ide.Wpf.ViewModels
             catch (PascalException e)
             {
                 Console.WriteLine(e);
-                Error = $"{e.Message}\n{e.StackTrace}";
+                Errors.Add(e);
             }
         }
 
@@ -186,24 +188,34 @@ namespace Pascal.Ide.Wpf.ViewModels
         private string _selectedCompiler;
         public const string CodeKey = "Code";
 
+        string ExStr(Exception e)
+        {
+            return $"{e.Message}\n{e.StackTrace}";
+        }
         private void CodeChanged()
         {
+            Errors = new ObservableCollection<PascalException>();
+
             try
             {
                 BlobCache.LocalMachine.InsertObject(CodeKey, _mainWindow.Code);
-                Tokens = lexer.Tokenize(_mainWindow.Code);
-                AbstractSyntaxTree = ast.Evaluate(Tokens);
-                analyzer.CheckSyntax(AbstractSyntaxTree);
-                Error = "";
+                var tokenizeResult = lexer.TokenizeResult(_mainWindow.Code);
+                Tokens = tokenizeResult.Result;
+                Errors.AddRange(tokenizeResult.Errors);
+                var astResult = ast.EvaluateResult(Tokens);
+                AbstractSyntaxTree = astResult.Result;
+                Errors.AddRange(astResult.Errors);
+                var anResult = analyzer.CheckSyntaxResult(AbstractSyntaxTree);
+                Errors.AddRange(anResult.Errors);
             }
             catch (PascalException e)
             {
                 Console.WriteLine(e);
-                Error = $"{e.Message}\n{e.StackTrace}";
+                Errors.Add(e);
             }
             finally
             {
-                _mainWindow.HighlightSyntax(parameters);
+                _mainWindow.HighlightSyntax(parameters, Tokens, Errors);
             }
         }
     }

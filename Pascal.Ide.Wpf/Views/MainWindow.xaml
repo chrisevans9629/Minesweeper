@@ -67,14 +67,26 @@
             Grid.Column="0" 
             >
             <TabItem Header="Errors">
-                <ScrollViewer>
+                <!--<ScrollViewer>
                     <TextBlock 
-                        Text="{Binding Error}" 
+                        Text="{Binding Errors}" 
                         TextWrapping="Wrap"
                         Foreground="White"
                         FontSize="18" Background="{StaticResource PanelColor}"
                     />
-                </ScrollViewer>
+                </ScrollViewer>-->
+                <ListBox ItemsSource="{Binding Errors}" Background="{StaticResource PanelColor}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock 
+                                Text="{Binding Message}" 
+                                TextWrapping="Wrap"
+                                Foreground="White"
+                                FontSize="18" 
+                            />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
             </TabItem>
             <TabItem Header="Output">
