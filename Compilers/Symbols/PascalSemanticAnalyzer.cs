@@ -4,11 +4,21 @@ using System.Linq;
 
 namespace Minesweeper.Test.Symbols
 {
-    public class PascalSemanticAnalyzer : IPascalNodeVisitor<object>
+    public class AnnotatedNode
+    {
+        public Dictionary<string,object> Annotations { get; set; } = new Dictionary<string, object>();
+        public Symbol Symbol { get; set; }
+        public Node Node { get; set; }
+        public AnnotatedNode(Node node)
+        {
+            Node = node;
+        }
+    }
+    public class PascalSemanticAnalyzer : IPascalNodeVisitor<AnnotatedNode>
     {
         private readonly ILogger _logger;
         private ScopedSymbolTable _currentScope;
-        public object VisitProgram(PascalProgramNode programNode)
+        public AnnotatedNode VisitProgram(PascalProgramNode programNode)
         {
             var levelZero = CreateCurrentScope(programNode.ProgramName);
 
@@ -17,7 +27,7 @@ namespace Minesweeper.Test.Symbols
             CurrentScope = global;
             VisitBlock(programNode.Block);
             CurrentScope = global;
-            return null;
+            return new AnnotatedNode(programNode);
         }
 
         public ScopedSymbolTable CreateCurrentScope(string name)
@@ -110,12 +120,13 @@ namespace Minesweeper.Test.Symbols
             _logger = logger ?? new Logger();
         }
 
-        private PascalResult<ScopedSymbolTable> pascalResult;
-        public PascalResult<ScopedSymbolTable> CheckSyntaxResult(Node rootNode)
+        private PascalResult<AnnotatedNode> pascalResult;
+        public PascalResult<AnnotatedNode> CheckSyntaxResult(Node rootNode)
         {
-            pascalResult = new PascalResult<ScopedSymbolTable>();
-            VisitNode(rootNode);
-            pascalResult.Result = CurrentScope;
+            pascalResult = new PascalResult<AnnotatedNode>();
+            var result =  VisitNode(rootNode);
+            result.Annotations.Add("SymbolTable", CurrentScope);
+            pascalResult.Result = result;
             return pascalResult;
         }
         public ScopedSymbolTable CheckSyntax(Node rootNode)
@@ -125,23 +136,22 @@ namespace Minesweeper.Test.Symbols
             {
                 throw r.Errors[0];
             }
-            return r.Result;
+            return r.Result.Annotations["SymbolTable"] as ScopedSymbolTable;
         }
 
 
 
-        public object VisitNode(Node node)
+        public AnnotatedNode VisitNode(Node node)
         {
             return this.VisitNodeModel(node);
         }
 
-        public object VisitNegationOperator(NegationOperator negate)
+        public AnnotatedNode VisitNegationOperator(NegationOperator negate)
         {
-            VisitNode(negate.Right);
-            return null;
+           return VisitNode(negate.Right);
         }
 
-        public object VisitIfStatement(IfStatementNode ifStatement)
+        public AnnotatedNode VisitIfStatement(IfStatementNode ifStatement)
         {
             VisitNode(ifStatement.IfCheck);
             VisitNode(ifStatement.IfTrue);
@@ -150,30 +160,30 @@ namespace Minesweeper.Test.Symbols
                 VisitNode(ifStatement.IfFalse);
             }
 
-            return null;
+            return new AnnotatedNode(ifStatement);
         }
 
-        public object VisitForLoop(ForLoopNode forLoop)
+        public AnnotatedNode VisitForLoop(ForLoopNode forLoop)
         {
             VisitAssignment(forLoop.AssignFromNode);
             VisitNode(forLoop.ToNode);
             VisitNode(forLoop.DoStatements);
-            return null;
+            return new AnnotatedNode(forLoop);
         }
 
-        public object VisitFunctionCall(CallNode functionCall)
+        public AnnotatedNode VisitFunctionCall(CallNode functionCall)
         {
             return VisitCall(functionCall);
         }
 
-        public object VisitEqualExpression(EqualExpression equal)
+        public AnnotatedNode VisitEqualExpression(EqualExpression equal)
         {
             var left = VisitNode(equal.Left);
             var right = VisitNode(equal.Right);
             return CheckTypeMatch(equal.TokenItem, left, right, equal);
         }
 
-        BuiltInTypeSymbol GetBuiltInType(object sym)
+        BuiltInTypeSymbol GetBuiltInType(Symbol sym)
         {
             if (sym is Symbol symbol)
             {
@@ -190,22 +200,22 @@ namespace Minesweeper.Test.Symbols
 
             return null;
         }
-        private object CheckTypeMatch(TokenItem tokenItem, object left, object right, Node nodeForLog, bool twoWayConversion = true)
+        private AnnotatedNode CheckTypeMatch(TokenItem tokenItem, AnnotatedNode left, AnnotatedNode right, Node nodeForLog, bool twoWayConversion = true)
         {
-            if (GetBuiltInType(left) is BuiltInTypeSymbol a && GetBuiltInType(right) is BuiltInTypeSymbol b)
+            if (GetBuiltInType(left.Symbol) is BuiltInTypeSymbol a && GetBuiltInType(right.Symbol) is BuiltInTypeSymbol b)
             {
                 if (a.Name == b.Name)
                 {
-                    return a;
+                    return new AnnotatedNode(nodeForLog){Symbol = a }; ;
                 }
 
                 if (a.Conversions.Contains(b.Name) && twoWayConversion)
                 {
-                    return b;
+                    return new AnnotatedNode(nodeForLog){Symbol = b }; ;
                 }
                 if (b.Conversions.Contains(a.Name))
                 {
-                    return a;
+                    return new AnnotatedNode(nodeForLog){Symbol = a };
                 }
 
 
@@ -221,75 +231,74 @@ namespace Minesweeper.Test.Symbols
             pascalResult.Errors.Add(new SemanticException(ErrorCode.TypeMismatch, tokenItem, $"type {a} is not assignable to {b}"));
         }
 
-        public object VisitWhileLoop(WhileLoopNode whileLoop)
+        public AnnotatedNode VisitWhileLoop(WhileLoopNode whileLoop)
         {
             VisitNode(whileLoop.BoolExpression);
             CurrentScope = new ScopedSymbolTable("_while_", CurrentScope);
             VisitNode(whileLoop.DoStatement);
             CurrentScope = CurrentScope.ParentScope;
-            return null;
+            return new AnnotatedNode(whileLoop);
         }
 
-        public object VisitReal(RealNode real)
+        public AnnotatedNode VisitReal(RealNode real)
         {
             //return real.Value;
-            return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Real, true);
-
+            return new AnnotatedNode(real){Symbol = CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Real, true) };
         }
 
-        public object VisitInteger(IntegerNode integer)
+        public AnnotatedNode VisitInteger(IntegerNode integer)
         {
-            return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Int, true);
+            return new AnnotatedNode(integer){Symbol = CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Int, true) }; ;
         }
 
-        public object VisitBinaryOperator(BinaryOperator binary)
+        public AnnotatedNode VisitBinaryOperator(BinaryOperator binary)
         {
             var left = VisitNode(binary.Left);
             var right = VisitNode(binary.Right);
             return CheckTypeMatch(binary.TokenItem, left, right, binary);
         }
 
-        public object VisitUnary(UnaryOperator unary)
+        public AnnotatedNode VisitUnary(UnaryOperator unary)
         {
             var value = VisitNode(unary.Value);
             return value;
         }
 
-        public object Fail(Node node)
+        public AnnotatedNode Fail(Node node)
         {
             return this.FailModel(node);
         }
 
-        public object VisitString(StringNode str)
+        public AnnotatedNode VisitString(StringNode str)
         {
             if (str.CurrentValue.Length == 1)
             {
-                return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Char, true);
+                return new AnnotatedNode(str){Symbol = CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Char, true) }; ;
             }
             else
             {
-                return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true);
+                return new AnnotatedNode(str){Symbol = CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true) }; ;
             }
         }
 
-        public object VisitInOperator(InOperator inOperator)
+        public AnnotatedNode VisitInOperator(InOperator inOperator)
         {
             var compare = VisitNode(inOperator.CompareNode);
 
             var list = VisitNode(inOperator.ListExpression);
-            if (list is CollectionTypeSymbol collection)
+            if (list.Symbol is CollectionTypeSymbol collection)
             {
-                var comType = GetBuiltInType(compare);
+                var comType = GetBuiltInType(compare.Symbol);
                 if (collection.ItemType.Name != comType.Name && comType.Conversions.Contains(collection.ItemType.Name) != true)
                 {
                     TypeMismatch(inOperator.TokenItem, collection, comType);
                 }
             }
 
-            return CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Boolean, true);
+            return new AnnotatedNode(inOperator){Symbol = CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.Boolean, true) }; ;
         }
 
-        public object VisitCaseStatement(CaseStatementNode caseStatement)
+        public AnnotatedNode VisitCaseStatement(CaseStatementNode caseStatement)
         {
             VisitNode(caseStatement.CompareExpression);
             foreach (var caseStatementCaseItemNode in caseStatement.CaseItemNodes)
@@ -302,7 +311,7 @@ namespace Minesweeper.Test.Symbols
                 VisitNode(caseStatement.ElseStatement);
             }
 
-            return null;
+            return new AnnotatedNode(caseStatement);
         }
 
         private void VisitCaseItem(CaseItemNode caseItem)
@@ -314,7 +323,7 @@ namespace Minesweeper.Test.Symbols
             VisitNode(caseItem.Statement);
         }
 
-        public object VisitConstantDeclaration(ConstantDeclarationNode decNode)
+        public AnnotatedNode VisitConstantDeclaration(ConstantDeclarationNode decNode)
         {
             var value = decNode.Value;
 
@@ -332,31 +341,31 @@ namespace Minesweeper.Test.Symbols
 
 
             //VisitNode(decNode.Value);
-            this.DefineVariableSymbol(decNode.TokenItem, decNode.ConstantName, typeName);
-            return null;
+            var symbol = this.DefineVariableSymbol(decNode.TokenItem, decNode.ConstantName, typeName);
+            return new AnnotatedNode(decNode){Symbol = symbol};
         }
 
-        public object VisitPointer(PointerNode pointer)
+        public AnnotatedNode VisitPointer(PointerNode pointer)
         {
-            return pointer.Value;
+            return new AnnotatedNode(pointer); ;
         }
 
-        public object VisitProcedureDeclaration(ProcedureDeclarationNode procedureDeclaration)
+        public AnnotatedNode VisitProcedureDeclaration(ProcedureDeclarationNode procedureDeclaration)
         {
             DeclareParameters(procedureDeclaration);
             VisitBlock(procedureDeclaration.Block);
             CurrentScope = CurrentScope.ParentScope;
             var procedure = new ProcedureDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters);
             CurrentScope.Define(procedure);
-            return null;
+            return new AnnotatedNode(procedureDeclaration);
         }
 
-        public object VisitProcedureCall(ProcedureCallNode procedureCall)
+        public AnnotatedNode VisitProcedureCall(ProcedureCallNode procedureCall)
         {
             return VisitCall(procedureCall);
         }
 
-        public object VisitFunctionDeclaration(FunctionDeclarationNode procedureDeclaration)
+        public AnnotatedNode VisitFunctionDeclaration(FunctionDeclarationNode procedureDeclaration)
         {
             var procedure = new FunctionDeclarationSymbol(procedureDeclaration.Name, procedureDeclaration.Parameters, CurrentScope.LookupSymbol(procedureDeclaration.ReturnType.TypeValue, true));
             CurrentScope.Define(procedure);
@@ -378,23 +387,23 @@ namespace Minesweeper.Test.Symbols
 
             CurrentScope = CurrentScope.ParentScope;
 
-            return procedure;
+            return new AnnotatedNode(procedureDeclaration){Symbol = procedure};
         }
 
-        public object VisitBool(BoolNode boolNode)
+        public AnnotatedNode VisitBool(BoolNode boolNode)
         {
-            return boolNode.Value;
+            return new AnnotatedNode(boolNode); ;
         }
 
-        public object VisitRangeExpression(ListRangeExpressionNode listRange)
+        public AnnotatedNode VisitRangeExpression(ListRangeExpressionNode listRange)
         {
 
             CheckTypeMatch(listRange.TokenItem, VisitNode(listRange.FromNode), VisitNode(listRange.ToNode), listRange);
 
-            return new CollectionTypeSymbol(CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true));
+            return new AnnotatedNode(listRange){Symbol = new CollectionTypeSymbol(CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true)) };
         }
 
-        public object VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
+        public AnnotatedNode VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
         {
             Node prevNode = null;
             foreach (var stringNode in itemsExpressionNode.Items)
@@ -407,7 +416,7 @@ namespace Minesweeper.Test.Symbols
                 CheckTypeMatch(itemsExpressionNode.TokenItem, VisitNode(prevNode), VisitNode(stringNode), itemsExpressionNode);
                 prevNode = stringNode;
             }
-            return new CollectionTypeSymbol(CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true));
+            return new AnnotatedNode(itemsExpressionNode){Symbol = new CollectionTypeSymbol(CurrentScope.LookupSymbol<BuiltInTypeSymbol>(PascalTerms.String, true)) };
         }
 
         private void DeclareParameters(DeclarationNode procedureDeclaration)
@@ -429,7 +438,7 @@ namespace Minesweeper.Test.Symbols
 
         }
 
-        private object VisitCall(CallNode funCall)
+        private AnnotatedNode VisitCall(CallNode funCall)
         {
             var symbols = CurrentScope.LookupSymbols<DeclarationSymbol>(funCall.Name, true);
             if (symbols.Any() != true)
@@ -455,27 +464,27 @@ namespace Minesweeper.Test.Symbols
 
             var symbol = symbols.FirstOrDefault(p => p.Parameters.Count == callCount);
 
-            return symbol?.Type;
+            return new AnnotatedNode(funCall){Symbol = symbol}; ;
         }
 
 
-        public object VisitVariableOrFunctionCall(VariableOrFunctionCall call)
+        public AnnotatedNode VisitVariableOrFunctionCall(VariableOrFunctionCall call)
         {
-            return VisitVariable(call);
+            return  VisitVariable(call);
         }
 
-        public object VisitNoOp(NoOp nope)
+        public AnnotatedNode VisitNoOp(NoOp nope)
         {
-            return null;
+            return new AnnotatedNode(nope);
         }
 
-        public object VisitAssignment(AssignmentNode ass)
+        public AnnotatedNode VisitAssignment(AssignmentNode ass)
         {
-            var variable = VisitVariable(ass.Left) as VariableSymbol;
+            var variable = VisitVariable(ass.Left);
             var assignmentType = VisitNode(ass.Right);
-            if (variable != null)
+            if (variable.Symbol is VariableSymbol v)
             {
-                variable.Initialized = true;
+                v.Initialized = true;
             }
 
             //CheckType(ass.TokenItem, assignmentType, variable);
@@ -509,7 +518,7 @@ namespace Minesweeper.Test.Symbols
         //    }
         //}
 
-        private object VisitVariable(VariableOrFunctionCall assLeft)
+        private AnnotatedNode VisitVariable(VariableOrFunctionCall assLeft)
         {
             var varName = assLeft.VariableName;
             Symbol symbol = CurrentScope.LookupSymbol<VariableSymbol>(varName, true);
@@ -522,7 +531,7 @@ namespace Minesweeper.Test.Symbols
                 NotFound(assLeft.TokenItem, "Variable", varName);
             }
 
-            return symbol;
+            return new AnnotatedNode(assLeft){Symbol = symbol};
         }
 
         private void NotFound(TokenItem assLeft, string type, string varName)
@@ -531,33 +540,33 @@ namespace Minesweeper.Test.Symbols
         }
 
 
-        public object VisitBlock(BlockNode programBlock)
+        public AnnotatedNode VisitBlock(BlockNode programBlock)
         {
             foreach (var programBlockDeclaration in programBlock.Declarations)
             {
                 VisitNode(programBlockDeclaration);
             }
             VisitCompoundStatement(programBlock.CompoundStatement);
-            return null;
+            return new AnnotatedNode(programBlock);
         }
 
-        public object VisitCompoundStatement(CompoundStatementNode node)
+        public AnnotatedNode VisitCompoundStatement(CompoundStatementNode node)
         {
             foreach (var nodeNode in node.Nodes)
             {
                 VisitNode(nodeNode);
             }
 
-            return null;
+            return new AnnotatedNode(node);
         }
 
 
 
-        public object VisitVarDeclaration(VarDeclarationNode node)
+        public AnnotatedNode VisitVarDeclaration(VarDeclarationNode node)
         {
             var typeName = node.TypeNode.TypeValue;
             var varName = node.VarNode.VariableName;
-            return DefineVariableSymbol(node.VarNode.TokenItem, varName, typeName);
+            return new AnnotatedNode(node){Symbol = DefineVariableSymbol(node.VarNode.TokenItem, varName, typeName) };
         }
 
         private VariableSymbol DefineVariableSymbol(TokenItem node, string varName, string typeName)
