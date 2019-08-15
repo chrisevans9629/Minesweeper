@@ -19,7 +19,7 @@ namespace Minesweeper.Test
 
         public override string Display()
         {
-            return $"{Left.Display()} {TokenItem.Value} {Right.Display()}";
+            return $"{Left?.Display()} {TokenItem?.Value} {Right?.Display()}";
         }
     }
 }

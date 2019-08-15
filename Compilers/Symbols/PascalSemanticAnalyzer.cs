@@ -4,16 +4,6 @@ using System.Linq;
 
 namespace Minesweeper.Test.Symbols
 {
-    public class AnnotatedNode
-    {
-        public Dictionary<string,object> Annotations { get; set; } = new Dictionary<string, object>();
-        public Symbol Symbol { get; set; }
-        public Node Node { get; set; }
-        public AnnotatedNode(Node node)
-        {
-            Node = node;
-        }
-    }
     public class PascalSemanticAnalyzer : IPascalNodeVisitor<AnnotatedNode>
     {
         private readonly ILogger _logger;
@@ -124,7 +114,7 @@ namespace Minesweeper.Test.Symbols
         public PascalResult<AnnotatedNode> CheckSyntaxResult(Node rootNode)
         {
             pascalResult = new PascalResult<AnnotatedNode>();
-            var result =  VisitNode(rootNode);
+            var result = VisitNode(rootNode);
             result.Annotations.Add("SymbolTable", CurrentScope);
             pascalResult.Result = result;
             return pascalResult;

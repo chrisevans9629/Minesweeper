@@ -95,14 +95,14 @@ namespace Minesweeper.Test
             if (Name == PascalTerms.LParinth)
             {
                 Eat(PascalTerms.LParinth);
-                while (Name != PascalTerms.RParinth)
+                RightParenthesisWithBreak(() =>
                 {
                     parameters.AddRange(VariableDeclaration().Select(p => new ParameterNode(p)));
                     if (Name == PascalTerms.Semi)
                     {
                         Eat(PascalTerms.Semi);
                     }
-                }
+                });
 
                 Eat(PascalTerms.RParinth);
             }
@@ -115,6 +115,22 @@ namespace Minesweeper.Test
             return proc;
         }
 
+        private void RightParenthesisWithBreak(Action action)
+        {
+            var errorCount = this.pascalResult.Errors.Count;
+            while (Name != PascalTerms.RParinth)
+            {
+                action();
+
+                var currentErrors = pascalResult.Errors.Count;
+                if (currentErrors > errorCount)
+                {
+                    Eat(PascalTerms.RParinth);
+                    break;
+                }
+            }
+        }
+
         public ProcedureDeclarationNode ProcedureDeclaration()
         {
             var parameters = new List<ParameterNode>();
@@ -124,14 +140,14 @@ namespace Minesweeper.Test
             if (Name == PascalTerms.LParinth)
             {
                 Eat(PascalTerms.LParinth);
-                while (Name != PascalTerms.RParinth)
+                RightParenthesisWithBreak(() =>
                 {
                     parameters.AddRange(VariableDeclaration().Select(p => new ParameterNode(p)));
                     if (Name == PascalTerms.Semi)
                     {
                         Eat(PascalTerms.Semi);
                     }
-                }
+                });
 
                 Eat(PascalTerms.RParinth);
             }
@@ -265,6 +281,7 @@ namespace Minesweeper.Test
             Eat(PascalTerms.Id);
             Eat(PascalTerms.LParinth);
             var parameters = new List<Node>();
+            var errorCount = pascalResult.Errors.Count;
             while (Current.Token.Name != PascalTerms.RParinth)
             {
                 parameters.Add(Expression());
@@ -272,7 +289,12 @@ namespace Minesweeper.Test
                 {
                     Eat(PascalTerms.Comma);
                 }
-
+                var currentErrors = pascalResult.Errors.Count;
+                if (currentErrors > errorCount)
+                {
+                    Eat(PascalTerms.RParinth);
+                    break;
+                }
             }
             Eat(PascalTerms.RParinth);
             return new FunctionCallNode(procedureName, parameters, token);
@@ -410,6 +432,7 @@ namespace Minesweeper.Test
 
             if (Name == PascalTerms.LParinth)
             {
+                var errorCount = pascalResult.Errors.Count;
                 Eat(PascalTerms.LParinth);
                 while (Name != PascalTerms.RParinth)
                 {
@@ -420,6 +443,12 @@ namespace Minesweeper.Test
                     }
                     else
                     {
+                        break;
+                    }
+                    var currentErrors = pascalResult.Errors.Count;
+                    if (currentErrors > errorCount)
+                    {
+                        Eat(PascalTerms.RParinth);
                         break;
                     }
 

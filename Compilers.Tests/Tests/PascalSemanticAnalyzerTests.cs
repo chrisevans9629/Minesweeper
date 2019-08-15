@@ -34,7 +34,38 @@ namespace Minesweeper.Test.Tests
             analyzer = new PascalSemanticAnalyzer(logger);
         }
 
-
+        [TestCase(@"
+program test;
+function factorial(
+begin
+    writeln(10);
+end.")]
+        [TestCase(@"
+program test;
+procedure factorial(
+begin
+    writeln(10);
+end.")]
+        [TestCase(@"
+program test;
+begin
+    t := 10 + ( 1
+    writeln(10);
+end.")]
+        [TestCase(@"
+program test;
+begin
+    writeln(10;
+end.")]
+        [TestCase(@"
+program test;
+begin
+    t := writeln(10;
+end.")]
+        public void AnalyzeWithMultipleErrors_Should_NotStackoverflow(string input)
+        {
+            Assert.Throws<ParserException>(() => CheckSyntax(input));
+        }
 
         [Test]
         public void FunctionAssignment_Should_Pass()
@@ -79,7 +110,7 @@ begin
   t := 'tt';
   writeln('Hello, world!');
 end.";
-           Assert.Throws<SemanticException>(()=> CheckSyntax(input));
+            Assert.Throws<SemanticException>(() => CheckSyntax(input));
         }
 
         [Test]
@@ -89,7 +120,7 @@ end.";
 
             var table = CheckSyntax(input);
 
-            table.LookupSymbol<FunctionDeclarationSymbol>("Add",true).Should().NotBeNull();
+            table.LookupSymbol<FunctionDeclarationSymbol>("Add", true).Should().NotBeNull();
         }
         [TestCase(PascalTestInputs.Invalid.FunctionDoesNotHaveReturn)]
         [TestCase(PascalTestInputs.Invalid.UndefinedProcedureAdd)]
@@ -100,7 +131,7 @@ end.";
         {
             Assert.Throws<SemanticException>(() => CheckSyntax(input));
         }
-      
+
 
         [Test]
         public void PascalProgram_ShouldGetSymbols()
@@ -167,7 +198,7 @@ begin
 end.")]
         public void PascalAssignRealToInteger_Should_Fail(string input)
         {
-           Assert.Throws<SemanticException>(()=> CheckSyntax(input));
+            Assert.Throws<SemanticException>(() => CheckSyntax(input));
         }
 
 
@@ -182,7 +213,7 @@ end.")]
 
             var tableBuilder = this.analyzer;
 
-            var t = Assert.Throws<SemanticException>(()=> tableBuilder.CheckSyntax(node));
+            var t = Assert.Throws<SemanticException>(() => tableBuilder.CheckSyntax(node));
             t.Error.Should().Be(ErrorCode.IdNotFound);
         }
 
@@ -231,7 +262,7 @@ end.")]
             var node = ast.Evaluate(tokens);
             var result = analyzer.CheckSyntax(node);
             var memory = interpreter.Interpret(node).Should().BeOfType<Memory>().Subject;
-             memory.ContainsKey("a").Should().BeTrue();
+            memory.ContainsKey("a").Should().BeTrue();
         }
 
 
@@ -311,12 +342,12 @@ end.")]
         [Test]
         public void LimitedScopes_OpensAndClosesScope()
         {
-            var input ="program globalTest; var x : integer; procedure test(a : integer;); var b : integer; begin a := 2; end; begin end.";
+            var input = "program globalTest; var x : integer; procedure test(a : integer;); var b : integer; begin a := 2; end; begin end.";
             var tokens = lexer.Tokenize(input);
             var node = ast.Evaluate(tokens);
             var memory = analyzer.CheckSyntax(node);
-            
-            
+
+
             logger.Calls.Should().Contain("Opened Scope globalTest");
             logger.Calls.Should().Contain("Opened Scope test");
             logger.Calls.Should().Contain("Closed Scope test");

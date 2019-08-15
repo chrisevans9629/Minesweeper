@@ -9,7 +9,7 @@ namespace Minesweeper.Test
         public TokenItem TokenItem { get; set; }
         public PascalProgramNode(TokenItem name, BlockNode block)
         {
-            ProgramName = name.Value;
+            ProgramName = name?.Value;
             Block = block;
             TokenItem = name;
         }

@@ -151,8 +151,10 @@ namespace Pascal.Ide.Wpf.ViewModels
 
         private void Start()
         {
-            Errors = new ObservableCollection<PascalException>();
-
+            if (Errors.Any())
+            {
+                return;
+            }
             try
             {
                 var console = new ConsoleModel();
@@ -161,7 +163,6 @@ namespace Pascal.Ide.Wpf.ViewModels
                     console.Input = new Iterator<char>(Input.ToCharArray());
                 }
 
-                analyzer.CheckSyntax(AbstractSyntaxTree);
                 if (SelectedCompiler == CompilerInterpreter)
                 {
                     var interpreter = new PascalInterpreter(console: console);

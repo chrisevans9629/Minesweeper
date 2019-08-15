@@ -52,6 +52,10 @@ namespace Pascal.Ide.Wpf.Models
         public void Initialize(object rtb)
         {
             fastColoredTextBox = rtb as FastColoredTextBox;
+
+            fastColoredTextBox.AutoIndent = true;
+            fastColoredTextBox.AutoIndentChars = true;
+            fastColoredTextBox.AutoIndentCharsPatterns = "Begin\r\nEnd";
             fastColoredTextBox.BackColor = Color.FromArgb(61, 61, 61);
             fastColoredTextBox.ForeColor = Color.White;
 
@@ -69,50 +73,43 @@ namespace Pascal.Ide.Wpf.Models
         IList<HighlightStyles> HighlightStyleList { get; set; }
         public void HighlightSyntax(IList<HighlightParameters> parameters, IList<TokenItem> tokens, IList<PascalException> errors)
         {
-            try
+            fastColoredTextBox.VisibleRange.ClearStyle(errorStyle);
+
+
+            if (HighlightStyleList == null)
             {
-                fastColoredTextBox.VisibleRange.ClearStyle(errorStyle);
-
-
-                if (HighlightStyleList == null)
+                HighlightStyleList = parameters.Select(p => new HighlightStyles()
                 {
-                    HighlightStyleList = parameters.Select(p => new HighlightStyles()
-                    {
-                        HighlightParameters = p,
-                        TextStyle = new TextStyle(new SolidBrush(p.Color), new SolidBrush(Color.Transparent), FontStyle.Regular)
-                    }).ToList();
-                }
-                fastColoredTextBox.VisibleRange.ClearStyle(HighlightStyleList.Select(p => p.TextStyle as Style).ToArray());
-
-                foreach (var tokenItem in tokens)
+                    HighlightParameters = p,
+                    TextStyle = new TextStyle(new SolidBrush(p.Color), new SolidBrush(Color.Transparent), FontStyle.Regular)
+                }).ToList();
+            }
+            fastColoredTextBox.VisibleRange.ClearStyle(HighlightStyleList.Select(p => p.TextStyle as Style).ToArray());
+            foreach (var tokenItem in tokens)
+            {
+                
+                foreach (var highlightParameterse in HighlightStyleList)
                 {
-                    foreach (var highlightParameterse in HighlightStyleList)
+                    if (highlightParameterse.HighlightParameters.Filter(tokenItem))
                     {
-                        if (highlightParameterse.HighlightParameters.Filter(tokenItem))
-                        {
-                            var range = fastColoredTextBox.GetRange(tokenItem.Index, tokenItem.Index + tokenItem.Value.Length);
-                            range.SetStyle(highlightParameterse.TextStyle);
-
-                        }
-                    }
-                }
-
-                foreach (var e in errors)
-                {
-                    if (e.Token != null)
-                    {
-                        var range = fastColoredTextBox.GetRange(e.Token.Index, e.Token.Index + e.Token.Value.Length);
-                        range.SetStyle(errorStyle);
+                        var range = fastColoredTextBox.GetRange(tokenItem.Index, tokenItem.Index + tokenItem.Value.Length);
+                        range.SetStyle(highlightParameterse.TextStyle);
+                        
                     }
                 }
             }
-            catch (PascalException e)
+
+            foreach (var e in errors)
             {
-                Console.WriteLine(e);
+                if (e.Token != null)
+                {
+                    var range = fastColoredTextBox.GetRange(e.Token.Index, e.Token.Index + e.Token.Value.Length);
+                    range.SetStyle(errorStyle);
+                }
             }
         }
 
-        TextStyle errorStyle = new TextStyle(new SolidBrush(Color.Red), new SolidBrush(Color.Transparent), FontStyle.Regular );
+        TextStyle errorStyle = new TextStyle(new SolidBrush(Color.Red), new SolidBrush(Color.Transparent), FontStyle.Regular);
 
         protected virtual void OnCodeChanged()
         {

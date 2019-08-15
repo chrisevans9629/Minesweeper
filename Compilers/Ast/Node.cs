@@ -5,6 +5,7 @@ namespace Minesweeper.Test
 {
     public abstract class Node : INode
     {
+        public Dictionary<string, object> Annotations { get; set; } = new Dictionary<string, object>();
 
         public Node()
         {
@@ -22,7 +23,7 @@ namespace Minesweeper.Test
         public static string Aggregate(IEnumerable<Node> nodes)
         {
             if (nodes == null) return "";
-            return (nodes.Any() ? nodes.Select(p => p.Display()).Aggregate((f, s) => $"{f}, {s}") : "");
+            return (nodes.Any() ? nodes.Select(p => p?.Display()).Aggregate((f, s) => $"{f}, {s}") : "");
         }
 
         //public string Name => TokenItem.Token.Name;
