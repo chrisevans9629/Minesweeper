@@ -1,8 +1,0 @@
-﻿program test;
-var constant, determined : boolean;
-var x : integer;
-begin
-	constant := tRue;
-	x := 10;
-	determined := x = 10;
-end.
