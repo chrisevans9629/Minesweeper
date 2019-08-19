@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Minesweeper.Test
 {
-    public class PascalInterpreter : IPascalNodeVisitor<object>
+    public class PascalInterpreter : PascalNodeVisitor<object>
     {
         private readonly IConsole _console;
         private ILogger _logger;
@@ -16,12 +16,12 @@ namespace Minesweeper.Test
         }
 
 
-        public object VisitReal(RealNode num)
+        public override object VisitReal(RealNode num)
         {
             return num.Value;
         }
 
-        public object VisitUnary(UnaryOperator op)
+        public override object VisitUnary(UnaryOperator op)
         {
             if (op.Name == PascalTerms.Add)
             {
@@ -43,19 +43,19 @@ namespace Minesweeper.Test
             return Fail(op);
         }
 
-        public object Fail(Node node)
+        public override object Fail(Node node)
         {
             return this.FailModel(node);
         }
 
 
 
-        public object VisitInteger(IntegerNode integer)
+        public override object VisitInteger(IntegerNode integer)
         {
             return integer.Value;
         }
 
-        public object VisitBinaryOperator(BinaryOperator op)
+        public override object VisitBinaryOperator(BinaryOperator op)
         {
             var doubleActions = new Dictionary<string, Func<double, double, double>>();
             doubleActions.Add(PascalTerms.Add, (d, d1) => d + d1);
@@ -142,7 +142,7 @@ namespace Minesweeper.Test
             return CurrentScope.GetValue(key, true);
         }
         private Memory CurrentScope;
-        public object VisitCompoundStatement(CompoundStatementNode compound)
+        public override object VisitCompoundStatement(CompoundStatementNode compound)
         {
             foreach (var compoundNode in compound.Nodes)
             {
@@ -152,18 +152,18 @@ namespace Minesweeper.Test
             return compound;
         }
 
-        public object VisitNode(Node node)
+        public override object VisitNode(Node node)
         {
             return this.VisitNodeModel(node);
         }
 
 
-        public object VisitBool(BoolNode boolNode)
+        public override object VisitBool(BoolNode boolNode)
         {
             return boolNode.Value;
         }
 
-        public object VisitRangeExpression(ListRangeExpressionNode listRange)
+        public override object VisitRangeExpression(ListRangeExpressionNode listRange)
         {
             var from = listRange.FromNode.CurrentValue[0];
 
@@ -173,25 +173,25 @@ namespace Minesweeper.Test
             return list.Cast<object>();
         }
 
-        public object VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
+        public override object VisitListItemsExpression(ListItemsExpressionNode itemsExpressionNode)
         {
             var items = itemsExpressionNode.Items.Select(p => p.CurrentValue[0]);
 
             return items.Cast<object>();
         }
 
-        public object VisitFunctionDeclaration(FunctionDeclarationNode funcdec)
+        public override object VisitFunctionDeclaration(FunctionDeclarationNode funcdec)
         {
             CurrentScope.Add(funcdec.FunctionName, funcdec);
             return null;
         }
 
-        public object VisitString(StringNode str)
+        public override object VisitString(StringNode str)
         {
             return str.CurrentValue;
         }
 
-        public object VisitWhileLoop(WhileLoopNode whileLoop)
+        public override object VisitWhileLoop(WhileLoopNode whileLoop)
         {
             while ((bool)VisitNode(whileLoop.BoolExpression))
             {
@@ -200,7 +200,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        public object VisitCaseStatement(CaseStatementNode caseStatement)
+        public override object VisitCaseStatement(CaseStatementNode caseStatement)
         {
             var comparer = VisitNode(caseStatement.CompareExpression);
 
@@ -220,7 +220,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        public object VisitInOperator(InOperator inOperator)
+        public override object VisitInOperator(InOperator inOperator)
         {
             var valueToContain = VisitNode(inOperator.CompareNode).ToString()[0];
 
@@ -242,7 +242,7 @@ namespace Minesweeper.Test
             }
             return null;
         }
-        public object VisitPointer(PointerNode pointer)
+        public override object VisitPointer(PointerNode pointer)
         {
             if (pointer.Value == 'I')
             {
@@ -256,13 +256,13 @@ namespace Minesweeper.Test
             throw new NotImplementedException($"{pointer}");
         }
 
-        public object VisitConstantDeclaration(ConstantDeclarationNode constantDeclarationNode)
+        public override object VisitConstantDeclaration(ConstantDeclarationNode constantDeclarationNode)
         {
             CurrentScope.Add(constantDeclarationNode.ConstantName, VisitNode(constantDeclarationNode.Value));
             return null;
         }
 
-        public object VisitForLoop(ForLoopNode forLoop)
+        public override object VisitForLoop(ForLoopNode forLoop)
         {
             var fromName = forLoop.AssignFromNode.Left.VariableName;
             VisitAssignment(forLoop.AssignFromNode);
@@ -277,7 +277,7 @@ namespace Minesweeper.Test
             return null;
         }
 
-        public object VisitIfStatement(IfStatementNode ifNode)
+        public override object VisitIfStatement(IfStatementNode ifNode)
         {
             if ((bool)VisitNode(ifNode.IfCheck))
             {
@@ -295,7 +295,7 @@ namespace Minesweeper.Test
 
 
 
-        public object VisitNegationOperator(NegationOperator negation)
+        public override object VisitNegationOperator(NegationOperator negation)
         {
             var right = VisitNode(negation.Right);
             if (right is bool b)
@@ -307,7 +307,7 @@ namespace Minesweeper.Test
                 $"Did not find an equality operator called {negation.TokenItem.Token.Name}");
         }
 
-        public object VisitEqualExpression(EqualExpression exp)
+        public override object VisitEqualExpression(EqualExpression exp)
         {
             var left = VisitNode(exp.Left);
             var right = VisitNode(exp.Right);
@@ -360,7 +360,7 @@ namespace Minesweeper.Test
 
         }
 
-        public object VisitFunctionCall(CallNode call)
+        public override object VisitFunctionCall(CallNode call)
         {
             try
             {
@@ -382,7 +382,7 @@ namespace Minesweeper.Test
 
         }
 
-        public object VisitProcedureCall(ProcedureCallNode call)
+        public override object VisitProcedureCall(ProcedureCallNode call)
         {
             if (call.ProcedureName.ToUpper() == "READ")
             {
@@ -427,18 +427,18 @@ namespace Minesweeper.Test
             return null;
         }
 
-        public object VisitProcedureDeclaration(ProcedureDeclarationNode procedure)
+        public override object VisitProcedureDeclaration(ProcedureDeclarationNode procedure)
         {
             this.CurrentScope.Add(procedure.ProcedureId, procedure);
             return null;
         }
 
-        public object VisitProgram(PascalProgramNode programNode)
+        public override object VisitProgram(PascalProgramNode programNode)
         {
             return VisitBlock(programNode.Block);
         }
         PascalDefaultValues defaultValues = new PascalDefaultValues();
-        public object VisitVarDeclaration(VarDeclarationNode varDeclaration)
+        public override object VisitVarDeclaration(VarDeclarationNode varDeclaration)
         {
             var typeName = varDeclaration.TypeNode.TypeValue.ToUpper();
             if (defaultValues.DefaultValues.ContainsKey(typeName))
@@ -451,7 +451,7 @@ namespace Minesweeper.Test
             }
             return null;
         }
-        public object VisitBlock(BlockNode block)
+        public override object VisitBlock(BlockNode block)
         {
             foreach (var blockDeclaration in block.Declarations)
             {
@@ -461,7 +461,7 @@ namespace Minesweeper.Test
             return VisitCompoundStatement(block.CompoundStatement);
         }
 
-        public object VisitAssignment(AssignmentNode node)
+        public override object VisitAssignment(AssignmentNode node)
         {
             var name = node.Left.VariableName.ToUpper();
             var value = VisitNode(node.Right);
@@ -477,7 +477,7 @@ namespace Minesweeper.Test
             return value;
         }
 
-        public object VisitVariableOrFunctionCall(VariableOrFunctionCall var)
+        public override object VisitVariableOrFunctionCall(VariableOrFunctionCall var)
         {
             var name = var.VariableName.ToUpper();
             var value = CurrentScope.GetValue(name, true);
@@ -489,7 +489,7 @@ namespace Minesweeper.Test
             return value;
         }
 
-        public object VisitNoOp(NoOp noop)
+        public override object VisitNoOp(NoOp noop)
         {
             return noop;
         }
