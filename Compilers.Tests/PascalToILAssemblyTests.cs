@@ -54,11 +54,11 @@ namespace Compilers.Tests
                  name, AssemblyBuilderAccess.Run);
             ModuleBuilder module = Assembly.DefineDynamicModule(
                 "CalculatorExpressionModule");
-            var Type = module.DefineType(
+            var type = module.DefineType(
                  "ExpressionExecutor", TypeAttributes.Public);
-            var field = Type.DefineField("test", typeof(bool), FieldAttributes.Public | FieldAttributes.Static);
+            var field = type.DefineField("test", typeof(bool), FieldAttributes.Public | FieldAttributes.Static);
             //field.SetValue(null, true);
-            var t = Type.CreateType();
+            var t = type.CreateType();
 
             t.GetField("test", BindingFlags.Public | BindingFlags.Static ).Should().NotBeNull();
 
