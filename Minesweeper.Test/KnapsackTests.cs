@@ -220,21 +220,21 @@ namespace Minesweeper.Test
         }
 
 
-        [Test]
-        public void KnapSack_GetBasedOnGenetics()
-        {
-            var sack = createKnapsack();
-            sack.GenerateItems();
-            sack.SolveWithGenetics();
+        //[Test]
+        //public void KnapSack_GetBasedOnGenetics()
+        //{
+        //    var sack = createKnapsack();
+        //    sack.GenerateItems();
+        //    sack.SolveWithGenetics();
 
-            var result = sack.ResultContents.Sum(p=>p.Value);
+        //    var result = sack.ResultContents.Sum(p=>p.Value);
 
-            sack.Solve();
+        //    sack.Solve();
 
-            var regResult = sack.ResultContents.Sum(p=>p.Value);
+        //    var regResult = sack.ResultContents.Sum(p=>p.Value);
 
-            result.Should().BeGreaterOrEqualTo(regResult);
-        }
+        //    result.Should().BeGreaterOrEqualTo(regResult);
+        //}
 
 
         [Test]

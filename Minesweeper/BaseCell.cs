@@ -6,9 +6,26 @@
         private int _value;
         private bool _bomb;
         private bool _visible;
-        public abstract void Show();
-        public abstract void Highlight();
-        public abstract void UnHighLight();
+
+        public virtual void Show()
+        {
+           
+        }
+
+        public bool ShowBomb => Visible && Bomb;
+        public bool ShowValue => Visible && Value > 0;
+        public bool ShowEmpty => Visible && Value <= 0;
+
+        public bool ShowFlag => !Visible && Flag;
+        public virtual void Highlight()
+        {
+            IsHighlighted = true;
+        }
+
+        public virtual void UnHighLight()
+        {
+            IsHighlighted = false;
+        }
         public virtual bool Flag
         {
             get { return _flag; }
@@ -50,6 +67,8 @@
                 Show();
             }
         }
+
+        public virtual bool IsHighlighted { get; set; }
         public virtual int Row { get; set; }
         public virtual int Column { get; set; }
         public virtual float X { get; set; }
