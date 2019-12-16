@@ -1,6 +1,6 @@
 ﻿namespace Minesweeper
 {
-    public abstract class BaseCell
+    public class BaseCell
     {
         private bool _flag;
         private int _value;
@@ -14,7 +14,7 @@
 
         public bool ShowBomb => Visible && Bomb;
         public bool ShowValue => Visible && Value > 0;
-        public bool ShowEmpty => Visible && Value <= 0;
+        public bool ShowEmpty => Visible && Value <= 0 && !Bomb;
 
         public bool ShowFlag => !Visible && Flag;
         public virtual void Highlight()

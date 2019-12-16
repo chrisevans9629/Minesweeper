@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -16,5 +16,8 @@
     <PackageReference Include="FSharp.Core" Version="4.6.2" />
     <PackageReference Update="FSharp.Core" Version="4.6.2" /> <!-- workaround for VSMac bug https://github.com/mono/monodevelop/pull/5137 --> 
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Evans.Minesweeper\Evans.Minesweeper.csproj" />
   </ItemGroup>
 </Project>

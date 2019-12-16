@@ -18,6 +18,10 @@ namespace Minesweeper
         {
         }
 
+        public NoShowCell()
+        {
+            
+        }
         public NoShowCell(int row, int column, int width)
         {
             X = row * width;
@@ -39,7 +43,7 @@ namespace Minesweeper
         public double EvaluateFitness(INeuralNetwork network)
         {
             var mine = new MinesweeperBase();
-            mine.Setup(new MinesweeperConfig(p => new NoShowCell(p.Row, p.Column, (int)p.Width)){BombCount = 50});
+            mine.Setup(new MinesweeperConfig(() => new NoShowCell()){BombCount = 50});
             int clicks = 0;
             int score = 0;
             while (mine.GameEnd() != true && clicks < mine.MaxScore)
@@ -68,13 +72,13 @@ namespace Minesweeper
 
     public class MinesweeperConfig
     {
-        public MinesweeperConfig(Func<CellParams, BaseCell> createCellFunc)
+        public Func<BaseCell> CreateCellFunc { get; }
+        public MinesweeperConfig(Func<BaseCell> createCell)
         {
-            CreateCellFunc = createCellFunc;
+            CreateCellFunc = createCell;
         }
         public int? Rows { get; set; }
         public int? Columns { get; set; }
-        public Func<CellParams, BaseCell> CreateCellFunc { get; }
         public float CellWidth { get; set; } = 40;
         public float Width { get; set; } = 600;
         public float Height { get; set; } = 600;
@@ -98,11 +102,11 @@ namespace Minesweeper
     }
     public class MinesweeperBase
     {
-        internal Grid Grid;
-        internal int Columns;
-        internal int Rows;
-        internal float Width;
-        internal float Height;
+        public Grid Grid;
+        public int Columns;
+        public int Rows;
+        public float Width;
+        public float Height;
         public IEnumerable<BaseCell> Cells => Grid?.Cells;
 
         public virtual int MaxScore => Grid.Cells.Count;
