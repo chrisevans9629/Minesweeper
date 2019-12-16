@@ -16,9 +16,9 @@ namespace Minesweeper.Test
             minesweeper.Setup(new MinesweeperConfig(NoShow));
         }
 
-        BaseCell NoShow(CellParams p)
+        BaseCell NoShow()
         {
-            return new NoShowCell(p.Row, p.Column, (int) p.Width);
+            return new NoShowCell();
         }
 
         [Test]
@@ -97,16 +97,16 @@ namespace Minesweeper.Test
             minesweeper.ClickOnCell(t, false);
             var first = minesweeper.Cells.First(p => p.Bomb);
             minesweeper.ClickOnCell(first, false);
-            minesweeper.GameEnd().Should().BeTrue();
-            minesweeper.Lost().Should().BeTrue();
+            minesweeper.GameEnd.Should().BeTrue();
+            minesweeper.Lost.Should().BeTrue();
         }
 
         [Test]
         public void ClickOnCell_Bomb_Flag()
         {
             PlaceFlag();
-            minesweeper.GameEnd().Should().BeFalse();
-            minesweeper.Lost().Should().BeFalse();
+            minesweeper.GameEnd.Should().BeFalse();
+            minesweeper.Lost.Should().BeFalse();
         }
 
         private void PlaceFlag()
@@ -132,8 +132,8 @@ namespace Minesweeper.Test
                 minesweeper.ClickOnCell(baseCell, true);
             }
 
-            minesweeper.GameEnd().Should().BeTrue();
-            minesweeper.Win().Should().BeTrue();
+            minesweeper.GameEnd.Should().BeTrue();
+            minesweeper.Win.Should().BeTrue();
         }
 
         [Test]
@@ -145,8 +145,8 @@ namespace Minesweeper.Test
                 minesweeper.ClickOnCell(baseCell, false);
             }
 
-            minesweeper.GameEnd().Should().BeFalse();
-            minesweeper.Win().Should().BeFalse();
+            minesweeper.GameEnd.Should().BeFalse();
+            minesweeper.Win.Should().BeFalse();
         }
 
         [Test]
@@ -211,8 +211,8 @@ namespace Minesweeper.Test
                 minesweeper.ClickOnCell(baseCell, false);
             }
 
-            minesweeper.GameEnd().Should().BeTrue();
-            minesweeper.Win().Should().BeTrue();
+            minesweeper.GameEnd.Should().BeTrue();
+            minesweeper.Win.Should().BeTrue();
         }
     }
 }
