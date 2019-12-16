@@ -1,6 +1,9 @@
-﻿namespace Minesweeper
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace Minesweeper
 {
-    public class BaseCell
+    public class BaseCell : INotifyPropertyChanged
     {
         private bool _flag;
         private int _value;
@@ -32,6 +35,7 @@
             set
             {
                 _flag = value;
+                OnPropertyChanged();
                 Show();
             }
         }
@@ -42,6 +46,7 @@
             set
             {
                 _value = value;
+                OnPropertyChanged();
                 Show();
             }
         }
@@ -53,6 +58,7 @@
             set
             {
                 _bomb = value;
+                OnPropertyChanged();
                 Show();
             }
         }
@@ -64,6 +70,7 @@
             set
             {
                 _visible = value;
+                OnPropertyChanged();
                 Show();
             }
         }
@@ -77,6 +84,13 @@
         public virtual bool Hit(float x, float y)
         {
             return (x > X && x < X + Width && y > Y && y < Y + Width);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

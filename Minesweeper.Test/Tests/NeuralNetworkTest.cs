@@ -1,8 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
-namespace Minesweeper.Test
+namespace Minesweeper.Test.Tests
 {
     [TestFixture]
     public class NeuralNetworkTest

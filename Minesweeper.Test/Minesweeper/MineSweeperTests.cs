@@ -20,6 +20,31 @@ namespace Minesweeper.Test
         {
             return new NoShowCell(p.Row, p.Column, (int) p.Width);
         }
+
+        [Test]
+        public void TapCell_FlagFalse_ShouldNotSetFlag()
+        {
+            PlaceFirst();
+
+            var cell = minesweeper.Cells.First(p=>p.Visible != true);
+
+            minesweeper.ClickOnCell(cell, false);
+
+            cell.Flag.Should().BeFalse();
+        }
+
+        [Test]
+        public void TapCell_FlagTrue_ShouldSetFlag()
+        {
+            PlaceFirst();
+
+            var cell = minesweeper.Cells.First(p=>p.Visible != true);
+
+            minesweeper.ClickOnCell(cell, true);
+
+            cell.Flag.Should().BeTrue();
+        }
+
         [Test]
         public void Bomb_Num()
         {

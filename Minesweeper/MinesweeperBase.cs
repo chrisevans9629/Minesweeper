@@ -100,8 +100,14 @@ namespace Minesweeper
             Width = width;
         }
     }
-    public class MinesweeperBase
+
+    public interface IMinesweeperBase
     {
+        {
+            bool ClickOnCell(BaseCell item, bool placeAsFlag);
+        }
+        public class MinesweeperBase : IMinesweeperBase
+        {
         public Grid Grid;
         public int Columns;
         public int Rows;
@@ -129,7 +135,7 @@ namespace Minesweeper
             {
                 return false;
             }
-            if (flag != true)
+            if (placeAsFlag != true)
             {
                 item.Visible = true;
                 if (item.Bomb)
@@ -150,6 +156,7 @@ namespace Minesweeper
                     }
                 }
             }
+            else
             {
                 item.Flag = true;
             }
@@ -231,21 +238,21 @@ namespace Minesweeper
             var cellwidth = config.CellWidth;
             Width = config.Width;
             Height = config.Height;
-            if (config.Columns is int i)
+            if (config.Columns != null)
             {
-                Columns = i;
+                Columns = config.Columns ?? 0;
             }
             else
                 Columns = (int)(Width / cellwidth);
 
-            if (config.Rows is int t) Rows = t;
+            if (config.Rows != null) Rows = config.Rows ?? 0;
             else
                 Rows = (int)(Height / cellwidth);
-            if (config.BlockCount is int j)
+            if (config.BlockCount != null)
             {
                 throw new NotImplementedException();
             }
-            Grid = new Grid(Rows, Columns, cellwidth, config.CreateCellFunc);
+            Grid = new MinesweeperGrid(Rows, Columns, cellwidth, config.CreateCellFunc);
 
         }
 

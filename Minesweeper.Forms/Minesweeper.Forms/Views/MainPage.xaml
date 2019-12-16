@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Minesweeper.Forms.Views.MainPage"
+             Title="{Binding Title}">
+    <ContentPage.Resources>
+
+    </ContentPage.Resources>
+    <StackLayout>
+        <Label Text="Flag"></Label>
+        <CheckBox x:Name="FlagCheck"></CheckBox>
+        <CollectionView  ItemsSource="{Binding Cells}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Label
+                            BackgroundColor="Black"
+                            TextColor="White"
+                            Grid.Column="{Binding Column}"
+                            Grid.Row="{Binding Row}"
+                            Text="{Binding ViewText}"
+                        >
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="{Binding Source={x:Reference FlagCheck}, Path=IsChecked}"></TapGestureRecognizer>
+                            </Label.GestureRecognizers>
+
+                        </Label>
+                    </ViewCell>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Horizontal"  Span="10" HorizontalItemSpacing="5" VerticalItemSpacing="5" ></GridItemsLayout>
+            </CollectionView.ItemsLayout>
+        </CollectionView>
+
+    </StackLayout>
+    <!--<Grid x:Name="MineGrid" RowSpacing="5" ColumnSpacing="5">
+    </Grid>-->
+
+</ContentPage>

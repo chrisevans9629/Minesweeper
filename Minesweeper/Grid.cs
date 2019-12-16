@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Minesweeper
 {
-    public class Grid
+    public class MinesweeperGrid
     {
         private readonly Func<BaseCell> _createCellFunc;
 
