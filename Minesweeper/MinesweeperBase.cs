@@ -46,7 +46,7 @@ namespace Minesweeper
             mine.Setup(new MinesweeperConfig(() => new NoShowCell()){BombCount = 50});
             int clicks = 0;
             int score = 0;
-            while (mine.GameEnd() != true && clicks < mine.MaxScore)
+            while (mine.GameEnd != true && clicks < mine.MaxScore)
             {
                 var result = network.FeedForward(mine.Grid.Cells.Select(p => p.Value).ToArray().ToDoubleArray());
                 double x = 0, y = 0;
@@ -113,14 +113,12 @@ namespace Minesweeper
 
         public virtual int Score => Grid.Cells.Count(p => p.Visible || p.Flag);
 
-        public bool GameEnd()
-        {
-            return Lost() || Win();
-        }
-        public bool Lost()
-        {
-            return Grid.Cells.Any(p => p.Visible && p.Bomb);
-        }
+
+        public bool GameEnd => Win || Lost;
+            
+        public bool Win => Grid.Cells.All(p => p.Bomb && p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
+        public bool Lost => Grid.Cells.Any(p => p.Visible && p.Bomb);
+
         public bool ClickOnCell(BaseCell item, bool flag)
         {
             if (Grid.Cells.Any(p => p.Bomb) != true)
@@ -155,7 +153,7 @@ namespace Minesweeper
             {
                 item.Flag = true;
             }
-            if (Win())
+            if (Win)
             {
                 OnHasWon();
                 OnGameEnded(true);
@@ -223,10 +221,7 @@ namespace Minesweeper
             }
 
         }
-        public bool Win()
-        {
-            return Grid.Cells.Any(p => p.Bomb && p.Flag != true) != true || Grid.Cells.Where(p => p.Bomb != true).All(p => p.Visible);
-        }
+        
 
         private MinesweeperConfig _config;
 

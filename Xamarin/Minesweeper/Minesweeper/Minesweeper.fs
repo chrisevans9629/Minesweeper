@@ -77,11 +77,23 @@ module App =
             model.Game.Reset()
             model, Cmd.none
     let view (model: Model) dispatch =
-        View.ContentPage(
-            content=View.Grid(
+        let endView =
+            View.StackLayout(children=[
+                View.Label(text=if model.Game.Win then "Congrats! You Won!" else "You lost")
+                View.Label(text=sprintf "Your score was %d" model.Game.Score)
+                View.Button(text="Reset", command=(fun () -> dispatch Reset))])
+                .HorizontalOptions(LayoutOptions.Center)
+                .VerticalOptions(LayoutOptions.Center)
+                .Margin(Thickness(10.0))
+                .BackgroundColor(Color.White)
+                
+
+
+        let mineSweeperGrid =
+            View.Grid(
                 rowdefs=[for i in 1 .. model.Game.Rows -> Dimension.Star], 
                 coldefs=[for i in 1..model.Game.Columns -> Star],
-                children=[
+                children=([
                     for r in model.Game.Cells -> 
                         View.Label(
                             text=if r.ShowEmpty then "0" 
@@ -96,9 +108,12 @@ module App =
                             .HorizontalTextAlignment(TextAlignment.Center)
                             .VerticalTextAlignment(TextAlignment.Center)
                             .FontSize(Named NamedSize.Large)
-                            .GestureRecognizers([
-                                View.TapGestureRecognizer(command=(fun () -> dispatch (Tap r)))])
-                                ]).Spacing(2.0)).Title("Mine Sweeper")
+                            .GestureRecognizers([View.TapGestureRecognizer(command=(fun () -> dispatch (Tap r)))])
+                                ] |> List.append (if model.Game.GameEnd then [endView.RowSpan(model.Game.Rows).ColumnSpan(model.Game.Columns).Padding(Thickness(10.0))] else []))).Spacing(2.0)
+        
+
+        View.ContentPage(
+            content=mineSweeperGrid).Title("Mine Sweeper")
                             
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view
