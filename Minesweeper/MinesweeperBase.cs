@@ -20,7 +20,7 @@ namespace Minesweeper
 
         public NoShowCell()
         {
-            
+
         }
         public NoShowCell(int row, int column, int width)
         {
@@ -43,7 +43,7 @@ namespace Minesweeper
         public double EvaluateFitness(INeuralNetwork network)
         {
             var mine = new MinesweeperBase();
-            mine.Setup(new MinesweeperConfig(() => new NoShowCell()){BombCount = 50});
+            mine.Setup(new MinesweeperConfig(() => new NoShowCell()) { BombCount = 50 });
             int clicks = 0;
             int score = 0;
             while (mine.GameEnd != true && clicks < mine.MaxScore)
@@ -103,12 +103,12 @@ namespace Minesweeper
 
     public interface IMinesweeperBase
     {
-        {
-            bool ClickOnCell(BaseCell item, bool placeAsFlag);
-        }
-        public class MinesweeperBase : IMinesweeperBase
-        {
-        public Grid Grid;
+
+        bool ClickOnCell(BaseCell item, bool placeAsFlag);
+    }
+    public class MinesweeperBase : IMinesweeperBase
+    {
+        public MinesweeperGrid Grid;
         public int Columns;
         public int Rows;
         public float Width;
@@ -121,11 +121,11 @@ namespace Minesweeper
 
 
         public bool GameEnd => Win || Lost;
-            
+
         public bool Win => Grid.Cells.All(p => p.Bomb && p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
         public bool Lost => Grid.Cells.Any(p => p.Visible && p.Bomb);
 
-        public bool ClickOnCell(BaseCell item, bool flag)
+        public bool ClickOnCell(BaseCell item, bool placeAsFlag)
         {
             if (Grid.Cells.Any(p => p.Bomb) != true)
             {
@@ -228,7 +228,7 @@ namespace Minesweeper
             }
 
         }
-        
+
 
         private MinesweeperConfig _config;
 
