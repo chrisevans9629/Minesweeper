@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -11,6 +11,10 @@
     <Compile Include="..\Minesweeper\Ext.cs" Link="Ext.cs" />
     <Compile Include="..\Minesweeper\Grid.cs" Link="Grid.cs" />
     <Compile Include="..\Minesweeper\MinesweeperBase.cs" Link="MinesweeperBase.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>

@@ -82,7 +82,7 @@ namespace Minesweeper.Forms.ViewModels
         {
             Title = "Main Page";
             minesweeper = new MinesweeperBase();
-            var config = new MinesweeperConfig(() => new CellViewModel(minesweeper))
+            var config = new MinesweeperConfig()
             {
                 Columns = 10,
                 Rows = 10,

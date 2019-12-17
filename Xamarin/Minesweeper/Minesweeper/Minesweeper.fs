@@ -6,6 +6,7 @@ open Fabulous
 open Fabulous.XamarinForms
 open Fabulous.XamarinForms.LiveUpdate
 open Xamarin.Forms
+open System
 
 module App = 
     //type Model = 
@@ -62,7 +63,7 @@ module App =
         | Tap of BaseCell
         | Reset
     let game = MinesweeperBase()
-    let config = MinesweeperConfig(fun () -> new BaseCell())
+    let config = MinesweeperConfig()
     config.Rows <- System.Nullable(10)
     config.Columns <- System.Nullable(10)
     game.Setup(config)
@@ -136,8 +137,7 @@ type App () as app =
 #endif    
 
     // Uncomment this code to save the application state to app.Properties using Newtonsoft.Json
-    // See https://fsprojects.github.io/Fabulous/Fabulous.XamarinForms/models.html#saving-application-state for further  instructions.
-#if APPSAVE
+    // See https://fsprojects.github.io/Fabulous/Fabulous.XamarinForms/models.html#saving-application-state for further  instructions
     let modelId = "model"
     override __.OnSleep() = 
 
@@ -165,6 +165,5 @@ type App () as app =
     override this.OnStart() = 
         Console.WriteLine "OnStart: using same logic as OnResume()"
         this.OnResume()
-#endif
 
 

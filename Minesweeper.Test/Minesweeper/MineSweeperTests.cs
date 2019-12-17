@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace Minesweeper.Test
@@ -13,13 +14,9 @@ namespace Minesweeper.Test
         {
             minesweeper = new MinesweeperBase();
 
-            minesweeper.Setup(new MinesweeperConfig(NoShow));
+            minesweeper.Setup(new MinesweeperConfig());
         }
 
-        BaseCell NoShow()
-        {
-            return new NoShowCell();
-        }
 
         [Test]
         public void TapCell_FlagFalse_ShouldNotSetFlag()
@@ -55,7 +52,7 @@ namespace Minesweeper.Test
         [Test]
         public void Setup_100Cells()
         {
-            minesweeper.Setup(new MinesweeperConfig(NoShow){Columns = 10, Rows = 10});
+            minesweeper.Setup(new MinesweeperConfig(){Columns = 10, Rows = 10});
             minesweeper.Cells.Count().Should().Be(100);
         }
 
@@ -126,11 +123,15 @@ namespace Minesweeper.Test
         [Test]
         public void FlagAllBombs_Win()
         {
+            minesweeper.ClickOnCell(minesweeper.Cells.FirstOrDefault(), false);
             var bombs = minesweeper.Cells.Where(p => p.Bomb);
             foreach (var baseCell in bombs)
             {
                 minesweeper.ClickOnCell(baseCell, true);
             }
+
+
+            minesweeper.Cells.Where(p => p.Bomb).All(p => p.Flag).Should().BeTrue();
 
             minesweeper.GameEnd.Should().BeTrue();
             minesweeper.Win.Should().BeTrue();
@@ -213,6 +214,63 @@ namespace Minesweeper.Test
 
             minesweeper.GameEnd.Should().BeTrue();
             minesweeper.Win.Should().BeTrue();
+        }
+
+        [Test]
+        public void Model_Is_Serializable()
+        {
+            var t = minesweeper.Cells.FirstOrDefault(p => p.Bomb != true);
+
+            minesweeper.ClickOnCell(t, false);
+
+
+            var gamestr = JsonConvert.SerializeObject(minesweeper);
+
+
+            var newGame = JsonConvert.DeserializeObject<MinesweeperBase>(gamestr);
+
+
+            newGame.Height.Should().Be(minesweeper.Height);
+            newGame.Width.Should().Be(minesweeper.Width);
+
+            newGame.Columns.Should().Be(minesweeper.Columns);
+            newGame.Rows.Should().Be(minesweeper.Rows);
+            newGame.Score.Should().Be(minesweeper.Score);
+            newGame.MaxScore.Should().Be(minesweeper.MaxScore);
+            newGame.Cells.Count().Should().Be(minesweeper.Cells.Count());
+
+
+
+            
+
+            newGame.Cells.Count(p => p.Visible).Should().BeGreaterOrEqualTo(1);
+        }
+
+
+        [Test]
+        public void SimpleSerialization()
+        {
+            minesweeper.Setup(new MinesweeperConfig(){Rows = 2, Columns = 2, BombCount = 2});
+
+            var t = minesweeper.Cells.FirstOrDefault(p => p.Bomb != true);
+
+            minesweeper.ClickOnCell(t, false);
+
+
+            var gamestr = JsonConvert.SerializeObject(minesweeper);
+
+
+            var newGame = JsonConvert.DeserializeObject<MinesweeperBase>(gamestr);
+
+
+            newGame.Height.Should().Be(minesweeper.Height);
+            newGame.Width.Should().Be(minesweeper.Width);
+
+            newGame.Columns.Should().Be(minesweeper.Columns);
+            newGame.Rows.Should().Be(minesweeper.Rows);
+            newGame.Score.Should().Be(minesweeper.Score);
+            newGame.MaxScore.Should().Be(minesweeper.MaxScore);
+            newGame.Cells.Count().Should().Be(minesweeper.Cells.Count());
         }
     }
 }

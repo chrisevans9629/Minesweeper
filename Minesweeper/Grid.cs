@@ -6,7 +6,6 @@ namespace Minesweeper
 {
     public class MinesweeperGrid
     {
-        private readonly Func<BaseCell> _createCellFunc;
 
         public BaseCell[] SquareCells(BaseCell cell)
         {
@@ -27,9 +26,13 @@ namespace Minesweeper
             }
             return cells.ToArray();
         }
-        public MinesweeperGrid(int rows, int columns, float width, Func<BaseCell> createCellFunc)
+
+        public MinesweeperGrid()
         {
-            _createCellFunc = createCellFunc;
+            
+        }
+        public MinesweeperGrid(int rows, int columns, float width)
+        {
             Rows = rows;
             Columns = columns;
             Width = width;
@@ -43,7 +46,7 @@ namespace Minesweeper
             {
                 for (int j = 0; j < Columns; j++)
                 {
-                    var cell = _createCellFunc();
+                    var cell = new BaseCell();
 
                     cell.Row = i;
                     cell.Column = j;

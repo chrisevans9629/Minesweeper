@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,18 +7,6 @@ namespace Minesweeper
 {
     public class NoShowCell : BaseCell
     {
-        public override void Show()
-        {
-        }
-
-        public override void Highlight()
-        {
-        }
-
-        public override void UnHighLight()
-        {
-        }
-
         public NoShowCell()
         {
 
@@ -43,7 +32,7 @@ namespace Minesweeper
         public double EvaluateFitness(INeuralNetwork network)
         {
             var mine = new MinesweeperBase();
-            mine.Setup(new MinesweeperConfig(() => new NoShowCell()) { BombCount = 50 });
+            mine.Setup(new MinesweeperConfig() { BombCount = 50 });
             int clicks = 0;
             int score = 0;
             while (mine.GameEnd != true && clicks < mine.MaxScore)
@@ -72,11 +61,11 @@ namespace Minesweeper
 
     public class MinesweeperConfig
     {
-        public Func<BaseCell> CreateCellFunc { get; }
-        public MinesweeperConfig(Func<BaseCell> createCell)
-        {
-            CreateCellFunc = createCell;
-        }
+        //public Func<BaseCell> CreateCellFunc { get; }
+        //public MinesweeperConfig(Func<BaseCell> createCell)
+        //{
+        //    CreateCellFunc = createCell;
+        //}
         public int? Rows { get; set; }
         public int? Columns { get; set; }
         public float CellWidth { get; set; } = 40;
@@ -108,28 +97,38 @@ namespace Minesweeper
     }
     public class MinesweeperBase : IMinesweeperBase
     {
-        public MinesweeperGrid Grid;
-        public int Columns;
-        public int Rows;
-        public float Width;
-        public float Height;
+        public MinesweeperBase()
+        {
+            
+        }
+        public MinesweeperConfig Config { get; set; }
+
+        public MinesweeperGrid Grid { get; set; }
+        public int Columns { get; set; }
+        public int Rows { get; set; }
+        public float Width { get; set; }
+        public float Height { get; set; }
+
+
+        [JsonIgnore]
         public IEnumerable<BaseCell> Cells => Grid?.Cells;
-
+        [JsonIgnore]
         public virtual int MaxScore => Grid.Cells.Count;
-
+        [JsonIgnore]
         public virtual int Score => Grid.Cells.Count(p => p.Visible || p.Flag);
 
 
+        [JsonIgnore]
         public bool GameEnd => Win || Lost;
 
-        public bool Win => Grid.Cells.All(p => p.Bomb && p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
+        public bool Win => Grid.Cells.Where(p=>p.Bomb).All(p => p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
         public bool Lost => Grid.Cells.Any(p => p.Visible && p.Bomb);
 
         public bool ClickOnCell(BaseCell item, bool placeAsFlag)
         {
             if (Grid.Cells.Any(p => p.Bomb) != true)
             {
-                SetupBombs(_config.BombCount, _config.Seed, item);
+                SetupBombs(Config.BombCount, Config.Seed, item);
             }
             if (item.Visible == true)
             {
@@ -191,7 +190,7 @@ namespace Minesweeper
 
         public void Reset()
         {
-            Setup(_config);
+            Setup(Config);
             Show();
         }
         private void ShowOthers(BaseCell cell)
@@ -229,12 +228,9 @@ namespace Minesweeper
 
         }
 
-
-        private MinesweeperConfig _config;
-
         public void Setup(MinesweeperConfig config)
         {
-            _config = config;
+            Config = config;
             var cellwidth = config.CellWidth;
             Width = config.Width;
             Height = config.Height;
@@ -252,7 +248,7 @@ namespace Minesweeper
             {
                 throw new NotImplementedException();
             }
-            Grid = new MinesweeperGrid(Rows, Columns, cellwidth, config.CreateCellFunc);
+            Grid = new MinesweeperGrid(Rows, Columns, cellwidth);
 
         }
 
