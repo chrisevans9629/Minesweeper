@@ -57,8 +57,12 @@ module App =
     //            View.Label(text = sprintf "Step size: %d" model.Step, horizontalOptions = LayoutOptions.Center) 
     //            View.Button(text = "Reset", horizontalOptions = LayoutOptions.Center, command = (fun () -> dispatch Reset), commandCanExecute = (model <> initModel))
     //        ]))
-    type Model = { Game: Minesweeper.MinesweeperBase}
+    type Model = 
+        { 
+            Game: Minesweeper.MinesweeperBase
+            Flag: bool }
     type Msg = 
+        | ToggleFlag
         | Flag of BaseCell
         | Tap of BaseCell
         | Reset
@@ -67,16 +71,20 @@ module App =
     config.Rows <- System.Nullable(10)
     config.Columns <- System.Nullable(10)
     game.Setup(config)
-    let init() = {Game=game}, Cmd.none
+    let init() = {Game=game;Flag=false}, Cmd.none
     let update msg model =
         match msg with
-        | Flag f -> model, Cmd.none
+        | Flag f -> 
+            model.Game.ClickOnCell(f, true) |> ignore
+            model, Cmd.none
         | Tap f -> 
             model.Game.ClickOnCell(f, false) |> ignore
             model, Cmd.none
         | Reset ->
             model.Game.Reset()
             model, Cmd.none
+        | ToggleFlag -> { model with Flag = model.Flag <> true }, Cmd.none
+
     let view (model: Model) dispatch =
         let endView =
             View.StackLayout(children=[
@@ -89,6 +97,16 @@ module App =
                 .BackgroundColor(Color.White)
                 
 
+
+        let header =
+            View.Grid(
+                coldefs=[Star;Star;Star;Star],
+                children=[
+                    View.Label(text= sprintf "%d Bombs" model.Game.Config.BombCount).FontSize(Named NamedSize.Large).Column(0)
+                    View.Label(text= sprintf "Score: %d" model.Game.Score).FontSize(Named NamedSize.Large).Column(1)
+                    View.Button(text=sprintf "Flag %b" model.Flag, command=(fun () -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
+                    View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
+                    ])
 
         let mineSweeperGrid =
             View.Grid(
@@ -109,12 +127,14 @@ module App =
                             .HorizontalTextAlignment(TextAlignment.Center)
                             .VerticalTextAlignment(TextAlignment.Center)
                             .FontSize(Named NamedSize.Large)
-                            .GestureRecognizers([View.TapGestureRecognizer(command=(fun () -> dispatch (Tap r)))])
-                                ] |> List.append (if model.Game.GameEnd then [endView.RowSpan(model.Game.Rows).ColumnSpan(model.Game.Columns).Padding(Thickness(10.0))] else []))).Spacing(2.0)
+                            .GestureRecognizers([
+                                View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
+                                ])
+                                ] |> List.append (if model.Game.GameEnd then [endView.RowSpan(model.Game.Rows).ColumnSpan(model.Game.Columns).Padding(Thickness(20.0))] else []))).Spacing(2.0)
         
 
         View.ContentPage(
-            content=mineSweeperGrid).Title("Mine Sweeper")
+            content=View.StackLayout(children=[header;mineSweeperGrid])).Title("Mine Sweeper")
                             
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view

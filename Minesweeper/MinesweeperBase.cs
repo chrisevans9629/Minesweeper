@@ -119,7 +119,7 @@ namespace Minesweeper
 
 
         [JsonIgnore]
-        public bool GameEnd => Win || Lost;
+        public bool GameEnd => (Win || Lost) && Cells.Count(p=>p.Bomb) > 0;
 
         public bool Win => Grid.Cells.Where(p=>p.Bomb).All(p => p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
         public bool Lost => Grid.Cells.Any(p => p.Visible && p.Bomb);

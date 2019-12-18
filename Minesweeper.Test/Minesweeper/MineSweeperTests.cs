@@ -17,6 +17,18 @@ namespace Minesweeper.Test
             minesweeper.Setup(new MinesweeperConfig());
         }
 
+        [Test]
+        public void Start_GameEnd_False()
+        {
+            minesweeper.GameEnd.Should().BeFalse();
+        }
+
+        [Test]
+        public void Start_PlayFirst_GameEnd_False()
+        {
+            minesweeper.ClickOnCell(minesweeper.Cells.First(), false);
+            minesweeper.GameEnd.Should().BeFalse();
+        }
 
         [Test]
         public void TapCell_FlagFalse_ShouldNotSetFlag()
