@@ -107,34 +107,43 @@ module App =
                     View.Button(text=sprintf "Flag %b" model.Flag, command=(fun () -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     ])
-
+        let cell (r:BaseCell) =
+            if r.ShowBomb then
+                View.Image(
+                    source = (Source(ImageSource.FromResource("Minesweeper.bomb.png"))),
+                    horizontalOptions=LayoutOptions.Center,
+                    verticalOptions=LayoutOptions.Center,
+                    aspect=Aspect.AspectFit
+                    ).WidthRequest(30.0).HeightRequest(30.0)
+            else
+                View.Label(
+                    text=if r.ShowEmpty then "0" 
+                         else if r.ShowValue then r.Value.ToString() 
+                         else if r.ShowBomb then "x" 
+                         else if r.ShowFlag then "F" 
+                         else " ")
+                         .BackgroundColor(Color.LightBlue)
+                         .ForegroundColor(Color.Black)
+                         .HorizontalTextAlignment(TextAlignment.Center)
+                         .VerticalTextAlignment(TextAlignment.Center)
+                         .FontSize(Named NamedSize.Large)
+                         .GestureRecognizers([
+                             View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
+                             ]).WidthRequest(30.0).HeightRequest(30.0)
         let mineSweeperGrid =
             View.Grid(
-                rowdefs=[for i in 1 .. model.Game.Rows -> Dimension.Star], 
-                coldefs=[for i in 1..model.Game.Columns -> Star],
+                rowdefs=[for i in 1 .. model.Game.Rows -> Dimension.Absolute 50.0], 
+                coldefs=[for i in 1..model.Game.Columns -> Absolute 50.0],
                 children=([
-                    for r in model.Game.Cells -> 
-                        View.Label(
-                            text=if r.ShowEmpty then "0" 
-                                else if r.ShowValue then r.Value.ToString() 
-                                else if r.ShowBomb then "x" 
-                                else if r.ShowFlag then "F" 
-                                else " ")
-                            .Row(r.Row)
-                            .BackgroundColor(Color.LightBlue)
-                            .ForegroundColor(Color.Black)
-                            .Column(r.Column)
-                            .HorizontalTextAlignment(TextAlignment.Center)
-                            .VerticalTextAlignment(TextAlignment.Center)
-                            .FontSize(Named NamedSize.Large)
-                            .GestureRecognizers([
-                                View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
-                                ])
-                                ] |> List.append (if model.Game.GameEnd then [endView.RowSpan(model.Game.Rows).ColumnSpan(model.Game.Columns).Padding(Thickness(20.0))] else []))).Spacing(2.0)
+                    for r in model.Game.Cells -> (cell r).Row(r.Row).Column(r.Column) ] |> 
+                        List.append (
+                            if model.Game.GameEnd then 
+                                [endView.RowSpan(model.Game.Rows).ColumnSpan(model.Game.Columns).Padding(Thickness(20.0))] 
+                            else []))).Spacing(2.0)
         
 
         View.ContentPage(
-            content=View.StackLayout(children=[header;mineSweeperGrid])).Title("Mine Sweeper")
+            content=View.StackLayout(children=[header;View.ScrollView(content=mineSweeperGrid)])).Title("Mine Sweeper")
                             
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view

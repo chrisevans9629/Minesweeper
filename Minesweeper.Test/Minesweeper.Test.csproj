@@ -94,10 +94,6 @@
       <Project>{9893c409-5635-4556-8871-74c0eae3f8bb}</Project>
       <Name>Evans.Minesweeper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Minesweeper.Forms\Minesweeper.Forms\Minesweeper.Forms.csproj">
-      <Project>{d923631c-b15f-4996-8eb7-dac33a907676}</Project>
-      <Name>Minesweeper.Forms</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
