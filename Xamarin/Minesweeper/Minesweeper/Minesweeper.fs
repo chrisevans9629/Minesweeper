@@ -126,12 +126,9 @@ module App =
                     ).WidthRequest(30.0).HeightRequest(30.0)
             else
                 View.Label(
-                    text=if r.ShowEmpty then "0" 
-                         else if r.ShowValue then r.Value.ToString() 
-                         else if r.ShowBomb then "x" 
-                         else if r.ShowFlag then "F" 
+                    text=if r.ShowValue then r.Value.ToString() 
                          else " ")
-                         .BackgroundColor(Color.LightBlue)
+                         .BackgroundColor(if r.ShowEmpty || r.ShowValue then Color.LightGreen else Color.LightBlue)
                          .ForegroundColor(Color.Black)
                          .HorizontalTextAlignment(TextAlignment.Center)
                          .VerticalTextAlignment(TextAlignment.Center)
