@@ -75,7 +75,7 @@ module App =
     let update msg model =
         match msg with
         | Flag f -> 
-            model.Game.ClickOnCell(f, f.Flag <> true) |> ignore
+            model.Game.ClickOnCell(f,true) |> ignore
             model, Cmd.none
         | Tap f -> 
             model.Game.ClickOnCell(f, false) |> ignore

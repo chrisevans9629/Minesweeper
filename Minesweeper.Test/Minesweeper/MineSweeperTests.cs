@@ -18,6 +18,18 @@ namespace Minesweeper.Test
         }
 
         [Test]
+        public void ToggleFlag()
+        {
+            var item = minesweeper.Cells.First();
+            minesweeper.ClickOnCell(item, true);
+            item.Flag.Should().BeTrue();
+
+            minesweeper.ClickOnCell(item, true);
+            item.Flag.Should().BeFalse();
+        }
+
+
+        [Test]
         public void Start_GameEnd_False()
         {
             minesweeper.GameEnd.Should().BeFalse();

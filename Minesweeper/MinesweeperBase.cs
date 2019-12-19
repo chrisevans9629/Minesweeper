@@ -157,7 +157,7 @@ namespace Minesweeper
             }
             else
             {
-                item.Flag = true;
+                item.Flag = !item.Flag;
             }
             if (Win)
             {

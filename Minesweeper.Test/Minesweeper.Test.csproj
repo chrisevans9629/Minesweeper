@@ -54,7 +54,6 @@
     <Compile Include="Evolution\ItemList.cs" />
     <Compile Include="Evolution\Knapsack.cs" />
     <Compile Include="Tests\KnapsackTests.cs" />
-    <Compile Include="Minesweeper\MainPageViewModelTests.cs" />
     <Compile Include="Minesweeper\MineSweeperTests.cs" />
     <Compile Include="Tests\NeuralNetworkTest.cs" />
     <Compile Include="Evolution\PathChosen.cs" />
