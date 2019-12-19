@@ -110,16 +110,9 @@ module App =
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     ])
         let cell (r:BaseCell) =
-            if r.ShowBomb then
+            if r.ShowBomb || r.ShowFlag then
                 View.Image(
-                    source = bombimg,
-                    horizontalOptions=LayoutOptions.Center,
-                    verticalOptions=LayoutOptions.Center,
-                    aspect=Aspect.AspectFit
-                    ).WidthRequest(30.0).HeightRequest(30.0)
-            else if r.ShowFlag then
-                View.Image(
-                    source = flagimg,
+                    source = (if r.ShowBomb then bombimg else flagimg),
                     horizontalOptions=LayoutOptions.Center,
                     verticalOptions=LayoutOptions.Center,
                     aspect=Aspect.AspectFit

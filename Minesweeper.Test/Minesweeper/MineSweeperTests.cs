@@ -18,6 +18,20 @@ namespace Minesweeper.Test
         }
 
         [Test]
+        public void Cell0OpensMoreCells()
+        {
+            var item = minesweeper.Cells.First();
+            minesweeper.ClickOnCell(item, false);
+
+            var item0 = minesweeper.Cells.First(p => p.Value == 0 && !p.Bomb);
+
+            var count = minesweeper.Cells.Count(p=>p.Visible);
+            minesweeper.ClickOnCell(item0, false);
+
+            minesweeper.Cells.Count(p=>p.Visible).Should().BeGreaterThan(count+1);
+        }
+
+        [Test]
         public void ToggleFlag()
         {
             var item = minesweeper.Cells.First();
