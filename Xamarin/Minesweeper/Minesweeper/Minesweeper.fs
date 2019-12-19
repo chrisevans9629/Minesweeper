@@ -75,7 +75,7 @@ module App =
     let update msg model =
         match msg with
         | Flag f -> 
-            model.Game.ClickOnCell(f, true) |> ignore
+            model.Game.ClickOnCell(f, f.Flag <> true) |> ignore
             model, Cmd.none
         | Tap f -> 
             model.Game.ClickOnCell(f, false) |> ignore
@@ -85,6 +85,8 @@ module App =
             model, Cmd.none
         | ToggleFlag -> { model with Flag = model.Flag <> true }, Cmd.none
 
+    let bombimg = Source(ImageSource.FromResource("Minesweeper.bomb.png"))
+    let flagimg = Source(ImageSource.FromResource("Minesweeper.flag.png"))
     let view (model: Model) dispatch =
         let endView =
             View.StackLayout(children=[
@@ -110,7 +112,14 @@ module App =
         let cell (r:BaseCell) =
             if r.ShowBomb then
                 View.Image(
-                    source = (Source(ImageSource.FromResource("Minesweeper.bomb.png"))),
+                    source = bombimg,
+                    horizontalOptions=LayoutOptions.Center,
+                    verticalOptions=LayoutOptions.Center,
+                    aspect=Aspect.AspectFit
+                    ).WidthRequest(30.0).HeightRequest(30.0)
+            else if r.ShowFlag then
+                View.Image(
+                    source = flagimg,
                     horizontalOptions=LayoutOptions.Center,
                     verticalOptions=LayoutOptions.Center,
                     aspect=Aspect.AspectFit
@@ -127,15 +136,15 @@ module App =
                          .HorizontalTextAlignment(TextAlignment.Center)
                          .VerticalTextAlignment(TextAlignment.Center)
                          .FontSize(Named NamedSize.Large)
-                         .GestureRecognizers([
-                             View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
-                             ]).WidthRequest(30.0).HeightRequest(30.0)
+                         .WidthRequest(30.0).HeightRequest(30.0)
         let mineSweeperGrid =
             View.Grid(
                 rowdefs=[for i in 1 .. model.Game.Rows -> Dimension.Absolute 50.0], 
                 coldefs=[for i in 1..model.Game.Columns -> Absolute 50.0],
                 children=([
-                    for r in model.Game.Cells -> (cell r).Row(r.Row).Column(r.Column) ] |> 
+                    for r in model.Game.Cells -> (cell r).Row(r.Row).Column(r.Column).GestureRecognizers([
+                             View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
+                             ]) ] |> 
                         List.append (
                             if model.Game.GameEnd then 
                                 [endView.RowSpan(model.Game.Rows).ColumnSpan(model.Game.Columns).Padding(Thickness(20.0))] 

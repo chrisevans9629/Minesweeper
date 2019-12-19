@@ -1,7 +1,6 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
-using Minesweeper.Forms.ViewModels;
 using NUnit.Framework;
 
 namespace Minesweeper.Test
