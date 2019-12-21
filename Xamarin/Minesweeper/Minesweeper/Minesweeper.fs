@@ -62,12 +62,15 @@ module App =
        
 
 
-        let entry (text:string) changed =
+        let entry (text:string) changed validation =
             View.StackLayout(
                 orientation=StackOrientation.Horizontal,
                 children=[
                     View.Label(text=text)
-                    View.Entry(placeholder=text, textChanged=(fun p -> changed p.NewTextValue))])
+                    View.Entry(
+                        placeholder=text, 
+                        textChanged=(fun p -> changed p.NewTextValue |> ignore), 
+                        textColor=if validation text then Color.Black else Color.Red )])
 
         let header =
             View.StackLayout(
@@ -76,7 +79,7 @@ module App =
                     View.Label(text= sprintf "%d Bombs" model.Game.Config.BombCount).FontSize(Named NamedSize.Large).Column(0)
                     View.Label(text= sprintf "Score: %d" model.Game.Score).FontSize(Named NamedSize.Large).Column(1)
                     View.Button(text=sprintf "Flag %b" model.Flag, command=(fun () -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
-                    entry "Rows" (fun p -> bind (fun () -> model.Game.Config.Rows <- Nullable(int(p))))
+                    entry "Rows" (fun p -> bind (fun () -> model.Game.Config.Rows <- Nullable(int(p)))) (fun p -> System.Int32.TryParse(p, byref(1)))
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     ])
         let cell (r:BaseCell) =
