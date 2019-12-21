@@ -124,40 +124,54 @@ namespace Minesweeper
         public bool Win => Grid.Cells.Where(p=>p.Bomb).All(p => p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
         public bool Lost => Grid.Cells.Any(p => p.Visible && p.Bomb);
 
-        public bool ClickOnCell(BaseCell item, bool placeAsFlag)
+        public void ToggleFlagCell(BaseCell item)
+        {
+            item.Flag = !item.Flag;
+        }
+
+        public void ShowCell(BaseCell item)
         {
             if (Grid.Cells.Any(p => p.Bomb) != true)
-            {
                 SetupBombs(Config.BombCount, Config.Seed, item);
-            }
-            if (item.Visible == true)
-            {
-                return false;
-            }
-            if (placeAsFlag != true)
-            {
-                item.Visible = true;
-                if (item.Bomb)
-                {
-                    OnHasLost();
-                    OnGameEnded(false);
-                }
 
-                if (item.Value == 0)
+            if (item.Flag)
+            {
+                ToggleFlagCell(item);
+                return;
+            }
+
+            item.Visible = true;
+            if (item.Bomb)
+            {
+                OnHasLost();
+                OnGameEnded(false);
+            }
+
+            if (item.Value == 0)
+            {
+                ShowOthers(item);
+                foreach (var gridCell in Grid.Cells)
                 {
-                    ShowOthers(item);
-                    foreach (var gridCell in Grid.Cells)
+                    if (Grid.SquareCells(gridCell).Any(p => p.Value == 0 && p.Bomb != true && p.Visible))
                     {
-                        if (Grid.SquareCells(gridCell).Any(p => p.Value == 0 && p.Bomb != true && p.Visible))
-                        {
-                            gridCell.Visible = true;
-                        }
+                        gridCell.Visible = true;
                     }
                 }
             }
+        }
+
+        public bool ClickOnCell(BaseCell item, bool placeAsFlag)
+        {
+            if (item.Visible)
+                return false;
+           
+            if (!placeAsFlag)
+            {
+               ShowCell(item);
+            }
             else
             {
-                item.Flag = !item.Flag;
+                ToggleFlagCell(item);
             }
             if (Win)
             {

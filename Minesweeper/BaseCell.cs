@@ -87,6 +87,29 @@ namespace Minesweeper
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+
+        public string DisplayValue()
+        {
+            if (ShowBomb)
+            {
+                return "X";
+            }
+            if (ShowEmpty)
+            {
+                return "0";
+            }
+            if (ShowFlag)
+            {
+                return "F";
+            }
+            if (ShowValue)
+            {
+                return Value.ToString();
+            }
+            return " ";
+        }
+
         public override string ToString()
         {
             return $"({Column},{Row}): {(ShowBomb ? "x" : ShowEmpty ? "_" : ShowFlag ? "F" : ShowValue ? Value.ToString() : "")},Value:{Value},Bomb:{Bomb}";

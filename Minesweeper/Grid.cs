@@ -1,12 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Minesweeper
 {
     public class MinesweeperGrid
     {
-
+        public string GetStringRepresentation()
+        {
+            var str = new StringBuilder();
+            foreach (var baseCells in Cells.GroupBy(p=>p.Row).OrderBy(p=>p.Key))
+            {
+                foreach (var baseCell in baseCells)
+                {
+                    str.Append(baseCell.DisplayValue());
+                }
+                str.AppendLine();
+            }
+            return str.ToString();
+        }
         public BaseCell[] SquareCells(BaseCell cell)
         {
             var cells = new List<BaseCell>();

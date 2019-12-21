@@ -9,54 +9,6 @@ open Xamarin.Forms
 open System
 
 module App = 
-    //type Model = 
-    //  { Count : int
-    //    Step : int
-    //    TimerOn: bool }
-    //
-    //type Msg = 
-    //    | Increment 
-    //    | Decrement 
-    //    | Reset
-    //    | SetStep of int
-    //    | TimerToggled of bool
-    //    | TimedTick
-    //
-    //let initModel = { Count = 0; Step = 1; TimerOn=false }
-    //
-    //let init () = initModel, Cmd.none
-    //
-    //let timerCmd =
-    //    async { do! Async.Sleep 200
-    //            return TimedTick }
-    //    |> Cmd.ofAsyncMsg
-    //
-    //let update msg model =
-    //    match msg with
-    //    | Increment -> { model with Count = model.Count + model.Step }, Cmd.none
-    //    | Decrement -> { model with Count = model.Count - model.Step }, Cmd.none
-    //    | Reset -> init ()
-    //    | SetStep n -> { model with Step = n }, Cmd.none
-    //    | TimerToggled on -> { model with TimerOn = on }, (if on then timerCmd else Cmd.none)
-    //    | TimedTick -> 
-    //        if model.TimerOn then 
-    //            { model with Count = model.Count + model.Step }, timerCmd
-    //        else 
-    //            model, Cmd.none
-    //
-    //let view (model: Model) dispatch =
-    //    View.ContentPage(
-    //      content = View.StackLayout(padding = Thickness 20.0, verticalOptions = LayoutOptions.Center,
-    //        children = [ 
-    //            View.Label(text = sprintf "%d" model.Count, horizontalOptions = LayoutOptions.Center, width=200.0, horizontalTextAlignment=TextAlignment.Center)
-    //            View.Button(text = "Increment", command = (fun () -> dispatch Increment), horizontalOptions = LayoutOptions.Center)
-    //            View.Button(text = "Decrement", command = (fun () -> dispatch Decrement), horizontalOptions = LayoutOptions.Center)
-    //            View.Label(text = "Timer", horizontalOptions = LayoutOptions.Center)
-    //            View.Switch(isToggled = model.TimerOn, toggled = (fun on -> dispatch (TimerToggled on.Value)), horizontalOptions = LayoutOptions.Center)
-    //            View.Slider(minimumMaximum = (0.0, 10.0), value = double model.Step, valueChanged = (fun args -> dispatch (SetStep (int (args.NewValue + 0.5)))), horizontalOptions = LayoutOptions.FillAndExpand)
-    //            View.Label(text = sprintf "Step size: %d" model.Step, horizontalOptions = LayoutOptions.Center) 
-    //            View.Button(text = "Reset", horizontalOptions = LayoutOptions.Center, command = (fun () -> dispatch Reset), commandCanExecute = (model <> initModel))
-    //        ]))
     type Model = 
         { 
             Game: Minesweeper.MinesweeperBase
@@ -66,6 +18,7 @@ module App =
         | Flag of BaseCell
         | Tap of BaseCell
         | Reset
+        
     let game = MinesweeperBase()
     let config = MinesweeperConfig()
     config.Rows <- System.Nullable(10)
@@ -99,14 +52,24 @@ module App =
                 .BackgroundColor(Color.White)
                 
 
+       
+
+
+        let entry (text:string) changed =
+            View.StackLayout(
+                orientation=StackOrientation.Horizontal,
+                children=[
+                    View.Label(text=text)
+                    View.Entry(placeholder=text, textChanged=(fun p -> changed p.NewTextValue))])
 
         let header =
-            View.Grid(
-                coldefs=[Star;Star;Star;Star],
+            View.StackLayout(
+                orientation=StackOrientation.Horizontal,
                 children=[
                     View.Label(text= sprintf "%d Bombs" model.Game.Config.BombCount).FontSize(Named NamedSize.Large).Column(0)
                     View.Label(text= sprintf "Score: %d" model.Game.Score).FontSize(Named NamedSize.Large).Column(1)
                     View.Button(text=sprintf "Flag %b" model.Flag, command=(fun () -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
+                    entry "Rows" (fun p -> model.Game.Rows <- p)
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     ])
         let cell (r:BaseCell) =
