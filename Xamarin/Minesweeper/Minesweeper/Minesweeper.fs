@@ -13,12 +13,12 @@ module App =
         { 
             Game: Minesweeper.MinesweeperBase
             Flag: bool }
-    type Msg<'a> = 
+    type Msg = 
         | ToggleFlag
         | Flag of BaseCell
         | Tap of BaseCell
         | Reset
-        | Bind of ('a -> unit)
+        | Bind of (unit -> unit)
         
     let game = MinesweeperBase()
     let config = MinesweeperConfig()
@@ -46,8 +46,8 @@ module App =
     let flagimg = Source(ImageSource.FromResource("Minesweeper.flag.png"))
     let view (model: Model) dispatch =
 
-        let bind binding = (fun () -> dispatch (Bind binding)) 
-        
+        //let inline bind (binding:unit -> 'a) = (fun () -> dispatch (Bind binding)) 
+        let bind binding = dispatch (Bind binding)
         let endView =
             View.StackLayout(children=[
                 View.Label(text=if model.Game.Win then "Congrats! You Won!" else "You lost")
@@ -76,7 +76,7 @@ module App =
                     View.Label(text= sprintf "%d Bombs" model.Game.Config.BombCount).FontSize(Named NamedSize.Large).Column(0)
                     View.Label(text= sprintf "Score: %d" model.Game.Score).FontSize(Named NamedSize.Large).Column(1)
                     View.Button(text=sprintf "Flag %b" model.Flag, command=(fun () -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
-                    entry "Rows" (fun p -> ())
+                    entry "Rows" (fun p -> bind (fun () -> model.Game.Config.Rows <- Nullable(int(p))))
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     ])
         let cell (r:BaseCell) =
