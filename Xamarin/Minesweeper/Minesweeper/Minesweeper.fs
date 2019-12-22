@@ -29,6 +29,14 @@ module App =
     config.Columns <- System.Nullable(10)
     game.Setup(config)
     let init() = {Game=game;Flag=false}, Cmd.none
+
+    let imageRef = ViewRef()
+    let animate (t:obj) =
+        async {
+            let image = t :?> View
+            image.ScaleTo(1.5) |> Async.AwaitTask |> ignore
+            image.ScaleTo(1.0) |> Async.AwaitTask |> ignore
+        }
     let update msg model =
         match msg with
         | Flag f -> 
@@ -36,7 +44,11 @@ module App =
             model, Cmd.none
         | Tap f -> 
             model.Game.ClickOnCell(f, false) |> ignore
-            model, Cmd.none
+            match imageRef.TryValue with
+            | Some t -> 
+                animate t |> Async.Start
+                model, Cmd.none
+            | None -> model, Cmd.none
         | Reset ->
             model.Game.Reset()
             model, Cmd.none
@@ -109,7 +121,8 @@ module App =
                                   else dirtimg),
                         horizontalOptions=LayoutOptions.CenterAndExpand,
                         verticalOptions=LayoutOptions.CenterAndExpand,
-                        aspect=Aspect.AspectFit
+                        aspect=Aspect.AspectFit,
+                        ref=imageRef
                         )//.WidthRequest(30.0).HeightRequest(30.0)
                     View.Label(
                         isVisible=r.ShowValue,
