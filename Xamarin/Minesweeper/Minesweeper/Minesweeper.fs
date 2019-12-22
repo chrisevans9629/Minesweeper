@@ -52,19 +52,22 @@ module App =
 
     let bombimg = Source(ImageSource.FromResource("Minesweeper.bomb.png"))
     let flagimg = Source(ImageSource.FromResource("Minesweeper.flag.png"))
+    let dirtimg = Source(ImageSource.FromResource("Minesweeper.dirt.jpg"))
+    let dugimg = Source(ImageSource.FromResource("Minesweeper.dug.jpg"))
     let isInt p = 
         let mutable t = 0
         System.Int32.TryParse(p, &t)
     let parse a =
         System.Int32.Parse(a)
-    let entry label text =
+    let entry label text textChanged =
         View.StackLayout(
                 orientation=StackOrientation.Vertical,
                 children=[
                     View.Label(text=label)
                     View.Entry(
                         placeholder=label,
-                        text=text)])
+                        text=text,
+                        textChanged = debounce 250 (fun e -> e.NewTextValue |> textChanged))])
     let view (model: Model) dispatch =
 
         let endView =
@@ -76,7 +79,9 @@ module App =
                 .VerticalOptions(LayoutOptions.Center)
                 .Margin(Thickness(10.0))
                 .BackgroundColor(Color.White)
-                
+        let rows p = dispatch (UpdateRow (Nullable(parse(p))))
+        let columns p = dispatch (UpdateColumn (Nullable(parse(p))))
+        let bombs p = dispatch (UpdateBombs (parse(p)))
         let header =
             View.StackLayout(
                 orientation=StackOrientation.Horizontal,
@@ -84,45 +89,63 @@ module App =
                     View.Label(text= sprintf "%d Bombs" model.Game.Config.BombCount).FontSize(Named NamedSize.Large).Column(0)
                     View.Label(text= sprintf "Score: %d" model.Game.Score).FontSize(Named NamedSize.Large).Column(1)
                     View.Button(text=sprintf "Flag %b" model.Flag, command=(fun () -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
-                    entry "Rows" (model.Game.Config.Rows.ToString())
-                    entry "Columns" (model.Game.Config.Columns.ToString())
-                    entry "Bombs" (model.Game.Config.BombCount.ToString())
+                    entry "Rows" (model.Game.Config.Rows.ToString()) rows
+                    entry "Columns" (model.Game.Config.Columns.ToString()) columns
+                    entry "Bombs" (model.Game.Config.BombCount.ToString()) bombs
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     ])
         let cell (r:BaseCell) =
-            if r.ShowBomb || r.ShowFlag then
-                View.Image(
-                    source = (if r.ShowBomb then bombimg else flagimg),
-                    horizontalOptions=LayoutOptions.Center,
-                    verticalOptions=LayoutOptions.Center,
-                    aspect=Aspect.AspectFit
-                    ).WidthRequest(30.0).HeightRequest(30.0)
-            else
-                View.Label(
-                    text=if r.ShowValue then r.Value.ToString() 
-                         else " ")
-                         .BackgroundColor(if r.ShowEmpty || r.ShowValue then Color.LightGreen else Color.LightBlue)
-                         .ForegroundColor(Color.Black)
-                         .HorizontalTextAlignment(TextAlignment.Center)
-                         .VerticalTextAlignment(TextAlignment.Center)
-                         .FontSize(Named NamedSize.Large)
-                         .WidthRequest(30.0).HeightRequest(30.0)
+            View.Grid(
+                children=[
+                    View.Image(
+                        source = (if r.ShowBomb then 
+                                    bombimg 
+                                  else if r.ShowFlag then 
+                                    flagimg 
+                                  else if r.ShowValue || r.ShowEmpty then 
+                                    dugimg 
+                                  else dirtimg),
+                        horizontalOptions=LayoutOptions.Center,
+                        verticalOptions=LayoutOptions.Center,
+                        aspect=Aspect.AspectFit
+                        )//.WidthRequest(30.0).HeightRequest(30.0)
+                    View.Label(
+                        isVisible=r.ShowValue,
+                        text=if r.ShowValue then r.Value.ToString() 
+                             else " ")
+                             //.BackgroundColor(if r.ShowEmpty || r.ShowValue then Color.LightGreen else Color.LightBlue)
+                             //.ForegroundColor(Color.Black)
+                             .HorizontalTextAlignment(TextAlignment.Center)
+                             .VerticalTextAlignment(TextAlignment.Center)
+                             .FontSize(Named NamedSize.Large)
+                             .WidthRequest(30.0).HeightRequest(30.0)
+                        ])
+                
         let mineSweeperGrid =
             View.Grid(
-                rowdefs=[for i in 1 .. model.Game.Rows -> Dimension.Absolute 50.0], 
+                rowdefs=[for i in 1 .. model.Game.Rows -> Absolute 50.0], 
                 coldefs=[for i in 1..model.Game.Columns -> Absolute 50.0],
                 children=([
-                    for r in model.Game.Cells -> (cell r).Row(r.Row).Column(r.Column).GestureRecognizers([
-                             View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
-                             ]) ] |> 
+                    for r in model.Game.Cells -> 
+                        (cell r)
+                            .Row(r.Row)
+                            .Column(r.Column)
+                            .GestureRecognizers([ View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
+                                ]) ] |> 
                         List.append (
                             if model.Game.GameEnd then 
                                 [endView.RowSpan(model.Game.Rows).ColumnSpan(model.Game.Columns).Padding(Thickness(20.0))] 
-                            else []))).Spacing(2.0)
+                            else [])))
         
 
         View.ContentPage(
-            content=View.StackLayout(children=[header;View.ScrollView(content=mineSweeperGrid)])).Title("Mine Sweeper")
+            content=View.StackLayout(
+                children=[
+                    header
+                    View.ScrollView(
+                        content=mineSweeperGrid,
+                        verticalScrollBarVisibility=ScrollBarVisibility.Always,
+                        horizontalScrollBarVisibility=ScrollBarVisibility.Always)])).Title("Mine Sweeper")
                             
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view
@@ -146,32 +169,32 @@ type App () as app =
 
     // Uncomment this code to save the application state to app.Properties using Newtonsoft.Json
     // See https://fsprojects.github.io/Fabulous/Fabulous.XamarinForms/models.html#saving-application-state for further  instructions
-    let modelId = "model"
-    override __.OnSleep() = 
-
-        let json = Newtonsoft.Json.JsonConvert.SerializeObject(runner.CurrentModel)
-        Console.WriteLine("OnSleep: saving model into app.Properties, json = {0}", json)
-
-        app.Properties.[modelId] <- json
-
-    override __.OnResume() = 
-        Console.WriteLine "OnResume: checking for model in app.Properties"
-        try 
-            match app.Properties.TryGetValue modelId with
-            | true, (:? string as json) -> 
-
-                Console.WriteLine("OnResume: restoring model from app.Properties, json = {0}", json)
-                let model = Newtonsoft.Json.JsonConvert.DeserializeObject<App.Model>(json)
-
-                Console.WriteLine("OnResume: restoring model from app.Properties, model = {0}", (sprintf "%0A" model))
-                runner.SetCurrentModel (model, Cmd.none)
-
-            | _ -> ()
-        with ex -> 
-            App.program.onError("Error while restoring model found in app.Properties", ex)
-
-    override this.OnStart() = 
-        Console.WriteLine "OnStart: using same logic as OnResume()"
-        this.OnResume()
-
+    //let modelId = "model"
+    //override __.OnSleep() = 
+    //
+    //    let json = Newtonsoft.Json.JsonConvert.SerializeObject(runner.CurrentModel)
+    //    Console.WriteLine("OnSleep: saving model into app.Properties, json = {0}", json)
+    //
+    //    app.Properties.[modelId] <- json
+    //
+    //override __.OnResume() = 
+    //    Console.WriteLine "OnResume: checking for model in app.Properties"
+    //    try 
+    //        match app.Properties.TryGetValue modelId with
+    //        | true, (:? string as json) -> 
+    //
+    //            Console.WriteLine("OnResume: restoring model from app.Properties, json = {0}", json)
+    //            let model = Newtonsoft.Json.JsonConvert.DeserializeObject<App.Model>(json)
+    //
+    //            Console.WriteLine("OnResume: restoring model from app.Properties, model = {0}", (sprintf "%0A" model))
+    //            runner.SetCurrentModel (model, Cmd.none)
+    //
+    //        | _ -> ()
+    //    with ex -> 
+    //        App.program.onError("Error while restoring model found in app.Properties", ex)
+    //
+    //override this.OnStart() = 
+    //    Console.WriteLine "OnStart: using same logic as OnResume()"
+    //    this.OnResume()
+    //
 

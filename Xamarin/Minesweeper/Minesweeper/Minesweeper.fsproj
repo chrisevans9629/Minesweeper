@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="dirt.jpg" />
+    <EmbeddedResource Include="dug.jpg" />
     <EmbeddedResource Include="flag.png" />
     <EmbeddedResource Include="bomb.png" />
     <Compile Include="Minesweeper.fs" />
