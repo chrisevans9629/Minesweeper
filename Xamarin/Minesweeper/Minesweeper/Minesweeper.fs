@@ -18,7 +18,9 @@ module App =
         | Flag of BaseCell
         | Tap of BaseCell
         | Reset
-        | Bind of (unit -> unit)
+        | UpdateRow of Nullable<int>
+        | UpdateColumn of Nullable<int>
+        | UpdateBombs of int
         
     let game = MinesweeperBase()
     let config = MinesweeperConfig()
@@ -38,16 +40,33 @@ module App =
             model.Game.Reset()
             model, Cmd.none
         | ToggleFlag -> { model with Flag = model.Flag <> true }, Cmd.none
-        | Bind change -> 
-            change()
+        | UpdateBombs b -> 
+            model.Game.Config.BombCount <- b
+            model, Cmd.none
+        | UpdateRow b ->
+            model.Game.Config.Rows <- b
+            model, Cmd.none
+        | UpdateColumn b ->
+            model.Game.Config.Columns <- b
             model, Cmd.none
 
     let bombimg = Source(ImageSource.FromResource("Minesweeper.bomb.png"))
     let flagimg = Source(ImageSource.FromResource("Minesweeper.flag.png"))
+    let isInt p = 
+        let mutable t = 0
+        System.Int32.TryParse(p, &t)
+    let parse a =
+        System.Int32.Parse(a)
+    let entry label text =
+        View.StackLayout(
+                orientation=StackOrientation.Vertical,
+                children=[
+                    View.Label(text=label)
+                    View.Entry(
+                        placeholder=label,
+                        text=text)])
     let view (model: Model) dispatch =
 
-        //let inline bind (binding:unit -> 'a) = (fun () -> dispatch (Bind binding)) 
-        let bind binding = dispatch (Bind binding)
         let endView =
             View.StackLayout(children=[
                 View.Label(text=if model.Game.Win then "Congrats! You Won!" else "You lost")
@@ -58,20 +77,6 @@ module App =
                 .Margin(Thickness(10.0))
                 .BackgroundColor(Color.White)
                 
-
-       
-
-
-        let entry (text:string) changed validation =
-            View.StackLayout(
-                orientation=StackOrientation.Horizontal,
-                children=[
-                    View.Label(text=text)
-                    View.Entry(
-                        placeholder=text, 
-                        textChanged=(fun p -> changed p.NewTextValue |> ignore), 
-                        textColor=if validation text then Color.Black else Color.Red )])
-
         let header =
             View.StackLayout(
                 orientation=StackOrientation.Horizontal,
@@ -79,7 +84,9 @@ module App =
                     View.Label(text= sprintf "%d Bombs" model.Game.Config.BombCount).FontSize(Named NamedSize.Large).Column(0)
                     View.Label(text= sprintf "Score: %d" model.Game.Score).FontSize(Named NamedSize.Large).Column(1)
                     View.Button(text=sprintf "Flag %b" model.Flag, command=(fun () -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
-                    entry "Rows" (fun p -> bind (fun () -> model.Game.Config.Rows <- Nullable(int(p)))) (fun p -> System.Int32.TryParse(p, byref(1)))
+                    entry "Rows" (model.Game.Config.Rows.ToString())
+                    entry "Columns" (model.Game.Config.Columns.ToString())
+                    entry "Bombs" (model.Game.Config.BombCount.ToString())
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     ])
         let cell (r:BaseCell) =
