@@ -7,6 +7,7 @@ open Fabulous.XamarinForms
 open Fabulous.XamarinForms.LiveUpdate
 open Xamarin.Forms
 open System
+open FFImageLoading.Forms
 
 module App = 
     type Model = 
@@ -49,11 +50,11 @@ module App =
         | UpdateColumn b ->
             model.Game.Config.Columns <- b
             model, Cmd.none
-
-    let bombimg = Source(ImageSource.FromResource("Minesweeper.bomb.png"))
-    let flagimg = Source(ImageSource.FromResource("Minesweeper.flag.png"))
-    let dirtimg = Source(ImageSource.FromResource("Minesweeper.dirt.jpg"))
-    let dugimg = Source(ImageSource.FromResource("Minesweeper.dug.jpg"))
+            
+    let bombimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.bomb.png"))
+    let flagimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.flag.png"))
+    let dirtimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.dirt.jpg"))
+    let dugimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.dug.jpg"))
     let isInt p = 
         let mutable t = 0
         System.Int32.TryParse(p, &t)
@@ -97,7 +98,7 @@ module App =
         let cell (r:BaseCell) =
             View.Grid(
                 children=[
-                    View.Image(
+                    View.CachedImage(
                         source = (if r.ShowBomb then 
                                     bombimg 
                                   else if r.ShowFlag then 

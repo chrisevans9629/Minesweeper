@@ -1,7 +1,7 @@
 ﻿namespace Minesweeper.WPF
 
 open System
-
+open FFImageLoading.Forms
 open Xamarin.Forms
 open Xamarin.Forms.Platform.WPF
 
