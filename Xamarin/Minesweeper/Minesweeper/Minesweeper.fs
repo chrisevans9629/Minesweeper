@@ -89,7 +89,8 @@ module App =
                 children=[
                     View.Label(text= sprintf "%d Bombs" model.Game.Config.BombCount).FontSize(Named NamedSize.Large).Column(0)
                     View.Label(text= sprintf "Score: %d" model.Game.Score).FontSize(Named NamedSize.Large).Column(1)
-                    View.Button(text=sprintf "Flag %b" model.Flag, command=(fun () -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
+                    View.Label(text="Flag:")
+                    View.CheckBox(isChecked=model.Flag, checkedChanged=(fun a -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
                     entry "Rows" (model.Game.Config.Rows.ToString()) rows
                     entry "Columns" (model.Game.Config.Columns.ToString()) columns
                     entry "Bombs" (model.Game.Config.BombCount.ToString()) bombs
@@ -106,8 +107,8 @@ module App =
                                   else if r.ShowValue || r.ShowEmpty then 
                                     dugimg 
                                   else dirtimg),
-                        horizontalOptions=LayoutOptions.Center,
-                        verticalOptions=LayoutOptions.Center,
+                        horizontalOptions=LayoutOptions.CenterAndExpand,
+                        verticalOptions=LayoutOptions.CenterAndExpand,
                         aspect=Aspect.AspectFit
                         )//.WidthRequest(30.0).HeightRequest(30.0)
                     View.Label(
@@ -132,21 +133,20 @@ module App =
                             .Row(r.Row)
                             .Column(r.Column)
                             .GestureRecognizers([ View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
-                                ]) ] |> 
-                        List.append (
-                            if model.Game.GameEnd then 
-                                [endView.RowSpan(model.Game.Rows).ColumnSpan(model.Game.Columns).Padding(Thickness(20.0))] 
-                            else [])))
+                                ]) ])).Spacing(0.)
         
 
         View.ContentPage(
             content=View.StackLayout(
                 children=[
                     header
-                    View.ScrollView(
-                        content=mineSweeperGrid,
-                        verticalScrollBarVisibility=ScrollBarVisibility.Always,
-                        horizontalScrollBarVisibility=ScrollBarVisibility.Always)])).Title("Mine Sweeper")
+                    if model.Game.GameEnd then 
+                        endView 
+                    else
+                        View.ScrollView(
+                            content=mineSweeperGrid,
+                            verticalScrollBarVisibility=ScrollBarVisibility.Always,
+                            horizontalScrollBarVisibility=ScrollBarVisibility.Always)])).Title("Mine Sweeper")
                             
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view
