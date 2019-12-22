@@ -10,6 +10,8 @@ open System
 open FFImageLoading.Forms
 
 module App = 
+    open SkiaSharp
+
     type Model = 
         { 
             Game: Minesweeper.MinesweeperBase
@@ -30,7 +32,7 @@ module App =
     game.Setup(config)
     let init() = {Game=game;Flag=false}, Cmd.none
 
-    let imageRef = ViewRef()
+    //let imageRef = ViewRef()
     let animate (t:obj) =
         async {
             let image = t :?> View
@@ -44,11 +46,7 @@ module App =
             model, Cmd.none
         | Tap f -> 
             model.Game.ClickOnCell(f, false) |> ignore
-            match imageRef.TryValue with
-            | Some t -> 
-                animate t |> Async.Start
-                model, Cmd.none
-            | None -> model, Cmd.none
+            model, Cmd.none
         | Reset ->
             model.Game.Reset()
             model, Cmd.none
@@ -81,6 +79,21 @@ module App =
                         placeholder=label,
                         text=text,
                         textChanged = debounce 250 (fun e -> e.NewTextValue |> textChanged))])
+    let skiaSharpGrid (model: Model) dispatch =
+        View.SKCanvasView(enableTouchEvents=true,invalidate=true,
+            paintSurface=(fun arg -> 
+                let canvas = arg.Surface.Canvas
+                canvas.Clear()
+                use paint = new SKPaint()
+                for t in model.Game.Cells do
+                    canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
+                ()),
+            touch=(fun a -> 
+                let x = a.Location.X
+                let y = a.Location.Y
+                for t in model.Game.Cells do
+                    if t.Hit(x,y) then dispatch Tap t
+                ()))
     let view (model: Model) dispatch =
 
         let endView =
@@ -108,6 +121,7 @@ module App =
                     entry "Bombs" (model.Game.Config.BombCount.ToString()) bombs
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     ])
+        
         let cell (r:BaseCell) =
             View.Grid(
                 children=[
@@ -121,9 +135,8 @@ module App =
                                   else dirtimg),
                         horizontalOptions=LayoutOptions.CenterAndExpand,
                         verticalOptions=LayoutOptions.CenterAndExpand,
-                        aspect=Aspect.AspectFit,
-                        ref=imageRef
-                        )//.WidthRequest(30.0).HeightRequest(30.0)
+                        aspect=Aspect.AspectFit
+                        ).WidthRequest(50.0).HeightRequest(50.0)
                     View.Label(
                         isVisible=r.ShowValue,
                         text=if r.ShowValue then r.Value.ToString() 
@@ -153,13 +166,13 @@ module App =
             content=View.StackLayout(
                 children=[
                     header
-                    if model.Game.GameEnd then 
+                    (if model.Game.GameEnd then 
                         endView 
                     else
                         View.ScrollView(
                             content=mineSweeperGrid,
                             verticalScrollBarVisibility=ScrollBarVisibility.Always,
-                            horizontalScrollBarVisibility=ScrollBarVisibility.Always)])).Title("Mine Sweeper")
+                            horizontalScrollBarVisibility=ScrollBarVisibility.Always))])).Title("Mine Sweeper")
                             
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view
