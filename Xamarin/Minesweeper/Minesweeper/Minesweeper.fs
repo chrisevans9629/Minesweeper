@@ -74,12 +74,12 @@ module App =
                         text=text,
                         textChanged = debounce 250 (fun e -> e.NewTextValue |> textChanged))])
     let skiaSharpGrid (model: Model) dispatch =
-        View.SKCanvasView(enableTouchEvents=true,invalidate=true,width=1000.,height=1000.,
+        View.SKCanvasView(enableTouchEvents=true,invalidate=true,height=2000.,
             paintSurface=(fun arg -> 
                 let canvas = arg.Surface.Canvas
                 canvas.Clear()
-                let width = 1000.f//canvas.LocalClipBounds.Width
-                let height = 1000.f//canvas.LocalClipBounds.Height
+                let width = canvas.LocalClipBounds.Width
+                let height = canvas.LocalClipBounds.Height
                 
                 model.Game.SetDimensions(width, height)
 
@@ -95,7 +95,8 @@ module App =
                     paint.Color <- SKColors.Black
                     canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
                     paint.IsStroke <- false
-                    canvas.DrawText(t.DisplayValue(),SKPoint(t.X+(t.Width/2.f),t.Y+(t.Width/2.f)), paint)
+                    if t.ShowValue || t.ShowFlag then
+                        canvas.DrawText(t.DisplayValue(),SKPoint(t.X+(t.Width/2.f),t.Y+(t.Width/2.f)), paint)
                 ),
             touch=(fun a -> 
                 if a.ActionType = SKTouchAction.Pressed then
@@ -159,17 +160,17 @@ module App =
                              .WidthRequest(30.0).HeightRequest(30.0)
                         ])
                 
-        let mineSweeperGrid =
-            View.Grid(
-                rowdefs=[for i in 1 .. model.Game.Rows -> Absolute 50.0], 
-                coldefs=[for i in 1..model.Game.Columns -> Absolute 50.0],
-                children=([
-                    for r in model.Game.Cells -> 
-                        (cell r)
-                            .Row(r.Row)
-                            .Column(r.Column)
-                            .GestureRecognizers([ View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
-                                ]) ])).Spacing(0.)
+        //let mineSweeperGrid =
+        //    View.Grid(
+        //        rowdefs=[for i in 1 .. model.Game.Rows -> Absolute 50.0], 
+        //        coldefs=[for i in 1..model.Game.Columns -> Absolute 50.0],
+        //        children=([
+        //            for r in model.Game.Cells -> 
+        //                (cell r)
+        //                    .Row(r.Row)
+        //                    .Column(r.Column)
+        //                    .GestureRecognizers([ View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
+        //                        ]) ])).Spacing(0.)
         
 
         View.ContentPage(
@@ -180,7 +181,7 @@ module App =
                         endView 
                     else
                         View.ScrollView(
-                            content=(skiaSharpGrid model dispatch),
+                            content=View.Grid(children=[(skiaSharpGrid model dispatch)]),
                             verticalScrollBarVisibility=ScrollBarVisibility.Always,
                             horizontalScrollBarVisibility=ScrollBarVisibility.Always))])).Title("Mine Sweeper")
                             

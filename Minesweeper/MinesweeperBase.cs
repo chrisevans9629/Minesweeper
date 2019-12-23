@@ -273,12 +273,12 @@ namespace Minesweeper
             Grid = new MinesweeperGrid(Rows, Columns, cellwidth);
 
         }
+        Random random;
 
         private void SetupBombs(int numOfBombs, int seed, BaseCell firstCell)
         {
             //var numOfBombs = 20;
-            var random = new Random(seed);
-
+            random = random ?? new Random(seed);
             //create bombs
             for (int i = 0; i < numOfBombs; i++)
             {
