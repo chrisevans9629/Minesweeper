@@ -52,6 +52,16 @@ namespace Minesweeper
             Setup();
         }
         public List<BaseCell> Cells { get; set; }
+
+        public void SetDimensions(float width)
+        {
+            Width = width;
+            foreach (var baseCell in Cells)
+            {
+                baseCell.Width = width;
+            }
+        }
+
         private void Setup()
         {
             Cells = new List<BaseCell>(Rows * Columns);
@@ -64,7 +74,6 @@ namespace Minesweeper
                     cell.Row = i;
                     cell.Column = j;
                     cell.Width = Width;
-
                     Cells.Add(cell);
                 }
             }
@@ -72,6 +81,6 @@ namespace Minesweeper
 
         public int Rows { get; }
         public int Columns { get; }
-        public float Width { get; }
+        public float Width { get; private set; }
     }
 }

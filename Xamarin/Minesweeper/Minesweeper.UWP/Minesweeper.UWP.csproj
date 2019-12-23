@@ -151,6 +151,8 @@
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="4.6.2" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.3" />
+    <PackageReference Include="Fabulous.XamarinForms.SkiaSharp" Version="0.51.0" />
+    <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.1.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Minesweeper\Minesweeper.fsproj">

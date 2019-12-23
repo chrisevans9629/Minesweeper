@@ -13,8 +13,6 @@ namespace Minesweeper
         }
         public NoShowCell(int row, int column, int width)
         {
-            X = row * width;
-            Y = column * width;
             Row = row;
             Column = column;
             Width = width;
@@ -68,9 +66,9 @@ namespace Minesweeper
         //}
         public int? Rows { get; set; }
         public int? Columns { get; set; }
-        public float CellWidth { get; set; } = 40;
-        public float Width { get; set; } = 600;
-        public float Height { get; set; } = 600;
+        public float? CellWidth { get; set; } = 40;
+        public float? Width { get; set; } = 600;
+        public float? Height { get; set; } = 600;
         public int Seed { get; set; } = 100;
         public int? BlockCount { get; set; }
         public int BombCount { get; set; } = 20;
@@ -99,7 +97,7 @@ namespace Minesweeper
     {
         public MinesweeperBase()
         {
-            
+
         }
         public MinesweeperConfig Config { get; set; }
 
@@ -119,9 +117,9 @@ namespace Minesweeper
 
 
         [JsonIgnore]
-        public bool GameEnd => (Win || Lost) && Cells.Count(p=>p.Bomb) > 0;
+        public bool GameEnd => (Win || Lost) && Cells.Count(p => p.Bomb) > 0;
 
-        public bool Win => Grid.Cells.Where(p=>p.Bomb).All(p => p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
+        public bool Win => Grid.Cells.Where(p => p.Bomb).All(p => p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
         public bool Lost => Grid.Cells.Any(p => p.Visible && p.Bomb);
 
         public void ToggleFlagCell(BaseCell item)
@@ -164,10 +162,10 @@ namespace Minesweeper
         {
             if (item.Visible)
                 return false;
-           
+
             if (!placeAsFlag)
             {
-               ShowCell(item);
+                ShowCell(item);
             }
             else
             {
@@ -242,12 +240,22 @@ namespace Minesweeper
 
         }
 
+        public void SetDimensions(float width, float height)
+        {
+            Config.Width = width;
+            Config.Height = height;
+
+            var cellWidth = Config.Width / Config.Rows;
+            if (cellWidth != null)
+                Grid.SetDimensions(cellWidth ?? 0);
+        }
+
         public void Setup(MinesweeperConfig config)
         {
             Config = config;
-            var cellwidth = config.CellWidth;
-            Width = config.Width;
-            Height = config.Height;
+            var cellwidth = config.CellWidth ?? 10;
+            Width = config.Width ?? 100;
+            Height = config.Height ?? 100;
             if (config.Columns != null)
             {
                 Columns = config.Columns ?? 0;

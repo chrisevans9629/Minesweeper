@@ -34,6 +34,18 @@ namespace Minesweeper.Test
         //}
 
         [Test]
+        public void Width_Height_Should_Set_XY_Width()
+        {
+            minesweeper.Config.Width = 100;
+            minesweeper.Config.Height = 100;
+            minesweeper.Config.Rows = 10;
+            minesweeper.Config.Columns = 10;
+            minesweeper.Config.CellWidth = null;
+            minesweeper.Setup(minesweeper.Config);
+            minesweeper.Cells.First().Width.Should().Be(10);
+        }
+
+        [Test]
         public void ToggleFlag()
         {
             var item = minesweeper.Cells.First();

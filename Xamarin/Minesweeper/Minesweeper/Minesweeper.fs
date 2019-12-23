@@ -11,6 +11,7 @@ open FFImageLoading.Forms
 
 module App = 
     open SkiaSharp
+    open SkiaSharp.Views.Forms
 
     type Model = 
         { 
@@ -31,14 +32,7 @@ module App =
     config.Columns <- System.Nullable(10)
     game.Setup(config)
     let init() = {Game=game;Flag=false}, Cmd.none
-
-    //let imageRef = ViewRef()
-    let animate (t:obj) =
-        async {
-            let image = t :?> View
-            image.ScaleTo(1.5) |> Async.AwaitTask |> ignore
-            image.ScaleTo(1.0) |> Async.AwaitTask |> ignore
-        }
+    
     let update msg model =
         match msg with
         | Flag f -> 
@@ -80,20 +74,31 @@ module App =
                         text=text,
                         textChanged = debounce 250 (fun e -> e.NewTextValue |> textChanged))])
     let skiaSharpGrid (model: Model) dispatch =
-        View.SKCanvasView(enableTouchEvents=true,invalidate=true,
+        View.SKCanvasView(enableTouchEvents=true,invalidate=true,width=1000.,height=1000.,
             paintSurface=(fun arg -> 
                 let canvas = arg.Surface.Canvas
                 canvas.Clear()
+                let width = 1000.f//canvas.LocalClipBounds.Width
+                let height = 1000.f//canvas.LocalClipBounds.Height
+                
+                model.Game.SetDimensions(width, height)
+
                 use paint = new SKPaint()
+                paint.TextSize <- 24.f
+                paint.IsStroke <- true
                 for t in model.Game.Cells do
+                    paint.Color <- SKColors.LightBlue
                     canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
-                ()),
+                    paint.Color <- SKColors.Black
+                    canvas.DrawText(t.DisplayValue(),SKPoint(t.X,t.Y), paint)
+                ),
             touch=(fun a -> 
-                let x = a.Location.X
-                let y = a.Location.Y
-                for t in model.Game.Cells do
-                    if t.Hit(x,y) then dispatch Tap t
-                ()))
+                if a.ActionType = SKTouchAction.Pressed then
+                    let x = a.Location.X
+                    let y = a.Location.Y
+                    for t in model.Game.Cells do
+                        if t.Hit(x,y+t.Width) then dispatch (Tap t)
+                ))
     let view (model: Model) dispatch =
 
         let endView =
@@ -170,7 +175,7 @@ module App =
                         endView 
                     else
                         View.ScrollView(
-                            content=mineSweeperGrid,
+                            content=(skiaSharpGrid model dispatch),
                             verticalScrollBarVisibility=ScrollBarVisibility.Always,
                             horizontalScrollBarVisibility=ScrollBarVisibility.Always))])).Title("Mine Sweeper")
                             

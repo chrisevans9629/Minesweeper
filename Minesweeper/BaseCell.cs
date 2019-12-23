@@ -78,8 +78,8 @@ namespace Minesweeper
         public virtual bool IsHighlighted { get; set; }
         public virtual int Row { get; set; }
         public virtual int Column { get; set; }
-        public virtual float X { get; set; }
-        public virtual float Y { get; set; }
+        public virtual float X => Row * Width;
+        public virtual float Y => Column * Width;
         public virtual float Width { get; set; }
         public virtual bool Hit(float x, float y)
         {
