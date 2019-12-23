@@ -84,20 +84,25 @@ module App =
                 model.Game.SetDimensions(width, height)
 
                 use paint = new SKPaint()
-                paint.TextSize <- 24.f
-                paint.IsStroke <- true
                 for t in model.Game.Cells do
-                    paint.Color <- SKColors.LightBlue
+                    paint.TextSize <- t.Width / 1.5f
+                    
+                    paint.Color <- if t.ShowEmpty || t.ShowValue then SKColors.Green else SKColors.LightGreen
+                    paint.IsStroke <- false
                     canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
+                    
+                    paint.IsStroke <- true
                     paint.Color <- SKColors.Black
-                    canvas.DrawText(t.DisplayValue(),SKPoint(t.X,t.Y), paint)
+                    canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
+                    paint.IsStroke <- false
+                    canvas.DrawText(t.DisplayValue(),SKPoint(t.X+(t.Width/2.f),t.Y+(t.Width/2.f)), paint)
                 ),
             touch=(fun a -> 
                 if a.ActionType = SKTouchAction.Pressed then
                     let x = a.Location.X
                     let y = a.Location.Y
                     for t in model.Game.Cells do
-                        if t.Hit(x,y+t.Width) then dispatch (Tap t)
+                        if t.Hit(x,y) then if model.Flag then dispatch (Flag t) else dispatch (Tap t)
                 ))
     let view (model: Model) dispatch =
 

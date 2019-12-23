@@ -150,14 +150,17 @@
     <Reference Include="Fabulous.XamarinForms.SkiaSharp">
       <HintPath>..\..\..\packages\Fabulous.XamarinForms.SkiaSharp.0.51.0\lib\netstandard2.0\Fabulous.XamarinForms.SkiaSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SkiaSharp">
-      <HintPath>..\..\..\packages\SkiaSharp.1.68.1\lib\Xamarin.iOS\SkiaSharp.dll</HintPath>
+      <HintPath>..\..\..\packages\SkiaSharp.1.68.1.1\lib\Xamarin.iOS\SkiaSharp.dll</HintPath>
     </Reference>
     <Reference Include="SkiaSharp.Views.Forms">
-      <HintPath>..\..\..\packages\SkiaSharp.Views.Forms.1.68.1\lib\Xamarin.iOS\SkiaSharp.Views.Forms.dll</HintPath>
+      <HintPath>..\..\..\packages\SkiaSharp.Views.Forms.1.68.1.1\lib\Xamarin.iOS\SkiaSharp.Views.Forms.dll</HintPath>
     </Reference>
     <Reference Include="SkiaSharp.Views.iOS">
-      <HintPath>..\..\..\packages\SkiaSharp.Views.1.68.1\lib\Xamarin.iOS\SkiaSharp.Views.iOS.dll</HintPath>
+      <HintPath>..\..\..\packages\SkiaSharp.Views.1.68.1.1\lib\Xamarin.iOS\SkiaSharp.Views.iOS.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -179,9 +182,6 @@
     </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.4.6.2\lib\netstandard1.6\FSharp.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Essentials">
       <HintPath>..\packages\Xamarin.Essentials.1.1.0\lib\monoandroid71\Xamarin.Essentials.dll</HintPath>
