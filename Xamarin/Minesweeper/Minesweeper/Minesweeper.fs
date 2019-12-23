@@ -70,7 +70,7 @@ module App =
     let entry label text textChanged =
         View.StackLayout(
                 orientation=StackOrientation.Vertical,
-                children=[
+                children=[ 
                     View.Label(text=label)
                     View.Entry(
                         placeholder=label,
@@ -84,8 +84,13 @@ module App =
                 let width = canvas.LocalClipBounds.Width
                 let height = canvas.LocalClipBounds.Height
                 
-                model.Game.SetDimensions(width, height)
+                let min = 20.f
+                let max = 50.f
 
+                if model.Game.SetDimensions(width, height) < min then
+                    model.Game.Grid.SetDimensions(min)
+                if model.Game.SetDimensions(width, height) > max then
+                    model.Game.Grid.SetDimensions(max)
                 use paint = new SKPaint()
                 paint.TextAlign <- SKTextAlign.Center
 
@@ -148,8 +153,8 @@ module App =
                     else
                         View.ScrollView(
                             content=View.Grid(children=[(skiaSharpGrid model dispatch)]),
-                            verticalScrollBarVisibility=ScrollBarVisibility.Always,
-                            horizontalScrollBarVisibility=ScrollBarVisibility.Always))])).Title("Mine Sweeper")
+                            horizontalOptions=LayoutOptions.Fill,
+                            orientation=ScrollOrientation.Both))])).Title("Mine Sweeper")
                             
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view

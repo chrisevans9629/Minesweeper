@@ -240,14 +240,17 @@ namespace Minesweeper
 
         }
 
-        public void SetDimensions(float width, float height)
+        public float SetDimensions(float width, float height)
         {
             Config.Width = width;
             Config.Height = height;
-
-            var cellWidth = Config.Width / Config.Rows;
-            if (cellWidth != null)
-                Grid.SetDimensions(cellWidth ?? 0);
+            float cellWidth = 0;
+            if (Config.Rows is int rows && Config.Columns is int columns)
+            {
+                cellWidth = Math.Min(width, height) / Math.Min(rows, columns);
+                Grid.SetDimensions(cellWidth);
+            }
+            return cellWidth;
         }
 
         public void Setup(MinesweeperConfig config)
