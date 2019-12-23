@@ -28,8 +28,9 @@ module App =
         
     let game = MinesweeperBase()
     let config = MinesweeperConfig()
-    config.Rows <- System.Nullable(10)
-    config.Columns <- System.Nullable(10)
+    config.Rows <- System.Nullable(30)
+    config.Columns <- System.Nullable(30)
+    config.BombCount <- 180
     game.Setup(config)
     let init() = {Game=game;Flag=false}, Cmd.none
     
@@ -63,7 +64,9 @@ module App =
         let mutable t = 0
         System.Int32.TryParse(p, &t)
     let parse a =
-        System.Int32.Parse(a)
+        let mutable t = 0
+        System.Int32.TryParse(a, &t) |> ignore
+        t
     let entry label text textChanged =
         View.StackLayout(
                 orientation=StackOrientation.Vertical,
@@ -84,6 +87,8 @@ module App =
                 model.Game.SetDimensions(width, height)
 
                 use paint = new SKPaint()
+                paint.TextAlign <- SKTextAlign.Center
+
                 for t in model.Game.Cells do
                     paint.TextSize <- t.Width / 1.5f
                     
@@ -96,7 +101,7 @@ module App =
                     canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
                     paint.IsStroke <- false
                     if t.ShowValue || t.ShowFlag then
-                        canvas.DrawText(t.DisplayValue(),SKPoint(t.X+(t.Width/2.f),t.Y+(t.Width/2.f)), paint)
+                        canvas.DrawText(t.DisplayValue(),SKPoint(t.X+(t.Width/2.f),t.Y+(t.Width/1.5f)), paint)
                 ),
             touch=(fun a -> 
                 if a.ActionType = SKTouchAction.Pressed then
@@ -122,59 +127,20 @@ module App =
         let header =
             View.StackLayout(
                 orientation=StackOrientation.Horizontal,
+                spacing=10.,
                 children=[
-                    View.Label(text= sprintf "%d Bombs" model.Game.Config.BombCount).FontSize(Named NamedSize.Large).Column(0)
-                    View.Label(text= sprintf "Score: %d" model.Game.Score).FontSize(Named NamedSize.Large).Column(1)
-                    View.Label(text="Flag:")
+                    View.Label(text= sprintf "Bombs: %d" model.Game.Config.BombCount).Column(0)
+                    View.Label(text= sprintf "Score: %d" model.Game.Score).Column(1)
+                    View.Label(text="Flag:", verticalTextAlignment=TextAlignment.Center)
                     View.CheckBox(isChecked=model.Flag, checkedChanged=(fun a -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
                     entry "Rows" (model.Game.Config.Rows.ToString()) rows
                     entry "Columns" (model.Game.Config.Columns.ToString()) columns
                     entry "Bombs" (model.Game.Config.BombCount.ToString()) bombs
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     ])
-        
-        let cell (r:BaseCell) =
-            View.Grid(
-                children=[
-                    View.CachedImage(
-                        source = (if r.ShowBomb then 
-                                    bombimg 
-                                  else if r.ShowFlag then 
-                                    flagimg 
-                                  else if r.ShowValue || r.ShowEmpty then 
-                                    dugimg 
-                                  else dirtimg),
-                        horizontalOptions=LayoutOptions.CenterAndExpand,
-                        verticalOptions=LayoutOptions.CenterAndExpand,
-                        aspect=Aspect.AspectFit
-                        ).WidthRequest(50.0).HeightRequest(50.0)
-                    View.Label(
-                        isVisible=r.ShowValue,
-                        text=if r.ShowValue then r.Value.ToString() 
-                             else " ")
-                             //.BackgroundColor(if r.ShowEmpty || r.ShowValue then Color.LightGreen else Color.LightBlue)
-                             //.ForegroundColor(Color.Black)
-                             .HorizontalTextAlignment(TextAlignment.Center)
-                             .VerticalTextAlignment(TextAlignment.Center)
-                             .FontSize(Named NamedSize.Large)
-                             .WidthRequest(30.0).HeightRequest(30.0)
-                        ])
-                
-        //let mineSweeperGrid =
-        //    View.Grid(
-        //        rowdefs=[for i in 1 .. model.Game.Rows -> Absolute 50.0], 
-        //        coldefs=[for i in 1..model.Game.Columns -> Absolute 50.0],
-        //        children=([
-        //            for r in model.Game.Cells -> 
-        //                (cell r)
-        //                    .Row(r.Row)
-        //                    .Column(r.Column)
-        //                    .GestureRecognizers([ View.TapGestureRecognizer(command=(fun () -> dispatch (if model.Flag then Flag r else Tap r)))
-        //                        ]) ])).Spacing(0.)
-        
-
         View.ContentPage(
             content=View.StackLayout(
+                margin=Thickness(10.),
                 children=[
                     header
                     (if model.Game.GameEnd then 
@@ -202,7 +168,7 @@ type App () as app =
     // Uncomment this line to enable live update in debug mode. 
     // See https://fsprojects.github.io/Fabulous/Fabulous.XamarinForms/tools.html#live-update for further  instructions.
     //
-    //do runner.EnableLiveUpdate()
+    do runner.EnableLiveUpdate()
 #endif    
 
     // Uncomment this code to save the application state to app.Properties using Newtonsoft.Json
