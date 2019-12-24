@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
@@ -21,7 +21,9 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <PackageReference Include="Fabulous.XamarinForms.FFImageLoading" Version="0.51.0" />
+    <PackageReference Include="Fabulous.XamarinForms.SkiaSharp" Version="0.51.0" />
     <PackageReference Include="FSharp.Core" Version="4.6.2" />
+    <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.1.1" />
     <PackageReference Include="Xamarin.Forms.Platform.WPF" Version="4.3.0.908675" />
     <ProjectReference Include="../Minesweeper/Minesweeper.fsproj" />
   </ItemGroup>

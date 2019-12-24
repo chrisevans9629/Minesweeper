@@ -16,7 +16,8 @@ module App =
     type Model = 
         { 
             Game: Minesweeper.MinesweeperBase
-            Flag: bool }
+            Flag: bool 
+            Size: float }
     type Msg = 
         | ToggleFlag
         | Flag of BaseCell
@@ -25,6 +26,7 @@ module App =
         | UpdateRow of Nullable<int>
         | UpdateColumn of Nullable<int>
         | UpdateBombs of int
+        | SizeChanged of float
         
     let game = MinesweeperBase()
     let config = MinesweeperConfig()
@@ -32,8 +34,8 @@ module App =
     config.Columns <- System.Nullable(30)
     config.BombCount <- 180
     game.Setup(config)
-    let init() = {Game=game;Flag=false}, Cmd.none
-    
+    let init() = {Game=game;Flag=false;Size=50.}, Cmd.none
+     
     let update msg model =
         match msg with
         | Flag f -> 
@@ -55,6 +57,7 @@ module App =
         | UpdateColumn b ->
             model.Game.Config.Columns <- b
             model, Cmd.none
+        | SizeChanged b -> {model with Size = b}, Cmd.none
             
     let bombimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.bomb.png"))
     let flagimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.flag.png"))
@@ -76,47 +79,43 @@ module App =
                         placeholder=label,
                         text=text,
                         textChanged = debounce 250 (fun e -> e.NewTextValue |> textChanged))])
-    let skiaSharpGrid (model: Model) dispatch =
-        View.SKCanvasView(enableTouchEvents=true,invalidate=true,height=2000.,
-            paintSurface=(fun arg -> 
-                let canvas = arg.Surface.Canvas
-                canvas.Clear()
-                let width = canvas.LocalClipBounds.Width
-                let height = canvas.LocalClipBounds.Height
-                
-                let min = 20.f
-                let max = 50.f
-
-                if model.Game.SetDimensions(width, height) < min then
-                    model.Game.Grid.SetDimensions(min)
-                if model.Game.SetDimensions(width, height) > max then
-                    model.Game.Grid.SetDimensions(max)
-                use paint = new SKPaint()
-                paint.TextAlign <- SKTextAlign.Center
-
-                for t in model.Game.Cells do
-                    paint.TextSize <- t.Width / 1.5f
-                    
-                    paint.Color <- if t.ShowEmpty || t.ShowValue then SKColors.Green else SKColors.LightGreen
-                    paint.IsStroke <- false
-                    canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
-                    
-                    paint.IsStroke <- true
-                    paint.Color <- SKColors.Black
-                    canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
-                    paint.IsStroke <- false
-                    if t.ShowValue || t.ShowFlag then
-                        canvas.DrawText(t.DisplayValue(),SKPoint(t.X+(t.Width/2.f),t.Y+(t.Width/1.5f)), paint)
-                ),
-            touch=(fun a -> 
-                if a.ActionType = SKTouchAction.Pressed then
-                    let x = a.Location.X
-                    let y = a.Location.Y
-                    for t in model.Game.Cells do
-                        if t.Hit(x,y) then if model.Flag then dispatch (Flag t) else dispatch (Tap t)
-                ))
+    
     let view (model: Model) dispatch =
+        let skiaSharpGrid =
+            View.SKCanvasView(enableTouchEvents=true,
+                invalidate=true,
+                height=float(model.Game.Rows) * model.Size,
+                width=float(model.Game.Columns) * model.Size,
+                paintSurface=(fun arg -> 
+                    let canvas = arg.Surface.Canvas
+                    canvas.Clear()
+                    let size = model.Size
 
+                    model.Game.Grid.SetDimensions(float32(size))
+                    use paint = new SKPaint()
+                    paint.TextAlign <- SKTextAlign.Center
+
+                    for t in model.Game.Cells do
+                        paint.TextSize <- t.Width / 1.5f
+                        
+                        paint.Color <- if t.ShowEmpty || t.ShowValue then SKColors.Green else SKColors.LightGreen
+                        paint.IsStroke <- false
+                        canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
+                        
+                        paint.IsStroke <- true
+                        paint.Color <- SKColors.Black
+                        canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
+                        paint.IsStroke <- false
+                        if t.ShowValue || t.ShowFlag then
+                            canvas.DrawText(t.DisplayValue(),SKPoint(t.X+(t.Width/2.f),t.Y+(t.Width/1.5f)), paint)
+                    ),
+                touch=(fun a -> 
+                    if a.ActionType = SKTouchAction.Pressed then
+                        let x = a.Location.X
+                        let y = a.Location.Y
+                        for t in model.Game.Cells do
+                            if t.Hit(x,y) then if model.Flag then dispatch (Flag t) else dispatch (Tap t)
+                    ))
         let endView =
             View.StackLayout(children=[
                 View.Label(text=if model.Game.Win then "Congrats! You Won!" else "You lost")
@@ -134,27 +133,30 @@ module App =
                 orientation=StackOrientation.Horizontal,
                 spacing=10.,
                 children=[
-                    View.Label(text= sprintf "Bombs: %d" model.Game.Config.BombCount).Column(0)
-                    View.Label(text= sprintf "Score: %d" model.Game.Score).Column(1)
+                    View.Label(text= sprintf "Bombs: %d" model.Game.Config.BombCount,verticalTextAlignment=TextAlignment.Center).Column(0)
+                    View.Label(text= sprintf "Score: %d" model.Game.Score,verticalTextAlignment=TextAlignment.Center).Column(1)
                     View.Label(text="Flag:", verticalTextAlignment=TextAlignment.Center)
                     View.CheckBox(isChecked=model.Flag, checkedChanged=(fun a -> dispatch ToggleFlag)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(2)
                     entry "Rows" (model.Game.Config.Rows.ToString()) rows
                     entry "Columns" (model.Game.Config.Columns.ToString()) columns
                     entry "Bombs" (model.Game.Config.BombCount.ToString()) bombs
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
+                    View.Label(text="Size:",verticalTextAlignment=TextAlignment.Center)
+                    View.Slider(value=model.Size,verticalOptions=LayoutOptions.CenterAndExpand, minimumMaximum=(10.,75.), width=200., valueChanged=(fun args -> dispatch (SizeChanged args.NewValue)))
                     ])
         View.ContentPage(
-            content=View.StackLayout(
+            content=View.Grid(
+                rowdefs=[Dimension.Absolute 70.;Star],
                 margin=Thickness(10.),
                 children=[
-                    header
+                    View.ScrollView(content=header,orientation=ScrollOrientation.Horizontal).Row(0)
                     (if model.Game.GameEnd then 
                         endView 
                     else
                         View.ScrollView(
-                            content=View.Grid(children=[(skiaSharpGrid model dispatch)]),
-                            horizontalOptions=LayoutOptions.Fill,
-                            orientation=ScrollOrientation.Both))])).Title("Mine Sweeper")
+                            content=skiaSharpGrid,
+                            orientation=ScrollOrientation.Both)).Row(1) ]) 
+                                ).Title("Mine Sweeper")
                             
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view
