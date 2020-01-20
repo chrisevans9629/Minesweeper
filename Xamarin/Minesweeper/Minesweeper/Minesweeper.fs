@@ -90,15 +90,22 @@ module App =
                 paintSurface=(fun arg -> 
                     let canvas = arg.Surface.Canvas
                     canvas.Clear()
-                    let size = model.Size
 
-                    let rowSizeHalf = float(model.Game.Rows) * size/2.
-                    let columnSizeHalf = float(model.Game.Columns) * size/2.
+                    let columns = float32(model.Game.Columns)
+                    let rows = float32(model.Game.Rows)
 
-                    let xOffset, yOffset = float(arg.Info.Width)/2.-columnSizeHalf, float(arg.Info.Height)/2.-rowSizeHalf
+                    let cWidth = float32(arg.Info.Width)
+                    let cHeight = float32(arg.Info.Height)
+
+                    let size = Math.Min( float32(model.Size), Math.Min(cWidth/columns,cHeight/rows))
+
+                    let rowSizeHalf = rows * size/2.f
+                    let columnSizeHalf = columns * size/2.f
+
+                    let xOffset, yOffset = cWidth/2.f-columnSizeHalf, cHeight/2.f-rowSizeHalf
 
 
-                    model.Game.Grid.SetDimensions(float32(size))
+                    model.Game.Grid.SetDimensions(size,xOffset,yOffset)
                     use paint = new SKPaint()
                     paint.TextAlign <- SKTextAlign.Center
 
@@ -114,7 +121,7 @@ module App =
                         canvas.DrawRect(t.X,t.Y,t.Width,t.Width, paint)
                         paint.IsStroke <- false
                         if t.ShowValue || t.ShowFlag then
-                            canvas.DrawText(t.DisplayValue(),SKPoint(t.X+(t.Width/2.f),t.Y+(t.Width/1.5f)), paint)
+                            canvas.DrawText(t.DisplayValue(),SKPoint(t.X + (t.Width/2.f),t.Y + (t.Width/1.5f)), paint)
                     ),
                 touch=(fun a -> 
                     if a.ActionType = SKTouchAction.Pressed then

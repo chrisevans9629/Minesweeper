@@ -60,8 +60,6 @@ namespace Minesweeper
 
     public class MinesweeperConfig
     {
-        private int _bombCount = 20;
-
         //public Func<BaseCell> CreateCellFunc { get; }
         //public MinesweeperConfig(Func<BaseCell> createCell)
         //{
@@ -75,15 +73,7 @@ namespace Minesweeper
         public int Seed { get; set; } = 100;
         //public int? BlockCount { get; set; }
 
-        public int BombCount
-        {
-            get => _bombCount;
-            set
-            {
-                Debug.Assert(Width*Height < value);
-                _bombCount = value;
-            }
-        }
+        public int BombCount { get; set; } = 20;
     }
     public struct CellParams
     {
@@ -259,7 +249,7 @@ namespace Minesweeper
             if (Config.Rows is int rows && Config.Columns is int columns)
             {
                 cellWidth = Math.Min(width, height) / Math.Min(rows, columns);
-                Grid.SetDimensions(cellWidth);
+                Grid.SetDimensions(cellWidth,0,0);
             }
             return cellWidth;
         }

@@ -53,12 +53,14 @@ namespace Minesweeper
         }
         public List<BaseCell> Cells { get; set; }
 
-        public void SetDimensions(float width)
+        public void SetDimensions(float width, float xOffset, float yOffset)
         {
             Width = width;
             foreach (var baseCell in Cells)
             {
                 baseCell.Width = width;
+                baseCell.XOffset = xOffset;
+                baseCell.YOffset = yOffset;
             }
         }
 
