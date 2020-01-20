@@ -16,7 +16,9 @@ module App =
         Size:float
         Zoom:float
         XTran:float
-        YTran:float}
+        YTran:float
+        PanXStart:float
+        PanYStart:float}
     type Model = 
         { 
             Game: Minesweeper.MinesweeperBase
@@ -38,7 +40,7 @@ module App =
     config.Columns <- System.Nullable(20)
     config.BombCount <- 25
     game.Setup(config)
-    let init() = {Game=game;Flag=false;Size={Size=50.;Zoom=1.;XTran=0.;YTran=0.;}}, Cmd.none
+    let init() = {Game=game;Flag=false;Size={Size=50.;Zoom=1.;XTran=0.;YTran=0.;PanXStart=0.;PanYStart=0.}}, Cmd.none
      
     let update msg model =
         match msg with
@@ -96,12 +98,18 @@ module App =
                 dispatch (SizeChanged({model.Size with Zoom=model.Size.Zoom*p.Scale; XTran= p.ScaleOrigin.X;YTran=p.ScaleOrigin.Y}))
             if p.Status = GestureStatus.Running then
                 dispatch (SizeChanged({model.Size with Zoom= model.Size.Zoom*p.Scale}))
+
+        let handlePan (p:PanUpdatedEventArgs) =
+            if p.StatusType = GestureStatus.Started then
+                dispatch (SizeChanged({model.Size with PanXStart=model.Size.XTran;PanYStart=model.Size.YTran}))
+            if p.StatusType = GestureStatus.Running then
+                dispatch (SizeChanged({model.Size with XTran=model.Size.XTran+model.Size.PanXStart;YTran=model.Size.YTran+model.Size.PanYStart}))
                 
         let skiaSharpGrid =
             View.SKCanvasView(enableTouchEvents=true,
                 invalidate=true,
-                height=2000.,
-                width=2000.,
+                height=1000.,
+                width=1000.,
                 paintSurface=(fun arg -> 
                     let canvas = arg.Surface.Canvas
                     canvas.Clear()
@@ -148,7 +156,7 @@ module App =
                     .Scale(model.Size.Zoom)
                     .AnchorX(model.Size.XTran)
                     .AnchorY(model.Size.YTran)
-                    .GestureRecognizers([View.PinchGestureRecognizer(handlePinch)])//.TranslationX(model.XTran).TranslationY(model.YTran)
+                    //.GestureRecognizers([View.PinchGestureRecognizer(handlePinch);View.PanGestureRecognizer(handlePan)])
                         
                     
         let endView =
@@ -177,7 +185,7 @@ module App =
                     entry "Bombs" (model.Game.Config.BombCount.ToString()) bombs
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     View.Label(text="Size:",verticalTextAlignment=TextAlignment.Center)
-                    View.Slider(value=model.Size.Zoom,verticalOptions=LayoutOptions.CenterAndExpand, minimumMaximum=(0.5,4.), width=200., valueChanged=(fun args -> dispatch (SizeChanged (args.NewValue,model.XTran,model.YTran))))
+                    View.Slider(value=model.Size.Zoom,verticalOptions=LayoutOptions.CenterAndExpand, minimumMaximum=(0.5,4.), width=200., valueChanged=(fun args -> dispatch (SizeChanged ({model.Size with Zoom= args.NewValue}))))
                     ])
 
         View.MasterDetailPage(title="Minesweeper",masterBehavior=MasterBehavior.Popover,master=View.ContentPage(content=header,title="Settings"),
