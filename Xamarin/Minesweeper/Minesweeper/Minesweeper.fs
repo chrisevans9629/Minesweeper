@@ -12,13 +12,16 @@ open FFImageLoading.Forms
 module App = 
     open SkiaSharp
     open SkiaSharp.Views.Forms
-
+    type GridSize = {
+        Size:float
+        Zoom:float
+        XTran:float
+        YTran:float}
     type Model = 
         { 
             Game: Minesweeper.MinesweeperBase
             Flag: bool 
-            Size: float 
-            Zoom: float}
+            Size:GridSize}
     type Msg = 
         | ToggleFlag
         | Flag of BaseCell
@@ -27,15 +30,15 @@ module App =
         | UpdateRow of Nullable<int>
         | UpdateColumn of Nullable<int>
         | UpdateBombs of int
-        | SizeChanged of float
+        | SizeChanged of GridSize
         
     let game = MinesweeperBase()
     let config = MinesweeperConfig()
     config.Rows <- System.Nullable(20)
-    config.Columns <- System.Nullable(10)
-    config.BombCount <- 10
+    config.Columns <- System.Nullable(20)
+    config.BombCount <- 25
     game.Setup(config)
-    let init() = {Game=game;Flag=false;Size=50.;Zoom=1.}, Cmd.none
+    let init() = {Game=game;Flag=false;Size={Size=50.;Zoom=1.;XTran=0.;YTran=0.;}}, Cmd.none
      
     let update msg model =
         match msg with
@@ -58,7 +61,7 @@ module App =
         | UpdateColumn b ->
             model.Game.Config.Columns <- b
             model, Cmd.none
-        | SizeChanged b -> {model with Zoom = b}, Cmd.none
+        | SizeChanged g -> {model with Size=g}, Cmd.none
             
     let bombimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.bomb.png"))
     let flagimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.flag.png"))
@@ -80,13 +83,25 @@ module App =
                         placeholder=label,
                         text=text,
                         textChanged = debounce 250 (fun e -> e.NewTextValue |> textChanged))])
-    
+    let MIN_SCALE = 1.
+    let MAX_SCALE = 8.
+    let OVERSHOOT = 0.15
+    let StartX, StartY = 0.0,0.0
+    let StartScale = 0.0
+
     let view (model: Model) dispatch =
+        
+        let handlePinch (p:PinchGestureUpdatedEventArgs) =
+            if p.Status = GestureStatus.Started then
+                dispatch (SizeChanged({model.Size with Zoom=model.Size.Zoom*p.Scale; XTran= p.ScaleOrigin.X;YTran=p.ScaleOrigin.Y}))
+            if p.Status = GestureStatus.Running then
+                dispatch (SizeChanged({model.Size with Zoom= model.Size.Zoom*p.Scale}))
+                
         let skiaSharpGrid =
             View.SKCanvasView(enableTouchEvents=true,
                 invalidate=true,
-                //height=float(model.Game.Rows) * model.Size,
-                //width=float(model.Game.Columns) * model.Size,
+                height=2000.,
+                width=2000.,
                 paintSurface=(fun arg -> 
                     let canvas = arg.Surface.Canvas
                     canvas.Clear()
@@ -97,7 +112,7 @@ module App =
                     let cWidth = float32(arg.Info.Width)
                     let cHeight = float32(arg.Info.Height)
 
-                    let size = Math.Min( float32(model.Size), Math.Min(cWidth/columns,cHeight/rows))
+                    let size = Math.Min( float32(model.Size.Size), Math.Min(cWidth/columns,cHeight/rows))
 
                     let rowSizeHalf = rows * size/2.f
                     let columnSizeHalf = columns * size/2.f
@@ -124,12 +139,18 @@ module App =
                             canvas.DrawText(t.DisplayValue(),SKPoint(t.X + (t.Width/2.f),t.Y + (t.Width/1.5f)), paint)
                     ),
                 touch=(fun a -> 
-                    if a.ActionType = SKTouchAction.Pressed then
+                    if a.ActionType = SKTouchAction.Released then
                         let x = a.Location.X
                         let y = a.Location.Y
                         for t in model.Game.Cells do
                             if t.Hit(x,y) then if model.Flag then dispatch (Flag t) else dispatch (Tap t)
-                    )).Scale(model.Zoom)
+                    ))
+                    .Scale(model.Size.Zoom)
+                    .AnchorX(model.Size.XTran)
+                    .AnchorY(model.Size.YTran)
+                    .GestureRecognizers([View.PinchGestureRecognizer(handlePinch)])//.TranslationX(model.XTran).TranslationY(model.YTran)
+                        
+                    
         let endView =
             View.StackLayout(children=[
                 View.Label(text=if model.Game.Win then "Congrats! You Won!" else "You lost")
@@ -144,7 +165,7 @@ module App =
         let bombs p = dispatch (UpdateBombs (parse(p)))
         let header =
             View.StackLayout(
-                orientation=StackOrientation.Horizontal,
+                orientation=StackOrientation.Vertical,
                 spacing=10.,
                 children=[
                     View.Label(text= sprintf "Bombs: %d" model.Game.Config.BombCount,verticalTextAlignment=TextAlignment.Center).Column(0)
@@ -156,21 +177,18 @@ module App =
                     entry "Bombs" (model.Game.Config.BombCount.ToString()) bombs
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     View.Label(text="Size:",verticalTextAlignment=TextAlignment.Center)
-                    View.Slider(value=model.Zoom,verticalOptions=LayoutOptions.CenterAndExpand, minimumMaximum=(0.5,4.), width=200., valueChanged=(fun args -> dispatch (SizeChanged args.NewValue)))
+                    View.Slider(value=model.Size.Zoom,verticalOptions=LayoutOptions.CenterAndExpand, minimumMaximum=(0.5,4.), width=200., valueChanged=(fun args -> dispatch (SizeChanged (args.NewValue,model.XTran,model.YTran))))
                     ])
-        View.ContentPage(
-            content=View.Grid(
-                rowdefs=[Dimension.Absolute 70.;Star],
-                margin=Thickness(10.),
-                children=[
-                    View.ScrollView(content=header,orientation=ScrollOrientation.Horizontal).Row(0)
-                    (if model.Game.GameEnd then 
-                        endView 
-                    else
-                        View.ScrollView(
-                            content=skiaSharpGrid,
-                            orientation=ScrollOrientation.Both)).Row(1) ]) 
-                                ).Title("Mine Sweeper")
+
+        View.MasterDetailPage(title="Minesweeper",masterBehavior=MasterBehavior.Popover,master=View.ContentPage(content=header,title="Settings"),
+            detail=View.ContentPage(
+                content=(if model.Game.GameEnd then 
+                            endView 
+                        else
+                            View.ScrollView(
+                                content=skiaSharpGrid,
+                                orientation=ScrollOrientation.Both)
+                                )).Title("Minesweeper"))
                             
     // Note, this declaration is needed if you enable LiveUpdate
     let program = Program.mkProgram init update view
