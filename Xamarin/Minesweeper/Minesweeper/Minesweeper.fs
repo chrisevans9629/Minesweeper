@@ -31,7 +31,7 @@ module App =
         
     let game = MinesweeperBase()
     let config = MinesweeperConfig()
-    config.Rows <- System.Nullable(10)
+    config.Rows <- System.Nullable(20)
     config.Columns <- System.Nullable(10)
     config.BombCount <- 10
     game.Setup(config)
@@ -156,7 +156,7 @@ module App =
                     entry "Bombs" (model.Game.Config.BombCount.ToString()) bombs
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     View.Label(text="Size:",verticalTextAlignment=TextAlignment.Center)
-                    View.Slider(value=model.Zoom,verticalOptions=LayoutOptions.CenterAndExpand, minimumMaximum=(0.5,2.), width=200., valueChanged=(fun args -> dispatch (SizeChanged args.NewValue)))
+                    View.Slider(value=model.Zoom,verticalOptions=LayoutOptions.CenterAndExpand, minimumMaximum=(0.5,4.), width=200., valueChanged=(fun args -> dispatch (SizeChanged args.NewValue)))
                     ])
         View.ContentPage(
             content=View.Grid(

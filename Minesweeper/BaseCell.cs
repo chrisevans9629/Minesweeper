@@ -82,8 +82,8 @@ namespace Minesweeper
         public virtual float XOffset { get; set; }
         public virtual float YOffset { get; set; }
 
-        public virtual float X => Row * Width + XOffset;
-        public virtual float Y => Column * Width + YOffset;
+        public virtual float X => Column * Width + XOffset;
+        public virtual float Y => Row * Width + YOffset;
         public virtual float Width { get; set; }
         public virtual bool Hit(float x, float y)
         {

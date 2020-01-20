@@ -18,20 +18,21 @@ namespace Minesweeper.Test
             minesweeper.Setup(new MinesweeperConfig());
         }
 
-        //[Test]
-        //public void Cell0OpensMoreCells()
-        //{
-        //    var item = minesweeper.Cells.First();
-        //    minesweeper.ClickOnCell(item, false);
-        //    Console.WriteLine(minesweeper.Grid.GetStringRepresentation());
-        //    var item0 = minesweeper.Cells.First(p => p.Value == 0 && !p.Bomb);
+        [Test]
+        public void SetColumns_Should_Match()
+        {
+            minesweeper.Config.Columns = 10;
+            minesweeper.Config.Rows = 5;
+            minesweeper.Reset();
+            minesweeper.Grid.Cells.Should()
+                .OnlyContain(
+                    p=>p.Column < 10)
+                .And
+                .OnlyContain(
+                    p=>p.Row < 5);
 
-        //    var count = minesweeper.Cells.Count(p=>p.Visible);
-        //    minesweeper.ClickOnCell(item0, false);
-        //    Console.WriteLine(minesweeper.Grid.GetStringRepresentation());
-
-        //    minesweeper.Cells.Count(p=>p.Visible).Should().BeGreaterThan(count+1);
-        //}
+            minesweeper.Grid.Cells.Where(p => p.Column == 0).Should().HaveCount(5);
+        }
 
         [Test]
         public void Width_Height_Should_Set_XY_Width()

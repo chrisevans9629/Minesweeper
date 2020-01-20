@@ -71,11 +71,12 @@ namespace Minesweeper
             {
                 for (int j = 0; j < Columns; j++)
                 {
-                    var cell = new BaseCell();
-
-                    cell.Row = i;
-                    cell.Column = j;
-                    cell.Width = Width;
+                    var cell = new BaseCell
+                    {
+                        Row = i,
+                        Column = j,
+                        Width = Width
+                    };
                     Cells.Add(cell);
                 }
             }
