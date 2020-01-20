@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Minesweeper
@@ -59,6 +60,8 @@ namespace Minesweeper
 
     public class MinesweeperConfig
     {
+        private int _bombCount = 20;
+
         //public Func<BaseCell> CreateCellFunc { get; }
         //public MinesweeperConfig(Func<BaseCell> createCell)
         //{
@@ -70,9 +73,17 @@ namespace Minesweeper
         public float? Width { get; set; } = 600;
         public float? Height { get; set; } = 600;
         public int Seed { get; set; } = 100;
-        public int? BlockCount { get; set; }
-        public int BombCount { get; set; } = 20;
+        //public int? BlockCount { get; set; }
 
+        public int BombCount
+        {
+            get => _bombCount;
+            set
+            {
+                Debug.Assert(Width*Height < value);
+                _bombCount = value;
+            }
+        }
     }
     public struct CellParams
     {
@@ -269,10 +280,7 @@ namespace Minesweeper
             if (config.Rows != null) Rows = config.Rows ?? 0;
             else
                 Rows = (int)(Height / cellwidth);
-            if (config.BlockCount != null)
-            {
-                throw new NotImplementedException();
-            }
+           
             Grid = new MinesweeperGrid(Rows, Columns, cellwidth);
 
         }

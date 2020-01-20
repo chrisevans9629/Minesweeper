@@ -17,7 +17,8 @@ module App =
         { 
             Game: Minesweeper.MinesweeperBase
             Flag: bool 
-            Size: float }
+            Size: float 
+            Zoom: float}
     type Msg = 
         | ToggleFlag
         | Flag of BaseCell
@@ -30,11 +31,11 @@ module App =
         
     let game = MinesweeperBase()
     let config = MinesweeperConfig()
-    config.Rows <- System.Nullable(30)
-    config.Columns <- System.Nullable(30)
-    config.BombCount <- 180
+    config.Rows <- System.Nullable(10)
+    config.Columns <- System.Nullable(10)
+    config.BombCount <- 10
     game.Setup(config)
-    let init() = {Game=game;Flag=false;Size=50.}, Cmd.none
+    let init() = {Game=game;Flag=false;Size=50.;Zoom=1.}, Cmd.none
      
     let update msg model =
         match msg with
@@ -57,7 +58,7 @@ module App =
         | UpdateColumn b ->
             model.Game.Config.Columns <- b
             model, Cmd.none
-        | SizeChanged b -> {model with Size = b}, Cmd.none
+        | SizeChanged b -> {model with Zoom = b}, Cmd.none
             
     let bombimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.bomb.png"))
     let flagimg = Source(EmbeddedResourceImageSource.FromResource("Minesweeper.flag.png"))
@@ -84,12 +85,18 @@ module App =
         let skiaSharpGrid =
             View.SKCanvasView(enableTouchEvents=true,
                 invalidate=true,
-                height=float(model.Game.Rows) * model.Size,
-                width=float(model.Game.Columns) * model.Size,
+                //height=float(model.Game.Rows) * model.Size,
+                //width=float(model.Game.Columns) * model.Size,
                 paintSurface=(fun arg -> 
                     let canvas = arg.Surface.Canvas
                     canvas.Clear()
                     let size = model.Size
+
+                    let rowSizeHalf = float(model.Game.Rows) * size/2.
+                    let columnSizeHalf = float(model.Game.Columns) * size/2.
+
+                    let xOffset, yOffset = float(arg.Info.Width)/2.-columnSizeHalf, float(arg.Info.Height)/2.-rowSizeHalf
+
 
                     model.Game.Grid.SetDimensions(float32(size))
                     use paint = new SKPaint()
@@ -115,7 +122,7 @@ module App =
                         let y = a.Location.Y
                         for t in model.Game.Cells do
                             if t.Hit(x,y) then if model.Flag then dispatch (Flag t) else dispatch (Tap t)
-                    ))
+                    )).Scale(model.Zoom)
         let endView =
             View.StackLayout(children=[
                 View.Label(text=if model.Game.Win then "Congrats! You Won!" else "You lost")
@@ -142,7 +149,7 @@ module App =
                     entry "Bombs" (model.Game.Config.BombCount.ToString()) bombs
                     View.Button(text="Reset", command=(fun () -> dispatch Reset)).Padding(Thickness(10.0)).HorizontalOptions(LayoutOptions.Center).Column(3)
                     View.Label(text="Size:",verticalTextAlignment=TextAlignment.Center)
-                    View.Slider(value=model.Size,verticalOptions=LayoutOptions.CenterAndExpand, minimumMaximum=(10.,75.), width=200., valueChanged=(fun args -> dispatch (SizeChanged args.NewValue)))
+                    View.Slider(value=model.Zoom,verticalOptions=LayoutOptions.CenterAndExpand, minimumMaximum=(0.5,2.), width=200., valueChanged=(fun args -> dispatch (SizeChanged args.NewValue)))
                     ])
         View.ContentPage(
             content=View.Grid(
