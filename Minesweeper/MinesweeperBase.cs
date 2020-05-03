@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿#if !Bridge
+      using Newtonsoft.Json;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,18 +62,12 @@ namespace Minesweeper
 
     public class MinesweeperConfig
     {
-        //public Func<BaseCell> CreateCellFunc { get; }
-        //public MinesweeperConfig(Func<BaseCell> createCell)
-        //{
-        //    CreateCellFunc = createCell;
-        //}
         public int? Rows { get; set; }
         public int? Columns { get; set; }
         public float? CellWidth { get; set; } = 40;
         public float? Width { get; set; } = 600;
         public float? Height { get; set; } = 600;
         public int Seed { get; set; } = 100;
-        //public int? BlockCount { get; set; }
 
         public int BombCount { get; set; } = 20;
     }
@@ -91,7 +87,6 @@ namespace Minesweeper
 
     public interface IMinesweeperBase
     {
-
         bool ClickOnCell(BaseCell item, bool placeAsFlag);
     }
     public class MinesweeperBase : IMinesweeperBase
@@ -108,16 +103,23 @@ namespace Minesweeper
         public float Width { get; set; }
         public float Height { get; set; }
 
-
+#if !Bridge
         [JsonIgnore]
+#endif
         public IEnumerable<BaseCell> Cells => Grid?.Cells;
+#if !Bridge
         [JsonIgnore]
+#endif        
         public virtual int MaxScore => Grid.Cells.Count;
+#if !Bridge
         [JsonIgnore]
+#endif       
         public virtual int Score => Grid.Cells.Count(p => p.Visible || p.Flag);
 
 
+#if !Bridge
         [JsonIgnore]
+#endif
         public bool GameEnd => (Win || Lost) && Cells.Count(p => p.Bomb) > 0;
 
         public bool Win => Grid.Cells.Where(p => p.Bomb).All(p => p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
@@ -226,6 +228,7 @@ namespace Minesweeper
                     }
                 }
             }
+            
             //cell.Show();
         }
 
@@ -272,7 +275,9 @@ namespace Minesweeper
                 Rows = (int)(Height / cellwidth);
            
             Grid = new MinesweeperGrid(Rows, Columns, cellwidth);
-
+#if Bridge
+            Grid.Cells.ForEach(p => new Cell(p));
+#endif
         }
         Random random;
 

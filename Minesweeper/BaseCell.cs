@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Minesweeper
@@ -10,11 +11,16 @@ namespace Minesweeper
         private bool _bomb;
         private bool _visible;
 
+        public BaseCell()
+        {
+            Visible = false;
+        }
         public virtual void Show()
         {
-           
+            VisualChange?.Invoke(this, EventArgs.Empty);
         }
 
+        public event EventHandler VisualChange;
         public bool ShowBomb => Visible && Bomb;
         public bool ShowValue => Visible && Value > 0;
         public bool ShowEmpty => Visible && Value <= 0 && !Bomb;
@@ -23,11 +29,13 @@ namespace Minesweeper
         public virtual void Highlight()
         {
             IsHighlighted = true;
+            Show();
         }
 
         public virtual void UnHighLight()
         {
             IsHighlighted = false;
+            Show();
         }
         public virtual bool Flag
         {
@@ -63,7 +71,7 @@ namespace Minesweeper
             }
         }
 
-        
+
         public virtual bool Visible
         {
             get { return _visible; }
@@ -123,5 +131,12 @@ namespace Minesweeper
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        protected virtual void OnVisualChange()
+        {
+            VisualChange?.Invoke(this, EventArgs.Empty);
+        }
+
+
     }
 }

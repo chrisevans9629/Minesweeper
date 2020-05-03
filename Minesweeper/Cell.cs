@@ -2,75 +2,81 @@
 
 namespace Minesweeper
 {
-    public class Cell : BaseCell
+    public class Cell 
     {
+        private readonly BaseCell _cell;
 
-        public override void Highlight()
+        public void Highlight()
         {
             var context = Program.Canvas.GetContext(CanvasTypes.CanvasContext2DType.CanvasRenderingContext2D);
             context.FillStyle = HTMLColor.LightGray;
-            context.FillRect((int)X, (int)Y, (int)Width, (int)Width);
+            context.FillRect((int)_cell.X, (int)_cell.Y, (int)_cell.Width, (int)_cell.Width);
             context.FillStyle = HTMLColor.Black;
         }
 
-        public override void UnHighLight()
+        public void UnHighLight()
         {
             var context = Program.Canvas.GetContext(CanvasTypes.CanvasContext2DType.CanvasRenderingContext2D);
             context.FillStyle = HTMLColor.White;
-            context.FillRect((int)X, (int)Y, (int)Width, (int)Width);
+            context.FillRect((int)_cell.X, (int)_cell.Y, (int)_cell.Width, (int)_cell.Width);
 
             context.FillStyle = HTMLColor.Black;
         }
-        public Cell(int row, int column, int w)
+        public Cell(BaseCell cell)
         {
-            X = row * w;
-            Y = column * w;
-            Row = row;
-            Column = column;
-            Width = w;
-            //Bomb = true;
-            Visible = false;
+            _cell = cell;
+            _cell.VisualChange += (sender, args) => Show();
         }
 
 
 
 
 
-        public override void Show()
+        public void Show()
         {
             var context = Program.Canvas.GetContext(CanvasTypes.CanvasContext2DType.CanvasRenderingContext2D);
+
+            if (_cell.IsHighlighted)
+            {
+                Highlight();
+            }
+            else
+            {
+                UnHighLight();
+            }
+
             // context.ClearRect(X,Y,W,W);
-            if (ShowBomb)
+            if (_cell.ShowBomb)
             {
                 context.FillStyle = HTMLColor.DarkRed;
-                context.FillRect((int)X, (int)Y, (int)Width, (int)Width);
+                context.FillRect((int)_cell.X, (int)_cell.Y, (int)_cell.Width, (int)_cell.Width);
 
                 context.FillStyle = HTMLColor.Red;
                 context.Font = "55px arial";
-                context.FillText("X", (int)X, (int)(Y + Width), (int)Width);
+                context.FillText("X", (int)_cell.X, (int)(_cell.Y + _cell.Width), (int)_cell.Width);
                 context.FillStyle = HTMLColor.Black;
             }
-            else if (ShowValue)
+            else if (_cell.ShowValue)
             {
                 context.Font = "18px arial";
-                context.FillText(Value.ToString(), (int)(X + Width / 2), (int)(Y + Width / 2), (int)Width);
+                context.FillText(_cell.Value.ToString(), (int)(_cell.X + _cell.Width / 2), (int)(_cell.Y + _cell.Width / 2), (int)_cell.Width);
             }
-            else if (ShowEmpty)
+            else if (_cell.ShowEmpty)
             {
                 context.FillStyle = HTMLColor.Gray;
-                context.FillRect((int)X, (int)Y, (int)Width, (int)Width);
+                context.FillRect((int)_cell.X, (int)_cell.Y, (int)_cell.Width, (int)_cell.Width);
                 context.FillStyle = HTMLColor.Black;
             }
-            if (ShowFlag)
+            if (_cell.ShowFlag)
             {
                 context.FillStyle = HTMLColor.Red;
                 context.Font = "55px arial";
-                context.FillText("F", (int)X, (int)(Y + Width), (int)Width);
+                context.FillText("F", (int)_cell.X, (int)(_cell.Y + _cell.Width), (int)_cell.Width);
                 context.FillStyle = HTMLColor.Black;
             }
             else
             {
-                context.StrokeRect((int)X, (int)Y, (int)Width, (int)Width);
+                context.StrokeRect((int)_cell.X, (int)_cell.Y, (int)_cell.Width, (int)_cell.Width);
 
             }
         }

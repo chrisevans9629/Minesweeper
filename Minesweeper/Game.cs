@@ -6,25 +6,8 @@ namespace Minesweeper
 {
     public class Game : MinesweeperBase
     {
-        //internal double lastRender = 0;
-        //void RenderLoop(double timestamp)
-        //{
-        //    var progess = timestamp - lastRender;
-        //    Update(progess);
-        //    Draw();
-        //    lastRender = timestamp;
-        //    Window.RequestAnimationFrame(RenderLoop);
-        //}
-        //void Update(double time)
-        //{
-            
-        //}
-        //void Draw()
-        //{
-        //    //context.ClearRect(0,0, width, height);
-        //   // Show();
-        //}
-        private CanvasRenderingContext2D context =
+        
+        private readonly CanvasRenderingContext2D context =
             Program.Canvas.GetContext(CanvasTypes.CanvasContext2DType.CanvasRenderingContext2D);
         Random random = new Random();
 
@@ -41,7 +24,7 @@ namespace Minesweeper
                     Window.Alert("Lost!");
                 }
             };
-            Setup(new MinesweeperConfig(p => new Cell(p.Row, p.Column, (int)p.Width)){BombCount = 50, Seed = random.Next(int.MaxValue) });
+            Setup(new MinesweeperConfig());
             SetupHtml();
             Show();
             //Window.RequestAnimationFrame(RenderLoop);
@@ -107,7 +90,7 @@ namespace Minesweeper
             reset.OnClick = click =>
             {
                 //Reset();
-                Setup(new MinesweeperConfig(p => new Cell(p.Row, p.Column, (int)p.Width)) { BombCount = 50, Seed = random.Next(int.MaxValue) });
+                Setup(new MinesweeperConfig());
 
                 Show();
                // Setup(p => new Cell(p.Row,p.Column,p.Width)); 
@@ -121,8 +104,6 @@ namespace Minesweeper
             canvas.Height = (int)Height;
             game.AppendChild(canvas);
             game.AppendChild(tools);
-            //Document.Body.AppendChild(canvas);
-            // Document.Body.AppendChild(tools);
 
         }
 
