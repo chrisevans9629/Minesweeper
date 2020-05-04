@@ -9,7 +9,7 @@ namespace Minesweeper
 {
     public class Program
     {
-        public static HTMLCanvasElement Canvas = new HTMLCanvasElement();
+       // public static HTMLCanvasElement Canvas = new HTMLCanvasElement();
         public static void Main()
         {
             //var net = new NeuralNetworkTest();

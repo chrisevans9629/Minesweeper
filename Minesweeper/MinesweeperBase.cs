@@ -275,9 +275,7 @@ namespace Minesweeper
                 Rows = (int)(Height / cellwidth);
            
             Grid = new MinesweeperGrid(Rows, Columns, cellwidth);
-#if Bridge
-            Grid.Cells.ForEach(p => new Cell(p));
-#endif
+
         }
         Random random;
 
