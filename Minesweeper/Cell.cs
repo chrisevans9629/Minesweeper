@@ -1,20 +1,51 @@
-﻿using Bridge.Html5;
+﻿using System;
+using System.Collections.Generic;
+using Bridge.Html5;
 
 namespace Minesweeper
 {
     public class Theme
     {
-        public static string HighlightColor = HTMLColor.LightGray;
-        public static string DefaultFill = HTMLColor.Black;
-        public static string CellColor = HTMLColor.White;
-        public static string BombColor = HTMLColor.Red;
-        public static string BombBackgroundColor = HTMLColor.DarkRed;
-        public static string EmptyCellColor = HTMLColor.Gray;
-        public static string FlagColor = HTMLColor.Red;
+        public static string HighlightColor = GetColor(nameof(HighlightColor));
+        public static string DefaultFill = GetColor(nameof(DefaultFill));
+        public static string CellColor = GetColor(nameof(CellColor));
+        public static string BombColor = GetColor(nameof(BombColor));
+        public static string BombBackgroundColor = GetColor(nameof(BombBackgroundColor));
+        public static string EmptyCellColor = GetColor(nameof(EmptyCellColor));
+        public static string FlagColor = GetColor(nameof(FlagColor));
+        public static string CellStrokeColor = GetColor(nameof(CellStrokeColor));
 
-        public static string FlagFont = "55px arial";
-        public static string ValueFont = "18px arial";
-        public static string BombFont = "55px arial";
+        public static string FlagFont = GetColor(nameof(FlagFont),"font");
+        public static string ValueFont = GetColor(nameof(ValueFont),"font");
+        public static string BombFont = GetColor(nameof(BombFont), "font");
+
+        private static Dictionary<string, string> ClassColor = new Dictionary<string, string>();
+        private static string GetColor(string className, string prop = "color")
+        {
+            if(ClassColor == null)
+                ClassColor = new Dictionary<string, string>();
+            if(className == null)
+                throw new ArgumentNullException(nameof(className));
+            if (ClassColor.ContainsKey(className))
+                return ClassColor[className];
+
+            var div = new HTMLDivElement();
+            div.ClassName = className;
+            Document.Body.AppendChild(div);
+
+
+            var style = Window.GetComputedStyle(div);
+
+            var color = style.GetPropertyValue(prop);
+
+            ClassColor.Add(className, color);
+
+            Document.Body.RemoveChild(div);
+
+            return color;
+        }
+
+
     }
 
 
@@ -93,6 +124,7 @@ namespace Minesweeper
             }
             else
             {
+                context.StrokeStyle = Theme.CellStrokeColor;
                 context.StrokeRect((int)_cell.X, (int)_cell.Y, (int)_cell.Width, (int)_cell.Width);
 
             }
