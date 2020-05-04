@@ -19,6 +19,16 @@ namespace Minesweeper.Test
         }
 
         [Test]
+        public void PlaceFlag_Should_NotCauseWin()
+        {
+            minesweeper.GameEnd.Should().BeFalse();
+            minesweeper.ClickOnCell(minesweeper.Cells.First(), true);
+            minesweeper.GameEnd.Should().BeFalse();
+            minesweeper.Win.Should().BeFalse();
+        }
+
+
+        [Test]
         public void SetColumns_Should_Match()
         {
             minesweeper.Config.Columns = 10;
@@ -227,10 +237,10 @@ namespace Minesweeper.Test
         }
 
         [Test]
-        public void PlaceFlag_Score1()
+        public void PlaceFlag_ScoreNegative1()
         {
             PlaceFlag();
-            minesweeper.Score.Should().Be(minesweeper.Cells.Count(p=>p.Flag || p.Visible));
+            minesweeper.Score.Should().Be(minesweeper.Cells.Count(p=>p.Visible) -1);
         }
 
         [Test]

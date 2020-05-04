@@ -114,15 +114,19 @@ namespace Minesweeper
 #if !Bridge
         [JsonIgnore]
 #endif       
-        public virtual int Score => Grid.Cells.Count(p => p.Visible || p.Flag);
+        public virtual int Score => Grid.Cells.Count(p => p.Visible) - Grid.Cells.Count(p => p.Flag);
 
 
 #if !Bridge
         [JsonIgnore]
 #endif
-        public bool GameEnd => (Win || Lost) && Cells.Count(p => p.Bomb) > 0;
+        public bool HasBombs => Cells.Count(p => p.Bomb) > 0;
 
-        public bool Win => Grid.Cells.Where(p => p.Bomb).All(p => p.Flag) || Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
+        public bool GameEnd => (Win || Lost);
+
+        private bool AllFlagged => Grid.Cells.Where(p => p.Bomb).All(p => p.Flag);
+        private bool AllVisible => Grid.Cells.Where(p => !p.Bomb).All(p => p.Visible);
+        public bool Win => (AllFlagged || AllVisible) && HasBombs;
         public bool Lost => Grid.Cells.Any(p => p.Visible && p.Bomb);
 
         public void ToggleFlagCell(BaseCell item)
