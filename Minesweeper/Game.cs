@@ -31,10 +31,10 @@ namespace Minesweeper
         }
 
         HTMLCanvasElement Canvas;
-        public float GetY(float y) => y + Document.DocumentElement.ScrollTop - (float) Canvas.GetBoundingClientRect().Top;
+        public float GetY(float y) => y - (float) Canvas.GetBoundingClientRect().Top;
 
         public float GetX(float x) =>
-            x + Document.DocumentElement.ScrollLeft - (float) Canvas.GetBoundingClientRect().Left;
+            x  - (float) Canvas.GetBoundingClientRect().Left;
 
         private void SetupCanvas(HTMLCanvasElement canvas, HTMLElement score)
         {
